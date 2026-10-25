@@ -1,5 +1,28 @@
 # Build and run
 
+**Open the new entertainment layout:** In the canonical C-drive project, use the Content Browser to open `/Game/SpaceSurvival/Licensed/EntertainmentObservatory/L_EntertainmentObservatory`. Play in this map uses the First Person template for walking review; it is separate from the normal game's startup level. Ground floor contains the copied crew/performance lounge, the middle is enclosed, and the third floor has the panoramic windows. All construction is editable by actor/folder. Do not rerun its generation recipe over your edits. [Review images and verification](validation/2026-10-23-entertainment-observatory.md); original station/workshop and packaged build remain unchanged.
+
+October23: the active engine is `C:/Program Files/Epic Games/UE_5.8` (5.8.4). The former plugin-only standard folder is archived on D, and launcher records/desktop shortcut were repointed after the owner moved the full engine. No `EpicGames2` compatibility junction is required by current scripts. NVIDIA8.9 plugins live under engine `Plugins/Marketplace`; matching temporary project copies remain local pending separately reviewed cleanup. Pause > Settings > Graphics has Image & Performance, Advanced and Display sections; stage controls and choose Apply, or Back to cancel. [Graphics usage and validation](production/NVIDIA_GRAPHICS_UI.md).
+
+For brighter layout work in the current station, use **SS Prefabs > Daylight editing preview**, then **Restore game lighting** when done. This session-only authoring preview does not alter Play lighting. [Details](STATION_EDITING.md#daylight-editing-preview).
+
+**October20 storage:** Open `C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject`. Its former M-linked content and Artifacts now live on C. NPC executables/models and voice dependencies are under `LocalRuntime/`, configured in `DefaultNpcTalk.ini`; do not launch an old M checkout. The local package is still the existing package, not a rebuild of today's editor changes. D holds optional cold archives only. [Storage map and verification](validation/2026-10-20-storage-consolidation.md).
+
+For disposable isolated validation profiles, add `-NoAssetRegistryCacheWrite` to the hidden Unreal invocation. The installed engine documents this flag; it prevents redundant discovery-cache writes without turning off asset discovery. Normal editor shader/DDC caches remain enabled.
+
+**October20 playable heroes:** Use the canonical development checkout with its rebuilt Editor module and private `PlayableHeroes_20261020` assets. At the wardrobe pad, browse with the existing Previous/Next controls and choose Select to equip white, green, blue or cloth. Station default now resolves white; an explicit saved choice is preserved. This does not update the packaged/itch build. Physical-input/appearance acceptance and live cloth verification remain open; [current native evidence](validation/2026-10-20-playable-heroes.md) records the exact limits. Do not replay the import scripts on these adopted assets.
+
+**October16 diagnostics candidate:** Open Settings > Graphics > Diagnostics. Use the existing click/confirm action to toggle, or left/right on its selected row to set Off/On. It is off by default and saved with preferences. The compact left-side gameplay panel hides in menus/photo mode/gallery. It reports frame timing, process memory/CPU and local talk/voice status; running helpers are not proof of readiness. Native physical-input/readability review remains open; this is not yet in the packaged release. [Validation](validation/2026-10-16-runtime-diagnostics.md).
+
+**October16 wardrobe source candidate:** At the wardrobe pad, interact to open
+the side panel. Left/right arrows, D-pad or left stick browse the hologram;
+up/down chooses a button, Enter/A or a click activates it, and Esc/B closes.
+Only Select changes the equipped character. Closing restores the original
+projection and view. The existing Station default button clears the saved
+preference. This candidate requires the changed Editor module; scripted native
+framing/browse/cleanup pass. Physical input and owner visual review remain open; the packaged release is
+unchanged. [Evidence](validation/2026-10-16-wardrobe-hologram.md).
+
 **October 24 cryo v6:** current content is installed at
 `/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison`. Open it, Play and compare
 the forward cores and small constant nozzle streams. Approach a chamber and use
@@ -76,7 +99,7 @@ Keep these authoring destinations separate:
 | Original outpost experiment | `Edit Outpost Sandbox.cmd` in the canonical project, map `/Game/OutpostSandbox/L_AsteroidOutpost`. Its separate **Play Outpost Sandbox.cmd** still opens the design preview and its isolated profile. |
 | Purchased-kit building sandbox | `/Game/Blender/Sandbox/BuildingSandbox_20260922`, preserved on its flat platform with the space backdrop; the former canyon was removed. See [Building sandbox](BUILDING_SANDBOX.md). |
 
-**ULAT is enabled in the canonical project.** Its installed folder is now `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/UltimateLevelArtTool`; moving the existing plugin into Marketplace resolved the native rules-discovery failure. The native refresh verifies 16,051 assets across 70 refreshed collections and 2,617 ULAT rows. All 2,825 mesh proxies, thumbnails and native Blender cache assets are prepared, with zero failed proxies or unavailable cache meshes. The 204 name collisions and four unsupported names remain in native collections. The complete station is verified in Blender and saved as Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend; see [Building library](BUILDING_LIBRARY.md) and [Project State](PROJECT_STATE.md).
+**ULAT is enabled in the canonical project.** Its installed folder is now `C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Marketplace/UltimateLevelArtTool`; moving the existing plugin into Marketplace resolved the native rules-discovery failure. The native refresh verifies 16,051 assets across 70 refreshed collections and 2,617 ULAT rows. All 2,825 mesh proxies, thumbnails and native Blender cache assets are prepared, with zero failed proxies or unavailable cache meshes. The 204 name collisions and four unsupported names remain in native collections. The complete station is verified in Blender and saved as Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend; see [Building library](BUILDING_LIBRARY.md) and [Project State](PROJECT_STATE.md).
 
 Current station consoles route to existing gameplay panels: ship paint, wardrobe, flight briefing, engineering, contracts, repair and save services. Waves / Free Flight selection belongs at the Phoenix cockpit chair in the October 6 source revision; the briefing reports the choice and retains explicit saved-run continuation. The original sandbox's paint/wardrobe previews and map-travel terminals retain their own behaviors. [Outpost guide](OUTPOST_SANDBOX.md) distinguishes them. Save edits directly to the current Wayfarer map with Play stopped, then restart Play to review them. Changes to the preserved outpost experiment require a deliberate transfer; changes reach testers only through a later package/publication.
 
@@ -94,7 +117,7 @@ The fixture requests six frames: pad, home services, apartment, free-flight depa
 
 Run current build and authoring commands from `C:/Users/j6sis/SpaceSurvival`. Historical receipts may refer to the retained `flight-loop-reset` or outpost worktrees; those paths do not select the current project.
 
-- Owner-installed Unreal Engine 5.8.2: `C:/Program Files/EpicGames2/UE_5.8`.
+- Owner-installed Unreal Engine 5.8.4: `C:/Program Files/Epic Games/UE_5.8`.
 - Owner-installed Visual Studio 2026 C++ toolchain: MSVC 14.51.36257, Windows SDK 10.0.26100.0. Builds have succeeded; UBT reports that this compiler is newer than its preferred version. Consult the installed engine's `Engine/Config/Windows/Windows_SDK.json` if changing toolchains.
 - Docker Desktop Linux containers supply GCC and clang-format. No host system packages were installed by the implementation.
 - Existing Python 3 validates/generates source assets. Blender/Pillow are used by optional source previews; they are not needed to run the game.
@@ -110,7 +133,7 @@ Run this narrow import after the Editor module is built, one owned offscreen Unr
 ```powershell
 python Scripts/ImportFigmaMainMenu.py --validate-only
 $ssRoot = (Get-Location).Path
-$ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ssEditor = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
 $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
 & $ssEditor $ssProject -unattended -nosplash -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/ImportFigmaMainMenu.py"
 # Inspect Artifacts/FigmaMainMenu/author-dry-run.json, then create the 19 named textures:
@@ -158,7 +181,7 @@ After the Editor build, execute `Scripts/PreviewAsteroidLibrary.py` through Unre
 Example (one script at a time):
 
 ```powershell
-& 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe' 'C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject' '-ExecutePythonScript=C:/Users/j6sis/SpaceSurvival/Scripts/AuthorAsteroidDepth.py' -unattended -nosplash -RenderOffscreen
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe' 'C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject' '-ExecutePythonScript=C:/Users/j6sis/SpaceSurvival/Scripts/AuthorAsteroidDepth.py' -unattended -nosplash -RenderOffscreen
 ```
 
 Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
@@ -171,7 +194,7 @@ Paraphrase of the owner's September 21 direction: an industrial steel/amber dist
 
 ```powershell
 $ssRoot = (Get-Location).Path
-$ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ssEditor = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
 $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixFlightHull.py"
 # After inspecting Artifacts/PhoenixPresentation/flight-hull-dry-run.json:
@@ -216,7 +239,7 @@ Run the steps **in order**, one completed process at a time:
 
 ```powershell
 $blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
-$ueCmd = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ueCmd = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
 $root = 'C:/Users/j6sis/SpaceSurvival'
 & $blender --background --factory-startup --python "$root/Scripts/AuthorStationPitStop.py" -- --tag keel
 & $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/ImportStationPitStop.py -- --tag keel"
@@ -258,7 +281,7 @@ Once Blender's Apply has written `Prefabs/Scenes/StationInterior.json`, that fil
 
 ```powershell
 $blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
-$ueCmd = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ueCmd = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
 $root = 'C:/Users/j6sis/SpaceSurvival'
 & $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/ImportVaultGlb.py"
 & $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/ExportPrefabCatalog.py"
@@ -305,7 +328,7 @@ Portable tests compile the domain and its tests under strict C++17 and ASan/UBSa
 ./Scripts/Build.ps1 -Target Test
 ```
 
-Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close project instances that lock the module before rebuilding; do not close unrelated owner editor sessions.
+Each target accepts `-EngineRoot 'C:/Program Files/Epic Games/UE_5.8'`. Close project instances that lock the module before rebuilding; do not close unrelated owner editor sessions.
 
 - **Editor** invokes UnrealBuildTool for SpaceSurvivalEditor, Win64 Development.
 - **Content** imports canonical sources and authors the tuning asset and Survival map. Inspect `Saved/Validation/ContentImport.json`; the successful status is `IMPORTED_NOT_GAMEPLAY_VALIDATED` with no errors. Existing authored assets are preserved, and partial/wrong-type imports are rejected. Read [CONTENT_PIPELINE.md](CONTENT_PIPELINE.md) before deliberate reimport.
@@ -317,7 +340,7 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 Open `SpaceSurvival.uproject` in UE 5.8.2 to edit the current Wayfarer station. Press Play for the normal game, or load `/Game/SpaceSurvival/Maps/Survival` directly. For a separate development game window:
 
 ```powershell
-$ueEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe'
+$ueEditor = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe'
 $ssProject = Join-Path (Get-Location) 'SpaceSurvival.uproject'
 & $ueEditor $ssProject -game -windowed -ResX=1280 -ResY=720 -log
 ```
@@ -415,7 +438,7 @@ The uncooked developer build of the flight reset requires the rebuilt project DL
 
 On station approach, follow the exterior landing-pad marker. Release throttle, then apply brake to slow to unboosted cruise speed or below; approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller X when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
 
-Walk up the parked Phoenix's rear ramp, through the cabin and to the cockpit chair. A compact cockpit card shows **WAVES / FREE FLIGHT** and marks the selected departure. Press **R / D-pad Left** once to change the selection, then **E / Y** to sit and depart. Holding the mode button does not repeat; pressing mode and sit together changes only the mode. Choosing alone does not start a flight, restart a run or replace a saved checkpoint. The card and mode control are available only at the supported chair, not elsewhere in the station or during flight. An active Survival station stop keeps its current mode and progress and shows **MODE LOCKED**. The station **Flight Briefing** reports the selection and directs the pilot to the ship; explicit **Continue saved Survival** remains available for an existing checkpoint.
+Walk up the parked Phoenix's rear ramp, through the cabin and to the cockpit chair. A compact cockpit card shows **WAVES / FREE FLIGHT** and marks the selected departure. Press **R / D-pad Left** once to change the selection, then **E / Y** to depart. Nobody takes the seat for now (owner 2026-10-12): the pilot vanishes where they confirmed, the view moves to the ship, and the flight shows no character. Holding the mode button does not repeat; pressing mode and depart together changes only the mode. Choosing alone does not start a flight, restart a run or replace a saved checkpoint. The card and mode control are available only at the supported chair, not elsewhere in the station or during flight. An active Survival station stop keeps its current mode and progress and shows **MODE LOCKED**. The station **Flight Briefing** reports the selection and directs the pilot to the ship; explicit **Continue saved Survival** remains available for an existing checkpoint.
 
 The October 6 selector changes are implemented in source with [focused verification requirements](validation/2026-10-06-cockpit-mode-selector.md); native build, card rendering and physical-play acceptance require their own results. `SpaceSurvival.Integration.PhoenixCockpitDeparture` exercises raw keyboard/controller input at the walked chair. The updated boarding render fixture requires nine views, including Waves and selected Free Flight at the chair before sitting; the earlier eight-frame boarding captures are historical.
 
@@ -461,7 +484,7 @@ Save & Quit is available at stations. Continue consumes the suspension before ex
 The dedicated lifecycle harness runs preflight plus three fresh Unreal processes using actual GameInstance Init/Suspend/Resume/PersistDeath:
 
 ```powershell
-./Scripts/TestSaveLifecycle.ps1 -EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'
+./Scripts/TestSaveLifecycle.ps1 -EngineRoot 'C:/Program Files/Epic Games/UE_5.8'
 ```
 
 Use `-PreflightOnly` for the backend/path guard without GameInstance Init or save writes. The normal harness creates a GUID directory under `Artifacts/SaveLifecycle`, verifies the generic SaveGame backend and absence of reparse paths before writes, and checks owner production save hashes before/after. Its successful receipt verifies station fixture persistence, settings, resumed death, 475 XP/both unlocks and fresh-run reset, plus actual locked-suspension/account failures that preserve bytes and succeed after releasing the locks. It does not click station UI or test the packaged executable. See [VALIDATION.md](VALIDATION.md) for the exact token and limits.
@@ -513,3 +536,7 @@ the gameplay default map or a published package.
 The existing **Play SpaceSurvival - Current** and **Unreal Engine** desktop shortcuts use the repaired checkout at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, now `codex/wormhole-playtest`, gameplay source `8ee8260`, rebuilt and ready. Start Survival: the new passage occurs at the end of Wave5 before hostile combat. Ordinary free-flight controls and the harder survival baseline remain intact.
 
 For isolated offscreen visual evidence only, `Scripts/CaptureSpaceLook.ps1 -WormholeReview -Sequence` captures the normal chase camera through a seeded Wave5 entrance/transit/exit, with protected save isolation. It does not publish, package or run a natural five-wave journey. See [the wormhole receipt](validation/2026-09-30-wormhole-transit.md) for exact final build/capture identity.
+
+### Local station review controls (October 15)
+
+D-pad Up/F8 opens photo mode; A/Enter saves a clean PNG under the current instance's `Saved/Screenshots/PhotoMode`; B/Esc exits. Movement, zoom and camera limits appear on screen. Hold LB near a crew member for labeled D-pad interactions; keyboard 1–4 remains available. LB/RB switches settings tabs directly. Hero seating uses E/Y at authored contacts. See [the station guide](production/WAITRESS_BAR_SERVICE.md) for exact controls and the private Astra/eye source paths. These are Editor/source changes, not a new published package.

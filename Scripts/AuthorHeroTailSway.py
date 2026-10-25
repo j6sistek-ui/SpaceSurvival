@@ -1,6 +1,6 @@
 """A subtle tail sway on the squirrel clips that were retargeted from a body with no tail.
 
-    & 'C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe' `
+    & 'C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe' `
       'C:\\Users\\j6sis\\SpaceSurvival\\SpaceSurvival.uproject' -unattended -stdout `
       -FullStdOutLogOutput -NullRHI -DisablePlugins=UAssetBrowser `
       '-ExecutePythonScript=C:\\Users\\j6sis\\SpaceSurvival\\Scripts\\AuthorHeroTailSway.py'

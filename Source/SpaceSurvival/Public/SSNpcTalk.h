@@ -36,6 +36,21 @@ struct FTurn
 SPACESURVIVAL_API FSSTalkIdentity IdentityFromTags(const TArray<FName> &Tags, const FString &MeshName);
 /** Any Talk* tag at all: the station's deck crew are tagged, its display ship and holograms are not. */
 SPACESURVIVAL_API bool HasTalkTag(const TArray<FName> &Tags);
+/** A placed character's talk identity: its Talk* tags (the actor's, then the component's, which win) when it carries
+ *  any, else the name taken from its mesh; Name and Type both go through Alias. 2026-10-15: Silver's Blueprint is
+ *  tagged TalkName:Silver, but placed Blueprints were only ever named from the mesh (SK_Sentinel_MotionFinish). */
+SPACESURVIVAL_API FSSTalkIdentity PlacedIdentity(const TArray<FName> &ActorTags, const TArray<FName> &ComponentTags,
+                                                 const FString &MeshName, TFunctionRef<FString(const FString &)> Alias);
+/** How many of a model's layers llama-server may put on the GPU: what fits in FreeBytes after MarginBytes (left for
+ *  the game) and FixedBytes (llama's cache and scratch), at ModelBytes / (Blocks + 1) a layer. 999 (all) when the
+ *  whole model fits; 0 (CPU) when nothing does or a figure is unknown (negative). */
+SPACESURVIVAL_API int32 ChooseGpuLayers(int64 FreeBytes, int64 ModelBytes, int32 Blocks, int64 MarginBytes,
+                                        int64 FixedBytes);
+/** "<arch>.block_count" from a GGUF model's header, its layer count; -1 when it cannot be read. */
+SPACESURVIVAL_API int32 GgufBlockCount(const FString &Path);
+/** Video memory this process may still take on the largest GPU before the OS starts demoting it (the DXGI budget
+ *  minus current use); -1 where that cannot be asked. */
+SPACESURVIVAL_API int64 FreeVideoMemoryBytes();
 /** Interleaved float PCM at any rate and channel count -> mono 16 kHz, which is what whisper wants. */
 SPACESURVIVAL_API TArray<float> ToMono16k(const TArray<float> &Interleaved, int32 Channels, int32 SampleRate);
 /** Mono 16 kHz float -> a complete 16-bit PCM WAV file. */
@@ -80,10 +95,10 @@ SPACESURVIVAL_API FVoiceClip VoiceClip(const TArray<uint8> &Body, const FString 
  *  line cannot carry. */
 SPACESURVIVAL_API FString VoiceArgs(const FString &Script, const FString &Repo, const FString &VoicesDir,
                                     const FString &DefaultVoice, int32 Threads, int32 Port, uint32 ParentPid);
-/** The file a line is kept in: an MD5 of "<reference file>|<speed>|<treatment>|<line>", exactly as the server's
- *  --prerender names it, so lines made ahead of time are found. A new voice, speed or treatment is a new name. */
+/** The file a line is kept in, matching the server's --prerender. An empty revision preserves the legacy MD5 of
+ *  "<reference file>|<speed>|<treatment>|<line>". Set a new revision when replacing a recording at the same path. */
 SPACESURVIVAL_API FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment,
-                                         const FString &Text);
+                                         const FString &Text, const FString &CacheRevision = FString());
 /** A character's voice: the recording the server clones, and the settings from the <Name>.txt beside it. Speed is
  *  a double so "%.2f" rounds exactly as the server's Python does (0.985 is 0.98 to both). */
 struct FVoiceProfile
@@ -91,8 +106,9 @@ struct FVoiceProfile
     FString Reference;
     double Speed = 0.92;
     FString Treatment = TEXT("none");
+    FString CacheRevision;
 };
-/** "speed=0.92" and "treatment=entity" lines, as the server reads them; anything else is ignored. */
+/** "speed=0.92", "treatment=entity" and optional "cache_revision=...", as the server reads them. */
 SPACESURVIVAL_API void ParseVoiceProfile(const FString &Text, FVoiceProfile &Out);
 /** How long a line may wait for its voice before the caption carries it alone. A scripted line heard seconds after
  *  its caption is worse than none; a reply is what the pilot asked for, so it waits longer. */
@@ -115,6 +131,17 @@ enum class ESSTalkPhase : uint8
     Thinking
 };
 
+/** Read-only local service status. Contains no prompts, dialogue, paths or server responses. */
+struct FSSTalkDiagnostics
+{
+    ESSTalkPhase Phase = ESSTalkPhase::Idle;
+    bool Installed = false, Enabled = false, LlamaRunning = false, WhisperRunning = false;
+    bool VoiceInstalled = false, VoiceEnabled = false, VoiceRunning = false, VoiceReady = false;
+    bool TalkError = false;
+    int32 VoiceQueue = 0, VoiceRestarts = 0, VoiceFailures = 0;
+    double RequestSeconds = 0;
+};
+
 /** Owns the microphone, the two sidecar servers and one conversation per character. Config/DefaultNpcTalk.ini. */
 UCLASS(Config = NpcTalk)
 class SPACESURVIVAL_API USSNpcTalkSubsystem : public UGameInstanceSubsystem
@@ -130,6 +157,8 @@ public:
         return bInstalled;
     }
     bool IsEnabled() const;
+    /** Does not launch, contact or restart helpers. Call sparingly while diagnostics are visible. */
+    FSSTalkDiagnostics Diagnostics() const;
     /** The station loads the better talker on arrival; launching into a wave kills the server. */
     void SetContext(ESSTalkContext Context);
     ESSTalkPhase Phase() const
@@ -205,13 +234,25 @@ public:
         TEXT("Nyxar, the Director, Wayfarer Exchange, Stellar Phoenix, Dread, Vel, Orrin, Sable, "
              "Kett, Rue, Pim, Dax, Brakk, Mica, Unit Seven, Cyan, Cyborg, Violet, Tribal, Seer, "
              "Tendril, Glyph, Robe, Ember, Crest, Olive, Warden, Abyss, Silver, Elf, Crystal, "
-             "Finhead, Amethyst, synth-ale, Europa gin, Nebula.");
+             "Finhead, Amethyst, Joy, synth-ale, Europa gin, Nebula, cheers, pour, toast.");
     UPROPERTY(Config)
     int32 WhisperPort = 8701;
     UPROPERTY(Config)
     int32 LlamaPort = 8702;
+    /** Layers of the language model on the GPU. -1 = auto (2026-10-15): chosen at each launch from the video memory
+     *  free then, always leaving LlamaVramMarginMB to the game; 0 = CPU only; 99 = all. A fixed 99 put the 5 GB
+     *  station model on a GPU the open editor had filled to 12-13.5 of 16 GB, and replies took 16-61 s. */
     UPROPERTY(Config)
-    int32 LlamaGpuLayers = 99;
+    int32 LlamaGpuLayers = -1;
+    /** Auto layers: video memory always left to the game, and memory set aside for llama's cache and scratch. */
+    UPROPERTY(Config)
+    int32 LlamaVramMarginMB = 1536;
+    UPROPERTY(Config)
+    int32 LlamaVramFixedMB = 640;
+    /** In the editor, helpers kept running after a Play are stopped when no new Play picks them up within this many
+     *  minutes, so they do not hold their ports and video memory while the editor sits idle. */
+    UPROPERTY(Config)
+    int32 KeptHelpersMinutes = 10;
     UPROPERTY(Config)
     int32 MaxReplyTokens = 90;
     /** Turns of back-and-forth remembered per character. */
@@ -302,7 +343,17 @@ public:
     int32 DirectorReplyTokens = 48;
 
 private:
+    friend class FSSNpcTalkHelperIdentityTest;
+    friend class FSSNpcTalkHelperLifetimeTest;
+    FString WhisperServerKey() const;
+    FString LlamaServerKey(const FString &Model, const FString &Extra) const;
+    FString VoiceServerKey() const;
     void StopServers();
+    /** In the editor the helpers outlive a Play session (2026-10-15: every Play press cost the voice 16-56 s and the
+     *  model 4-11 s to come back); Deinitialize parks them and the next session's Initialize picks them up. */
+    void ParkServers();
+    void AdoptParkedServers();
+    int32 GpuLayersFor(const FString &Model) const;
     void Fail(const FString &Character, const FString &Why);
     void SendToWhisper(const FString &Character, const TArray<uint8> &Wav);
     void SendToLlama(const FString &Character, const FString &Question);
@@ -315,7 +366,8 @@ private:
     TSet<FString> PersonaNames;
     ESSTalkPhase CurrentPhase = ESSTalkPhase::Idle;
     ESSTalkContext CurrentContext = ESSTalkContext::Flight;
-    FString Error, RunningModel;
+    FString Error, RunningModel, RunningLlamaKey, RunningWhisperKey;
+    bool bWhisperTied = false, bLlamaTied = false;
     double LlamaStartedAt = 0.0, AskedAt = 0.0;
     int32 LlamaRetries = 0;
     FTimerHandle RetryTimer;
@@ -338,6 +390,8 @@ private:
     };
     FString VoiceScriptPath() const;
     FString VoicesPath() const;
+    /** The voice set and settings the voice server reads once at start: a kept one is reused only if this matches. */
+    FString VoiceKey;
     FString VoiceCacheFile(const FString &Voice, const FString &Text) const;
     bool FindVoiceClip(const FString &Voice, const FString &Text, SSNpcTalk::FVoiceClip &Out);
     /** Send the next job; one at a time, as the server works one line at a time. */
@@ -348,7 +402,7 @@ private:
     bool bVoiceInstalled = false, bVoiceReady = false;
     FProcHandle VoiceProc;
     double VoiceStartedAt = 0.0, PrerenderStartedAt = 0.0;
-    int32 VoiceCrashes = 0, NextVoiceJob = 0, InFlightVoiceJob = 0, Prerendered = 0;
+    int32 VoiceCrashes = 0, VoiceFailures = 0, NextVoiceJob = 0, InFlightVoiceJob = 0, Prerendered = 0;
     TArray<FVoiceJob> VoiceJobs;
     TMap<FString, SSNpcTalk::FVoiceClip> VoiceCache;
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> VoicePending;

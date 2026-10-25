@@ -100,6 +100,41 @@
 			"Name": "AudioCapture",
 			"Enabled": true,
 			"Comment": "Microphone for push-to-talk NPC conversations (Source/SpaceSurvival/Public/SSNpcTalk.h)."
+		},
+		{
+			"Name": "XRBase",
+			"Enabled": true,
+			"Comment": "Built-in function-library dependency of the imported XANDRA customization Blueprint; no VR platform or controls enabled."
+		},
+		{
+			"Name": "DLSS",
+			"Enabled": true,
+			"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/nvidia-dlss",
+			"Optional": true
+		},
+		{
+			"Name": "NIS",
+			"Enabled": true,
+			"Optional": true,
+			"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/nvidia-dlss"
+		},
+		{
+			"Name": "StreamlineDLSSG",
+			"Enabled": true,
+			"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/nvidia-dlss",
+			"Optional": true
+		},
+		{
+			"Name": "StreamlineReflex",
+			"Enabled": true,
+			"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/nvidia-dlss",
+			"Optional": true
+		},
+		{
+			"Name": "StreamlineDeepDVC",
+			"Enabled": true,
+			"Optional": true,
+			"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/nvidia-dlss"
 		}
 	]
 }

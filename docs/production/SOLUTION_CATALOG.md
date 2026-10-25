@@ -1,5 +1,94 @@
 # SpaceSurvival whole-project solution catalog
 
+**October24 owner review — ART-CURVEDBENCH-20261024:** Repaired source-preview appearance approved ("bench looks good"). Native integration and performance remain held. Console cleanup extends the same PR92.
+
+**ART-ZEROGCONSOLE-20261024 — owner-supplied control kiosk (station environment):** Acquisition local GLB; no purchase or installation. Evaluation: warped/open hard surfaces reconstructed into60 closed editable parts,10PBRmaterials and12312triangles; original sign/monitor/control artwork projected onto separate surfaces and original packed as hidden reference. Four CPU angles and fresh blend/GLB reload pass; owner appearance pending. Whole-project value: editable zero-G entertainment control/signage prop, with no implemented control behavior. Private source/delivery on C at SourceAssets/ZeroGravityConsole_20261024; same PR92 as bench. Next checks: owner look/scale, later-authorized native collision/LOD/placement/interaction/performance under RPT-20261023-02. [Guide](../../Scripts/StationRecipes/ZeroGravityConsole/README.md), [evidence](../validation/2026-10-24-zero-gravity-console-cleanup.md).
+
+**ART-CURVEDBENCH-20261024 — owner-supplied curved sofa (station seating):** Acquisition local GLB; no purchase, download or installation. Evaluation: distorted geometry rebuilt as43 editable closed parts,7 PBR materials and45cm seating height; original/reference preserved. Four CPU angles and fresh Blender/GLB reload pass. Whole-project value: editable curved lounge seating candidate. Private source on C at SourceAssets/CurvedBench_20261024; source recipe published. Not imported into Unreal; native collision, LODs, seat interaction, placement and performance remain held under RPT-20261023-02. [Guide](../../Scripts/StationRecipes/CurvedBench/README.md), [evidence](../validation/2026-10-24-curved-bench-repair.md).
+
+**LIB-OBSERVATORY-20261023 — owned Spectrum Galaxy lounge/window reuse (station environment):** Acquisition already local; no purchase or plugin install. The separate three-floor observatory uses native sloped window/trim pairs, sofas, recliners and cups plus twelve original centimeter/UCX modules. A local clear-glass override preserves vendor materials. Evaluation: saved-map multi-angle review and scripted stair traversal, not final owner design approval or performance acceptance. Whole-project value: editable architecture and a contained review environment for the entertainment redesign. Available now on C; current station connections/services and character contact remain separate work. [Recipe](../../Scripts/StationRecipes/EntertainmentObservatory/README.md), [evidence](../validation/2026-10-23-entertainment-observatory.md).
+
+**TOOL-LEVELBENCHMARK-20261023 — installed LevelBenchmark2.0 (performance diagnosis):** Acquisition owner-installed under the5.8 engine. Evaluation reviewed installed source and saved October23 log results; no new231-light sweep. Useful for static density/complexity clues, but editor ticker sampling, runtime map changes, inclusive GPU sums and an incomplete per-light pass prevent reliable frame-time attribution or a removal ranking. Whole-project value: complementary evidence for station profiling, not a quality preset or substitute for a controlled warm route. Next check remains RPT-20261020-04. [Source-method limits and findings](../validation/2026-10-23-station-benchmark.md).
+
+**NVIDIA-DLSS45-20261022 — owner-downloaded DLSS4.5 UE5.8 plugin (performance/settings UI):** Acquisition LOCAL; October23 owner authorizes runtime integration. SDK8.9.0/NGX310.9.16/Streamline2.14.16 is installed privately; compatibility with5.8.4 is confirmed by build and real D3D12 mode checks. Evaluation SETTINGS/RENDERER VERIFIED, performance/physical presentation/packaging not accepted. Figma-derived controls query SR/DLAA, FG modes, Reflex, RR, NIS and vibrance; unavailable controls explain why. Whole-project value: optional image reconstruction, presentation and latency controls without silently lowering native quality. It does not repair texture residency or replace profiling. Next: menu visual review, physical generated-frame/pacing/image-quality comparisons and owner Apply/restart check. [Usage/evidence](NVIDIA_GRAPHICS_UI.md); active RPT-20261022-01.
+
+**October21 HERO-SUPPLIED-20261020 cloth evaluation:** Existing585-vertex simulation cages can produce four render mappings after cache invalidation, but moving fabric stretches into spikes; the candidate is rejected and original restored. Large mapping extrapolation makes cage fit/mapping the next check, not blanket stiffness tuning. Whole-project value: retain reusable art and the diagnosed cache fix without shipping an unaccepted deformation. No purchase/plugin or new production asset. [Evidence](../validation/2026-10-21-cloth-mapping-trial.md).
+
+**October21 KRAKEN-XIUXIAN-20261015 motion evaluation:** Reuses the existing rig with a new24-second authored tentacle routine, adopted locally and verified in fresh Play. No acquisition or new mesh; compact editable animation library retains originals. Partial autonomy is visually simulated through varied cycles, with contact IK/cloth/owner feel still open. [Evidence](../validation/2026-10-21-kraken-independent-motion.md).
+
+**October21 evaluation update — HERO-IMPORT-20261020 / KRAKEN-XIUXIAN-20261015:** Owner supersedes white-default with Cloth; white remains preserved for Blender repair and is removed from active selection. Existing Kraken textures now stream without resolution loss. The bounded quality audit records asset caps/mip policy and oneLOD per sampled skeletal mesh; this is an evaluation, not a blanket upgrade or acceptance. No purchase/install/new resource. Whole-project value: lower active texture demand while retaining source art. Source paths in older entries are historical after storage consolidation. [Measured evidence](../validation/2026-10-21-quality-roster.md); remaining work belongs to the canonical issue log.
+
+**LIB-STORAGE-20261020 — preserved owned libraries (WBS8.4/10.3):** Acquisition: existing local assets only; no purchase or download. SHA256/native-registry audit confirms Spectrum Galaxy's1,232 files/1,222 packages in canonical `Content/Galaxy`, with no missing Galaxy dependency. It is an imported authoring option, not yet referenced from the authored game graph. The unused Medieval library remains a unique cold source on D; absence from the game does not make it redundant. Eleven formerly M-linked building packs now live physically in canonical Content. Editable Fab/Blender sources stay on C; duplicate native download packages go into the new D archive. Whole-project value: recoverable source libraries and a working project independent of M/D runtime paths. Evaluation is storage/dependency verification, not visual acceptance or wholesale content adoption. [Receipt](../validation/2026-10-20-storage-consolidation.md).
+
+**ANIM-LIRA-20261020 — existing Lira motion sources (WBS8.4/10.3):** Acquisition: already imported owner-supplied mesh and three clips, no purchase, installation or generation credits. October20 evaluation locates the actual own-skeleton packages and verifies finite sampled deformation; two clips show floating poses. Three separate native copies retain source IDs/hashes and authored travel for later retargeting, with fresh-editor pose equality verified. Whole-project value: a reusable zero-G motion source for other performers and the future entertainment area. Available now as a private animation library; character-specific retargeting, joins/contact and station adoption remain separate under RPT-20261020-02. Lira's restaurant role is prepared in text; persistent placement/behavior remain unverified. [Use guide](ANIMATION_WORKBENCH.md#liras-preserved-animation-library), [evidence](../validation/2026-10-20-character-handoff.md).
+
+**HERO-SUPPLIED-20261020 — EX7 and three alternates (WBS8.4/10.3):** Acquisition: existing owner-provided Blender/GLB deliveries, no purchase, installation or new generation credits. October20 evaluation imports white, green, blue and cloth with their original PBR, independent skeletons and 32 derived gameplay clips. Native material/weight/pose checks and Editor build pass; the owner authorizes white default plus all alternates in character selection. Whole-project value: reusable playable bodies without replacing original artwork or older choices. Available in the local development checkout; live cloth, natural contacts, owner look/feel, performance and packaged adoption remain distinct checks under RPT-20261020-01. Editable sources stay in Downloads/Hero_EX7_Rigged; archive/private packages belong on D, not GitHub. [Evidence](../validation/2026-10-20-playable-heroes.md), [pipeline/storage](../../Scripts/HeroIntegration/README.md).
+
+**ANIM-TRIPO-DANCE-20261016 — owner-generated Tripo motions (WBS8.4/10.3):** Acquisition: owner download already present, no purchase, generation or installation. October16 evaluation finds12 actions in a61-bone GLB; four selected motions now have separate Cyborg previews. Native pose/time sampling and saved reload pass. Whole-project value: reusable torso gestures, backbend and inverted hold for character performances. Available now for selecting/trimming; not adopted into station routines. Foot/palm contact, transitions and eventual Cyan retarget remain distinct checks under RPT-20261016-18. Source and accepted assets are preserved. [Guide](ANIMATION_WORKBENCH.md#tripo-dancer-candidates), [evidence](../validation/2026-10-16-tripo-dance-candidates.md).
+
+**ANIM-WORKBENCH-20261016 — owned Space Crew zero-G wrench clips (WBS8.4/10.3):** Acquisition: already installed, no purchase or plugin. October16 evaluation uses compatible Start/Loop/End clips and their Manny mannequin in a private teaching map, with four editable Sequencer sections. Native loops, joins, pause/resume and fresh reload pass; original clips and station content remain unchanged. Whole-project value: a reusable starting point for previewing staged character interactions and the requested maintenance crew. Timing: available now for learning; station integration and tool contact remain later checks under RPT-20261016-03/14. No wrench prop or accepted maintenance gameplay is claimed. [Guide](ANIMATION_WORKBENCH.md), [evidence](../validation/2026-10-16-animation-workbench.md). October16 action-guide follow-up:12 sets / 38 freshly checked clips across existing packs, with25 imported and13 FBX picks;205 interaction downloads verified present. Whole-project use includes terminal/cargo/valve/lever staging; no acquisition, bulk import or gameplay adoption. [Action guide](ANIMATION_WORKBENCH.md#pick-an-action-next). October17 superseding evaluation: a separate saved Manny/ratchet contact preview now uses V2 permanent-world bindings and106native motion frames; the first temporary-binding capture is rejected/retained. A new original3884-triangle ratchet needs no acquisition. Available for studying held-tool contact and staged zero-G repair; production-character fit, station placement and AI remain open under RPT-20261016-14. The October16 teaching map remains unchanged. [Contact guide](ANIMATION_WORKBENCH.md#floating-repair-with-a-tool), [evidence](../validation/2026-10-17-maintenance-contact-preview.md).
+
+**BAR-ANIMATIONS-20261016 — owned Interactions, Bar, Tavern and Drunk packs (WBS8.4/10.3):** Already downloaded; the earlier24-file shortlist and205 Interactions source FBXs remain catalog evidence. October16 native evaluation retargets DrunkIdle, Laying and SleepingAtTheTable onto the existing Nyxar skeleton; the first two are saved on existing patrons, while the table clip remains unplaced. Original vendor clips/rigs/materials are retained. Normal-glass and staff-shot contact derivatives are now separate on Astra/Joy. Whole-project value remains reuse for service, ambient patrons and later maintenance interactions. Next: RPT-20261016-02/03 and RPT-20261015-01 interaction, contact, audio and owner review; this does not accept every clip or all intoxication behavior. Private provenance: `.agent/local/Waitress_20261015/{AnimationAudit_20261016,BarFinish_20261016}`. [Native evidence](../validation/2026-10-16-bar-contact-and-patrons.md).
+
+## BAR-ART-20261016 — owned Illuminated Wall and Genesis observation windows
+
+- **Acquisition/evidence, October16:** owner identifies the installed Leartes
+  Illuminated Wall and authorizes pink panels and large bar observation windows.
+  Exact local mesh:
+  `/Game/MLR_IlluminatedWall/Unreal/Rocket/MLR_IlluminatedWall/SM_MLR_BPR_Illuminated_Wall_Deco01_a_c1_Nanite`,
+  whose assigned source material is
+  `/Game/Rocket/MLR_IlluminatedWall/MI_MLR_BPR_Illuminated_Wall_Deco01_a_4096`
+  (verified by `PanelInspect.json`, not the mesh folder).
+  Owned Genesis frame/glass pairs are
+  `/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V1_Part1`
+  and `Part2`, plus the corresponding `SM_Window600X250_V1_Part1`/`Part2`.
+  No new purchase, plugin or source-asset replacement.
+- **Evaluation/private integration:** `ArtDirection_20261016/Adopted.json`
+  records saved map `5fd8e257`, two pink panels and two observation bays using
+  the 6 m frame/glass pair, scaled to nominal 7.43 m by 4 m each. Six actors
+  are added and all 9,473 original actor transforms preserved. Thirteen private
+  material instances plus a pants parent supply the room/character colors and
+  431 material-slot assignments; six local lights are reduced. Native candidate
+  previews exist. `FreshReload.json` verifies the same map hash, 9,479 actors,
+  preserved original transforms, assignments/additions/lights, retained window
+  collision and character meshes/idle/walk, and zero dirty packages. Owner
+  appearance acceptance remains open.
+- **October16 footwear/drink extension:** installed SciFi Pants Sneakers c4 blue
+  textures supply two separate Joy derivatives (right shoe shares pants trim);
+  Astra footwear is deferred. Owned `CyberPunkBarAssetSet01/StaticMeshes/SM_Glasses01`,
+  `02` and `03` supply three private filled-glass derivatives, retaining their
+  exterior bounds/pivots and original glass material. Current local map `fb604de9`
+  assigns them to two counter props and three existing service components and
+  adds one cyan glass. Nine private drink assets, no acquisition or plugin.
+  Reusable across bar/table service (WBS8.4/10.3); scripted order passes 260 samples,
+  but static liquid volumes, close contact, final style and performance need
+  further review. [Follow-up evidence](../validation/2026-10-16-joy-shoes-and-bar-drinks.md).
+- **Whole-project use/timing:** reusable owned wall accents and real glass
+  openings for station social spaces (WBS8.2/8.4/10.3), applied to the current
+  bar only. Nearby asteroid terrain blocks the requested open starfield; this
+  does not certify the exterior composition, collision, performance or release.
+  Lead next checks remain under RPT-20261015-01: owner review of room/character
+  colors and window shape, then exterior composition. Costume
+  fit, service contacts, audio and behavior retain their separate open checks.
+  [Current guide](WAITRESS_BAR_SERVICE.md#bar-art-direction--saved-local-candidate-october-16);
+  [saved-scene evidence](../validation/2026-10-16-bar-lounge-art-direction.md).
+
+**WARDROBE-HOLO-20261016 — existing station projection (WBS8.4/10.3):** Reuses
+the owned pad, roster and assigned hologram material with a temporary preview
+component and the existing Canvas UI. No acquisition, installation or new
+runtime dependency. Value: character selection can be evaluated in the station
+without equipping during browsing. Source implementation is under evaluation;
+native framing and scripted browse/cleanup are verified; hologram readability,
+physical input and owner review remain pending in
+RPT-20261016-15. Existing projector props remain optional later art choices,
+not integrated replacements. [Evidence](../validation/2026-10-16-wardrobe-hologram.md).
+
+## ASTRA-EYES-VOICE-20261015 — supplied custom eyes and local voices
+
+WBS8.4/10.3: owner supplied17 unique eye variants and selected WhitePurpleRings after five native previews. Five presets share one fitted eye rig; the packed Blender library preserves maps/UVs. Acquisition: supplied/downloaded, no purchase. Evaluation: selected pair saved on Astra; later automatic gaze remains unauthored. Original local Astra and new Joy synthetic references reuse CPU LuxTTS, avoiding a new runtime dependency. Owner rejected Joy's earlier velvet audition on October15; her replacement is reserved to her and uses a scoped cache revision. Owner accepted Joy's replacement on October15; laughter and native mix remain open; [current evidence](../validation/2026-10-16-joy-original-voice.md). Whole-project value: reusable eye fitting and separate name/type/role/voice files. Next: RPT-20261015-01 owner listening and in-game appearance review.
+
+**WAITRESS-20261015 — owned Perfect Female Body, Premium Lace-Up Corset and Lace Up Fancy Shorts (WBS8.4/10.3):** owner confirmed installed assets and authorized bar service on October15. Private V16 clothing (improved waistband, seated fit still open) reuses the original native skeleton, physics and post-process; current Joy, existing table and owned animation/prop assets provide service contacts. No acquisition or new runtime dependency. Whole-project value: reusable skinned-garment/service component and authored table contacts; character-specific weights/grips still require native review. Local integration is partial; next checks are RPT-20261015-01, with selected custom eyes/shared rig saved and broader appearance/input/audio/performance acceptance pending. [Guide](WAITRESS_BAR_SERVICE.md); [evidence](../validation/2026-10-15-waitress-bar-service.md).
+
 ### CRYO-20261021 — four owner-supplied chamber candidates
 
 - **Acquisition:** four preserved local GLBs; generated frost/mist and a private
@@ -17,6 +106,17 @@
   documented. PR86 remains unmerged.
   [Current evidence](../validation/2026-10-24-cryo-core-idle-v6.md);
   [active review](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
+
+**October16 KRAKEN-XIUXIAN-20261015 cuff follow-up:** The owned outfit now has a saved local V12 derivative: 12,852 garment triangles, 405 left-cuff/94 sleeve-root weight corrections and 320 additional seam triangles. Original body/eyes/rig/actions, original garment positions/UV corners and all nine effective materials remain. Saved walking/reload/preservation pass on map `113492ed`; this supersedes the V11 cuff state below while retaining its provenance. Whole-project value: better reuse of the owned garment on Kraken. No acquisition or installation. Next: remaining small seam contact, owner appearance and broader cloth/performance/cooked checks under RPT-20261015-03. [Evidence](../validation/2026-10-16-kraken-cuff-fit.md).
+
+**BAR-ANIMATIONS-20261016 — owned Interactions, Bar, Tavern and Drunk packs (WBS8.4/10.3):** Owner's October16 launcher screenshot confirms these library resources. CPU reconciliation of the existing inventory verifies24 shortlisted files on disk: current compatible pour/carry/drink clips, a Bar female sit/start/end alternative, and Drunk idle/sleep candidates. Acquisition: already downloaded; Bar/Tavern/Drunk native roots exist, while Interactions is205 source FBXs with no matched native pack root. Evaluation: filenames and metadata are not playback acceptance; the current11.5s paired drink clips already start together, but prop/audio contact remains open. Whole-project value: reuse across service, ambient patrons and maintenance interactions before creating replacement animation. Next: RPT-20261016-02/03 and RPT-20261015-01, with native preview held for owner VRAM. Private exact paths/provenance: `.agent/local/Waitress_20261015/AnimationAudit_20261016/AnimationAudit.json`; no new import or adoption.
+
+**KRAKEN-XIUXIAN-20261015 — owned Immortal Cultivation MetaHuman outfit (WBS8.4/10.3):** Owner selected the blue/white/gold gown on October 15 and approved azure `#4C8DD8` on October 16 UTC. Acquisition: already downloaded on M: under FabLibrary/Immortal_Cultivation_Oriental_style_women_s_clothing_fully_adapted_to_body_shape-a261e551/metahuman/UE_5.7/oa_xiuxianwearoutfit_v11.mhpkg; no purchase or installation. Evaluation: saved V11 retains 12,532 garment triangles after removing 125 hidden underwear triangles, modest 18% loose-loop shortening, front opacity 0.9/chest 0.75, and the 1,380-triangle back slot at opacity 0.65. Original sheer panels, separate opaque underwear/gold and darker head remain. V9 changes only 405 right-cuff and 96 sleeve-root vertex weights; original body, UVs/maps, 243-bone rig and 34 actions are preserved. V11 adoption retains all 9,473 actor fingerprints and 63 protected prior native packages. Fresh native reload verifies nine material slots and all 9,473 world transforms; saved V11 walking records 220 samples over a 46.672s sampled span/3234.588cm with every hair attachment valid. Whole-project value: reuses owned art on the walking NPC. The selected Purple Mandala eyes are now station-adopted, freshly reloaded and visible in the final five-view capture, superseding the candidate-only state. Sharp pale lower-hem patches and shallow cuff rear/join contact remain unresolved; single-sided/dither trials were not adopted. Kraken remains on her current route; final role/zone is deferred. Next: lead repairs the hem artifacts and reviews remaining contact, followed by owner fit/back-sheer review under RPT-20261015-03; cloth/full-animation, physical play, performance and cooked-game acceptance remain open. [Current evidence](../validation/2026-10-16-kraken-blue-fit-eyes.md); [provenance](../validation/2026-10-15-kraken-gown.md).
+
+**October16 Kraken hem follow-up:** Saved/reloaded map `b5141cb6` now gives only the lower blue rear panel a smooth opacity increase to0.98; upper back stays0.65. This reduces bright floor showing between tentacles, without mesh/rig/route changes. All9,480 actor transforms and170 prior non-map files remain unchanged; saved-scene walk and final175-file preservation pass on unchanged module `a841a562`. Cuff contact and owner appearance remain open. [Evidence](../validation/2026-10-16-kraken-hem-opacity.md).
+
+**KRAKEN-METAHAIR162-20261015 — owned MetaHair162 strand groom (WBS8.4/10.3):** Owner-supplied `.mhpkg` from the local Fab library, explicitly selected for Kraken in Unreal. Imported/fitted black derivative is adopted on the new Kraken NPC, with head attachment, softened highlights and simulation disabled. Saved reload and native walking verify the scoped use; it is shorter/wider than the reference. No new acquisition or host plugin installation. Whole-project value: reusable owned hair presentation; other characters and broader hair physics remain separate decisions. Next: owner appearance review; packaging/performance remain unverified. [Provenance and evidence](../validation/2026-10-15-kraken-npc.md).
+
 
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
 
@@ -361,7 +461,7 @@ KNOWN_ISSUES owns priority and acceptance.
 ### LIB-20261006-ORBITPOOL — owned lounge pool set and crew
 
 - **Acquisition:** already installed, not purchased or downloaded by this pass.
-  `Downloads/down/MLR_PoolTable_fb187e14.zip` matches all34 installed private
+  `Downloads/down/MLR_PoolTable_fb187e14.zip` matches all 34 installed private
   Rocket packages byte for byte. Native probes resolve the table, separate base,
   cue, rack, triangle and ball to the existing4K material. The source contains
   no pool-playing animation.
@@ -650,6 +750,7 @@ KNOWN_ISSUES owns priority and acceptance.
 
 ### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
 
+- **Refresh, 2026-10-16:** supersedes the October6 disabled/unloaded assessment below. The owner again identifies this owned plugin for bar routing. The canonical project explicitly enables AdaptivePathfindingSystem; its installed descriptor remains2.06/UE5.8.0 and the saved set-down review log records its DLL loading (`Handoff_20261016/ReloadSetDown/Native.log`). Bar crew still use `ASSBarCrew::PlanPath` and authored collision-tested waypoints, without APS calls or a module dependency. Installed APS supplies Recast navigation data, an AI controller/crowd follower and Blueprint path parameters; using it for crew requires deliberate integration and a bounded route comparison. It cannot correct skeletal hand/tray clipping, and no APS route, crowd, performance or free-floating zero-G pass is claimed. No plugin settings were changed. Retain as an evaluated candidate for station circulation (WBS8.4/8.5), after the current bar prop-contact repairs.
 - **Listing evidence,2026-10-06:** the lead reviewed NordVader's
   [Adaptive Pathfinding System 2.06](https://www.fab.com/listings/e57ff036-fb84-4c86-af7d-8c2a75965c73),
   which describes Recast-based curved paths and configurable path settings. The
@@ -1146,8 +1247,8 @@ status remains owned/installed; interactive acceptance remains pending under RPT
   one Blender Push before considering gameplay station integration. Keep native material/Blueprint behavior and runtime collision/performance as separate
   later integration checks. RPT-20260922-04 owns acceptance. Licensed assets and generated previews/ZIP
   remain ignored; new Git exclusions cover the exact native pack and external-data roots.
-- **Storage:** the existing Artifacts junction targets `M:/SpaceSurvival/Artifacts`, so refreshed GLBs,
-  thumbnails, native Blender files and portable ZIP stay on M:. 23 fully duplicated native downloads, including this bundle, were removed after7,771 SHA256
+- **Storage:** October20 supersedes the old M junction: Artifacts, refreshed GLBs,
+  thumbnails, native Blender files and portable ZIP now stay inside the C project. At the original September checkpoint,23 fully duplicated native downloads, including this bundle, were removed after7,771 SHA256
   matches; unique/partial/changed sources retained.54,980,195,863 bytes reclaimed. Manifests archived
   under `Artifacts/VaultRefresh-20260922/RetainedManifests`. Project asset paths remain unchanged.
 
@@ -1223,3 +1324,36 @@ passes exports/weights/endpoints; native materials, body retarget and gameplay r
 - **Evaluation:** 3,491 native packages copied with hashes, 1,049 StaticMeshes discovered, 1,006 ULAT entries added with old rows preserved; 43 short-name collisions remain available outside ULAT. Five pack collections expose placeable meshes/Blueprints/maps/material instances. The full apartment is preserved in a private Level Instance with local lighting and an operational entry; its connector and sampled interior route pass native walking. Other example maps are imported, not all loaded, rendered or gameplay-approved.
 - **Private derivatives:** 19 structural collision meshes, the home map and complete-assembly Blueprint. Vendor global scene lighting/cinematics/background are excluded from this placement; native furniture, materials and displays remain. Decorative collision, moving-leaf profiles and local illumination are corrected in the private copy. Original downloads and source maps remain untouched. Local assets are excluded from Git/cooking by this authoring task.
 - **Next checks:** owner layout review and lead-owned natural traversal/performance under RPT-20260924-01. Legacy optional BP_Blinds material warnings and the original apartment's absent cinematic sequence are documented in the [receipt](../validation/2026-09-27-home-library.md); the scene does not require that cinematic. No broad Blueprint compatibility, game integration or laptop library refresh is implied.
+
+
+## E-OWNER-BAR-PROPS-20261016 — waitress display and metal tray
+
+- **Acquisition:** owner supplied two original Tripo GLBs on October16; already available, no purchase/install. Exact filenames/hashes are in [BAR_HOLOGRAM](BAR_HOLOGRAM.md).
+- **Whole-project value / WBS8.5,10.3:** a distinctive small bar advertisement and reusable serving prop support the existing social lounge. The static figure is decorative, not a duplicate NPC or replacement for Astra. The owned CyberpunkRestaurant projector provides the physical display base.
+- **Evaluation:**48,206-triangle65cm figure with2K color detail;1,081-triangle34cm tray with retained4K sources/native2K limit. Saved native projection, parent relation and tray prop reload;9,480 prior transforms remain. Original GLBs and vendor projector assets preserved.
+- **Timing / next checks:** display available locally now; owner glow/location feedback remains pending. A separate palm-supported tray carry/serve pair is now integrated and passes six native service/cancellation/fallback cases; original crew assets remain intact. Full glass handoff/pour and owner natural-play acceptance remain separate. Track RPT-20261016-16 in KNOWN_ISSUES. [Evidence](../validation/2026-10-16-bar-hologram-and-tray.md).
+
+- **October16 pickup follow-up:** six strict saved-scene cases pass on module`a16996cd`, including current-pose orientation on the first visible frame. No new acquisition or native asset edits; full handoff/pour remains lead polish.
+
+- **October16 drink appearance:** separate corrected glass-refraction copy assigned to six saved drink components; original vendor material and native meshes unchanged. The non-refractive trial was visually rejected. Fresh reload/saved service pass; full liquids and prop handoff remain open.
+
+- **October16 table delivery follow-up:** separate V6 set-down fitted to the existing low table and owner tray; rejected head/forearm contact trials retained. Optional source integration passes four native cases plus fresh saved service, preserving original clips/rig/physics. No acquisition or installation. Joy handoff/pour and owner natural play remain open under RPT-20261016-16.
+
+- **October16 counter pickup follow-up:** separate V6 Joy/Astra derivatives replace the large handoff jump, preserve original actions and pass saved service/cancel/fallback review. Reuses the owned rig, tray and glass; no acquisition/plugin adoption. Fine contact and natural play remain open under RPT-20261016-16.
+
+## E-CHARACTER-WORKSHOP-20261021 — owner-supplied character and motion collection
+
+| Resource ID | Acquisition / source | Whole-project use and evaluation | Timing / next check |
+| --- | --- | --- | --- |
+| E-XANDRA-F3-20261021 | Owned merged Quinn project, Rosie, Satomi and F3/M3 body addon; native Blender addon on D | WBS8.5/10.3: four distinct adult dancers, retained native customization and reusable body/hair options. Twelve private variants and four packed editable blends; eight separate hair GLBs | Adopted locally; complete motion, shader/skin seams, hair and dialogue binding remain open |
+| E-PARISE-CLOTHING-20261021 | Owned Female Clothing GLB from D vault | WBS8.5/10.3: removable, recolorable outfit option. Fitted to F3, weighted to its rig and imported as separate/combined skeletal variants | Static and sampled-pose checks; extreme poses and simulation not accepted |
+| E-OWNER-DANCE-20261021 | Seven owner-supplied adult female GLBs, plus retained merged G alternate | WBS8.5/10.3: seven retarget candidates on all four girls; twenty sequences. G1/G2 and B1/B2 play consecutively | Two derived joined routines now align XY/blend0.48s; source fidelity/reload and20 native pose captures pass. Floor/pole contact and continuous motion still need lead adjustment |
+| E-SHUTTLE-20261021 | Owned Sci-Fi Spaceship project on D | WBS4.1/10.3: reusable supplied ship art; three meshes and native material assembly imported | Open native Overview for assembled materials. Owner now requests rigging, flight, thrust physics and landing animations; queued RPT-20261021-02, not implemented; Phoenix unchanged |
+| E-JETPACK-20261021 | Owned Flight project on D | Later animation/control reference; five Blueprint assets load with classes available | Imported inactive as explicitly requested; no control, game mode or character activation |
+
+The shared workshop is an owner-authorized authoring room, not an approved entertainment redesign.
+These resources are acquired, not newly purchased or installed. The installed built-in XRBase
+function library is enabled only to satisfy the vendor customization Blueprint dependency;
+no VR platform is enabled. The original downloads remain intact. Native assets stay private
+on C; exact pre-adoption recovery is on D. [Guide](CHARACTER_WORKSHOP.md),
+[receipt](../validation/2026-10-21-character-workshop.md); active work is RPT-20261021-01.

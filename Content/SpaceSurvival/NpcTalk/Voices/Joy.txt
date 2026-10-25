@@ -1,0 +1,7 @@
+# Joy-only original synthetic adult voice designed offline with local Qwen3-TTS VoiceDesign, 2026-10-16.
+# Warm, rounded medium-low register, relaxed conversational delivery; no real-person imitation.
+# Exclusive to Joy in the cast; do not reuse for another character. Owner accepted this voice on October 15, 2026; laughter and native mix remain open.
+# Reference SHA-256: 4ea4ddf6b41e0b1268adfdc8148a1b83115d41a101e0ade63214fd692c90ee69
+speed=0.9
+treatment=none
+cache_revision=4ea4ddf6b41e0b12

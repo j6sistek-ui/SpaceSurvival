@@ -1,5 +1,27 @@
 # Push-to-talk conversations (NPC talk)
 
+**October20 local storage:** `Config/DefaultNpcTalk.ini` now uses `C:/Users/j6sis/SpaceSurvival/LocalRuntime/NpcTalk` for speech/dialogue, `LocalRuntime/LuxTTS` for voice Python/source, and `LocalRuntime/DirectorVoice/cache` for prerendered lines. The voice server uses the sibling `LocalRuntime/HuggingFace/hub` when present, with offline mode enabled before model imports; standalone installs without this directory retain the usual cache. Model identities, voices, GPU settings and ports are unchanged. Earlier M paths below are historical provenance, not the current launch configuration. [Migration verification](validation/2026-10-20-storage-consolidation.md).
+
+**October17 model check:** The current local speech, voice and station-dialogue models pass isolated CPU health/inference checks. Astra/Joy generated test lines transcribe exactly; the voice engine takes about37s to become ready from cold in this probe. Game startup/reuse, microphone use and listening quality remain separate checks. Fresh test recordings are under `.agent/local/HelperHealth_20261017/Run/`; existing voices and production cache are unchanged. [Evidence](validation/2026-10-17-npc-helper-reuse.md#real-model-health-and-inference).
+
+## Kept helper settings — October 17
+
+A Play restart can reuse unchanged local helpers. Changing speech/dialogue ports, executables, speech models or GPU allowances now invalidates the affected helper. Voice reuse also checks the Python/script/engine/reference-folder paths and loaded profile speed, treatment and cache revision. Keep using a new `cache_revision` when replacing a reference; it now invalidates the parked voice helper even when file timestamps match. This is startup/restart configuration handling, not a live file watcher. [Validation and limits](validation/2026-10-17-npc-helper-reuse.md).
+
+Placed ambient crew expose **Conversation Enabled** (default true). Disable it for unavailable characters such as the passed-out bar patron; fresh/cached prompts, actions and speech are suppressed and an existing conversation disengages. Idle animation and identity remain unchanged. Other crew keep conversation enabled. [Saved verification](validation/2026-10-16-resting-patron-interaction.md).
+
+## Optional diagnostics — October 16
+
+Settings > Graphics > Diagnostics adds a sanitized, read-only view of talk phase, local LLM/STT process presence, voice readiness/queue, voice request failures/restarts and whether a talk error is present. Reading it neither starts helpers nor sends requests. Running is not model readiness; counters are session-local and do not represent all engine errors. Paths, endpoints, prompts, transcripts and response bodies are excluded. [Validation and remaining checks](validation/2026-10-16-runtime-diagnostics.md).
+
+## Astra profile, voice and staff banter — October 15
+
+Astra has her own `Personas/Astra.txt` and synthetic `Voices/Astra.wav`/settings; Waitress type/role files stay reusable. Joy now has a fresh original synthetic reference reserved for her; her rejected velvet audition remains only as a recovery/listening baseline. Their optional nearby bar break alternates the existing voice channel and8 shuffled authored exchanges. The side conversation panel records transcripts and replies when shown, below the radar; it does not change microphone controls or train a LoRA. [Controls, files and limits](production/WAITRESS_BAR_SERVICE.md).
+
+## Waitress actions — October 15
+
+The authored bar waitress uses the existing talk/action selection: Order a drink, Have a drink with me, Sit with me, and Dismiss. Component tags select her Waitress profile; source service states set truthful current activities and use the existing spatial voice/caption channel. Keep the normal talk pack enabled and leave the title menu before using actions. [Service behavior and current validation limits](production/WAITRESS_BAR_SERVICE.md).
+
 Owner decision, 2026-10-10: the station crew and the villain can be spoken to. Tap **T** (keyboard) or **R3** (pad),
 speak into the microphone, tap again to send (owner: R3 was hard to keep holding; a hold/tap menu option and
 remapping are later). Your words appear as a caption ("You: ..."), and the character answers in a
@@ -218,6 +240,8 @@ Do it only after testing shows the profile plus scenario still slips.
 
 ## Voices
 
+Astra and Joy each have a separately designed original adult reference and exclusive exact-name routing in the current cast. [Current Joy revision and listening review](validation/2026-10-16-joy-original-voice.md) supersedes her earlier velvet audition. When replacing any reference at the same path, set `cache_revision` in its adjacent `.txt` to a new version or reference hash and prerender that character's lines again. Native lookup and Python prerender include this revision; an absent/empty value keeps legacy filenames exactly. Restart the talk subsystem and sidecar to load the change. Other voices and caches remain unaffected.
+
 Owner, 2026-10-10: text is hard to read while flying, so the villain speaks. After five rounds of voices by ear the
 owner chose "predator entity. done. exactly", and on the engine: "it didn't cost us 4 GB of VRAM or a week of
 iterations. That's a win."
@@ -225,7 +249,7 @@ iterations. That's a win."
 | Piece | What |
 |---|---|
 | Engine | LuxTTS (Apache-2.0, code and model), on the **processor**: no video memory. Measured on the i7-14700F with 4 threads: ready ~14 s after a cold start, a 10-word line in 2.7 s, 19 words in 3.6 s, ~1.6 GB of RAM |
-| Voice | one `Content/SpaceSurvival/NpcTalk/Voices/<Name>.wav` per character, 4-7 s cut at a pause between sentences, cloned live; an optional `<Name>.txt` beside it sets `speed=` (pace, ~speed squared) and `treatment=` (entity, chrome, none). The audio profile, next to the text profiles. `_Default.wav` is everyone else's: Windows' own Microsoft David, recorded with System.Speech (owner: "a neutral default so there is something") |
+| Voice | one `Content/SpaceSurvival/NpcTalk/Voices/<Name>.wav` per character, 4-7 s cut at a pause between sentences, cloned live; an optional `<Name>.txt` beside it sets `speed=` (pace, ~speed squared) and `treatment=` (entity, chrome, none), plus optional `cache_revision=` for a replacement reference. The audio profile, next to the text profiles. `_Default.wav` is everyone else's: Windows' own Microsoft David, recorded with System.Speech (owner: "a neutral default so there is something") |
 | Treatment | "entity" (the Director): pitched down 3 semitones, an octave-down double, a faint ghost an octave up, a dark 1.2 s tail. "chrome": a faint metallic comb and shimmer. Applied by the server per voice |
 | Server | `Tools/NpcTalk/director_voice_server.py` (POST `/speak` with `X-Voice: <Name>` -> PCM16 48 kHz; GET `/voices`), hidden, 127.0.0.1 only, exits with the game |
 | Recipe | `M:\Local AI\DirectorTTS\director_voice_final\README.md`: the description, the settings, the approved sample |

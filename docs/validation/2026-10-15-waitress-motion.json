@@ -1,0 +1,147 @@
+{
+  "passed": true,
+  "samples": 439,
+  "max_body_cloth_bone_delta_cm": 0.0,
+  "postprocess_enabled": true,
+  "physics": "/Game/Perfect_Female_Body/Mesh/PA_Perfect_Female_Body_01.PA_Perfect_Female_Body_01",
+  "max_postprocess_breast_motion_cm": 4.151593788681367,
+  "physical_input_verified": false,
+  "audio_verified": false,
+  "cases": [
+    {
+      "name": "order",
+      "states": [
+        {
+          "time": 0.32799999999997453,
+          "state": "GOING_TO_BAR"
+        },
+        {
+          "time": 11.5,
+          "state": "WAITING_FOR_BAR"
+        },
+        {
+          "time": 27.077999999999975,
+          "state": "RETURNING_TO_GUEST"
+        },
+        {
+          "time": 39.5630000000001,
+          "state": "SERVING"
+        },
+        {
+          "time": 42.922000000000025,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 44.3130000000001,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "Your drink has been served."
+    },
+    {
+      "name": "shared_drink",
+      "states": [
+        {
+          "time": 0.34400000000005093,
+          "state": "GOING_TO_BAR"
+        },
+        {
+          "time": 11.797000000000025,
+          "state": "WAITING_FOR_BAR"
+        },
+        {
+          "time": 27.327999999999975,
+          "state": "RETURNING_TO_GUEST"
+        },
+        {
+          "time": 39.8130000000001,
+          "state": "SERVING"
+        },
+        {
+          "time": 43.1880000000001,
+          "state": "DRINKING"
+        },
+        {
+          "time": 55.0,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 56.34400000000005,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "Cheers. That was lovely."
+    },
+    {
+      "name": "seat_dismiss",
+      "states": [
+        {
+          "time": 0.32799999999997453,
+          "state": "JOINING_TABLE"
+        },
+        {
+          "time": 1.6869999999998981,
+          "state": "SEATED"
+        },
+        {
+          "time": 8.077999999999975,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 10.108999999999924,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "Of course. Call me when you need me."
+    },
+    {
+      "name": "seat_leave",
+      "states": [
+        {
+          "time": 0.34400000000005093,
+          "state": "JOINING_TABLE"
+        },
+        {
+          "time": 1.6720000000000255,
+          "state": "SEATED"
+        },
+        {
+          "time": 6.344000000000051,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 8.672000000000025,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "The guest has left the table."
+    },
+    {
+      "name": "order_leave",
+      "states": [
+        {
+          "time": 0.32799999999997453,
+          "state": "GOING_TO_BAR"
+        },
+        {
+          "time": 11.672000000000025,
+          "state": "WAITING_FOR_BAR"
+        },
+        {
+          "time": 16.327999999999975,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 28.65599999999995,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "The guest has left the table."
+    }
+  ]
+}

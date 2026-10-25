@@ -1,4 +1,6 @@
 #include "SSGameMode.h"
+#include "SSPhotoMode.h"
+#include "SSBarCrew.h"
 #include "SSAlienGallery.h"
 #include "SSAudio.h"
 #include "SSWave10Soak.h"
@@ -15,6 +17,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSStationSeat.h"
 #include "SSOutpostSandbox.h"
 #include "SSNpcTalk.h"
 #include "SSLandingPad.h"
@@ -43,6 +46,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #if WITH_DEV_AUTOMATION_TESTS
@@ -359,6 +364,7 @@ void ASSGameMode::ShowHeldVillainReply()
         return;
     bVillainReplyHeld = false;
     TalkStatus.Empty();
+    AppendChatLine(TEXT("Director"), HeldVillainReply);
     // His channel, his colour; the story cue machinery is untouched, this only borrows the caption.
     VillainLine = HeldVillainReply;
     VillainLineSeconds = FMath::Clamp(4.f + .07f * HeldVillainReply.Len(), 6.f, 16.f);
@@ -464,6 +470,7 @@ void ASSGameMode::ShowHeldCrewReply()
     TalkStatus.Empty();
     NpcName = HeldCrewName;
     NpcLine = HeldCrewLine;
+    AppendChatLine(NpcName, NpcLine);
     NpcLineSeconds = FMath::Clamp(4.f + .07f * HeldCrewLine.Len(), 6.f, 16.f);
     HeldCrewName.Empty();
     HeldCrewLine.Empty();
@@ -509,6 +516,7 @@ void ASSGameMode::UpdateCrewRadio(float Dt)
         // The caption stays up while they are still talking.
         NpcLineSeconds = FMath::Max(NpcLineSeconds, CrewRadioLeft + .75f);
         CrewRadioReady = SSNpcTalk::FVoiceClip();
+        return; // Dt elapsed before Play; start the countdown on the next update.
     }
     // A procedural wave never ends by itself: it plays silence until stopped.
     if (CrewRadioLeft > 0.f && (CrewRadioLeft -= Dt) <= 0.f)
@@ -1044,7 +1052,7 @@ bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
 void ASSGameMode::CommitBoardedDeparture()
 {
     FString Reason;
-    if (!CanCommitDeparture(Reason) || !Ship->CanAdoptBoardedPilot(Walker))
+    if (!CanCommitDeparture(Reason))
     {
         bBoardingFlight = false;
         if (Walker)
@@ -1088,9 +1096,10 @@ void ASSGameMode::BeginDeparture()
     if (!Hub)
         return;
     const bool FromChair = bBoardingFlight;
-    // CanAdoptBoardedPilot was checked synchronously before the successful save/launch transaction.
-    if (FromChair)
-        Ship->AdoptBoardedPilot(Walker);
+    // Nobody takes the seat (owner 2026-10-12): the walker is hidden where they confirmed, and the ship's own
+    // pilot figure stays out of sight too, so the flight shows no character at all.
+    if (FromChair && Ship)
+        Ship->SetPilotFigureHidden(true);
     bBoardingFlight = false;
     bDepartingStation = true;
     Director->SetActive(false);
@@ -1267,7 +1276,8 @@ void ASSGameMode::EnterStation()
         Ship->Pilot->SnapshotPose(SeatedPose);
         // Only heroes with an authored exit clip use the seated-pose transition. Other heroes receive
         // control at the same measured exterior endpoint as soon as docking finishes.
-        const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
+        // Nobody sat, so nobody climbs out (owner 2026-10-12); the authored exits wait for the seat to return.
+        const bool ClimbsOut = false;
         const bool ExitStarted = ClimbsOut && Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit,
                                                                      Hub->GetActorRotation(), &SeatedPose);
         ensureMsgf(!ClimbsOut || ExitStarted, TEXT("Required authored disembark assets are unavailable."));
@@ -1540,11 +1550,10 @@ void ASSGameMode::Tick(float Dt)
         const TCHAR *Prompts[] = {
             TEXT("FLIGHT: left stick nose steering. LB/RB dash and bank; hold to roll. Right stick is camera-only "
                  "free-look."),
-            TEXT(
-                "THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. Left stick moves sideways."),
+            TEXT("THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. A/D moves sideways."),
             TEXT("BOOST: Shift / B. Separate from normal throttle; release to recharge."),
             TEXT("BRAKE: Space / left trigger. Partial braking builds heat; give it time to cool."),
-            TEXT("DODGE: Q / left bumper with a movement direction. Obstacles still hurt during a dodge."),
+            TEXT("DODGE: Q, or tap LB/RB to dash left/right. Hold a bumper to roll. Obstacles still hurt."),
             TEXT("FIRE: left mouse / A. Aim manually; brackets provide soft targeting assistance."),
             TEXT("PICKUPS: collect shaped rewards. Hull regenerates after damage; shield does not."),
             TEXT("OPTIONAL SIGNALS: approach, then E / X to accept. Passing nearby does not commit you.")};
@@ -1628,6 +1637,12 @@ void ASSGameMode::Interact()
     {
         if (Walker->IsDisembarking() || Walker->IsBoarding())
             return;
+        if (Walker->IsResting())
+        {
+            if (!Walker->StandFromSeat())
+                Announce(TEXT("The way out is blocked. Clear the space in front of the seat."));
+            return;
+        }
         if (IsWalkerAtPilotSeat(Walker))
         {
             TryBoardShip(Walker);
@@ -1644,6 +1659,11 @@ void ASSGameMode::Interact()
             OpenPanel(Service);
         else if (auto *Terminal = Hub->OutpostTerminalAt(Walker))
             Announce(Terminal->Use(UGameplayStatics::GetPlayerController(this, 0)));
+        else if (auto *Seat = ASSStationSeat::Find(Walker))
+        {
+            if (!Walker->SitAt(Seat))
+                Announce(TEXT("That seat is unavailable just now."));
+        }
         else
             Announce(Hub->ServiceGuidance(Walker->GetActorLocation()));
         return;
@@ -1719,6 +1739,8 @@ void ASSGameMode::RepaintShips()
 }
 void ASSGameMode::ClosePanel()
 {
+    bGraphicsDraftActive = false;
+    EndWardrobePreview();
     if (bTitleSettingsNavigation &&
         (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics || Panel == ESSPanel::Audio ||
          Panel == ESSPanel::Controls || Panel == ESSPanel::Acknowledgements))
@@ -1748,6 +1770,93 @@ TArray<FSSHeroDefinition> ASSGameMode::WardrobeBodies() const
     return Bodies;
 }
 
+void ASSGameMode::EndWardrobePreview()
+{
+    if (IsValid(WardrobeCamera))
+    {
+        if (auto *PC = UGameplayStatics::GetPlayerController(this, 0); PC && PC->GetViewTarget() == WardrobeCamera)
+            PC->SetViewTarget(WardrobePreviousView.IsValid() ? WardrobePreviousView.Get() : PC->GetPawn());
+        WardrobeCamera->Destroy();
+    }
+    WardrobeCamera = nullptr;
+    WardrobePreviousView.Reset();
+    if (WardrobeTerminal.IsValid())
+        WardrobeTerminal->EndWardrobePreview();
+    WardrobeTerminal.Reset();
+    WardrobePreviewId = NAME_None;
+    WardrobePreviewIndex = INDEX_NONE;
+    bWardrobeProjectionReady = false;
+}
+
+void ASSGameMode::FrameWardrobePreview()
+{
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!HasWardrobeProjection() || IsValid(WardrobeCamera) || !PC || !PC->PlayerCameraManager)
+        return;
+    FVector Location;
+    FRotator Rotation;
+    PC->GetPlayerViewPoint(Location, Rotation);
+    const FVector Focus = WardrobeTerminal->WardrobePreviewCenter();
+    FVector Direction = (Location - Focus).GetSafeNormal2D();
+    if (Direction.IsNearlyZero())
+        Direction = -PC->GetControlRotation().Vector().GetSafeNormal2D();
+    const FVector Desired = Focus + Direction * 350.f + FVector(0, 0, 25.f);
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSWardrobeCamera), true, PC->GetPawn());
+    Query.AddIgnoredActor(WardrobeTerminal.Get());
+    Query.AddIgnoredActor(WardrobeTerminal->PresentationTarget);
+    FHitResult Hit;
+    if (!GetWorld()->SweepSingleByChannel(Hit, Location, Desired, FQuat::Identity, ECC_Visibility,
+                                          FCollisionShape::MakeSphere(15.f), Query))
+        Location = Desired;
+    FActorSpawnParameters Spawn;
+    Spawn.ObjectFlags |= RF_Transient;
+    WardrobeCamera = GetWorld()->SpawnActor<ACameraActor>(Spawn);
+    if (!WardrobeCamera)
+        return;
+    WardrobePreviousView = PC->GetViewTarget();
+    int32 Width = 0, Height = 0;
+    PC->GetViewportSize(Width, Height);
+    const float Aspect = Height > 0 ? float(Width) / Height : 16.f / 9.f;
+    const float FOV = FMath::Clamp(
+        FMath::RadiansToDegrees(2.f * FMath::Atan(FMath::Tan(FMath::DegreesToRadians(20.f)) * Aspect)), 60.f, 110.f);
+    const FVector Right = FRotationMatrix((Focus - Location).Rotation()).GetUnitAxis(EAxis::Y);
+    // The panel occupies the right third. Aim beside the body so it fills the open world area.
+    const FVector Aim =
+        Focus + Right * (FVector::Distance(Location, Focus) * FMath::Tan(FMath::DegreesToRadians(FOV * .5f)) * .30f);
+    WardrobeCamera->SetActorLocationAndRotation(Location, (Aim - Location).Rotation());
+    WardrobeCamera->GetCameraComponent()->SetFieldOfView(FOV);
+    const auto &POV = PC->PlayerCameraManager->GetCameraCacheView();
+    WardrobeCamera->GetCameraComponent()->PostProcessSettings = POV.PostProcessSettings;
+    WardrobeCamera->GetCameraComponent()->PostProcessBlendWeight = POV.PostProcessBlendWeight;
+    PC->SetViewTarget(WardrobeCamera);
+}
+
+void ASSGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    EndWardrobePreview();
+    Super::EndPlay(EndPlayReason);
+}
+
+bool ASSGameMode::HasWardrobeProjection() const
+{
+    return bWardrobeProjectionReady && WardrobeTerminal.IsValid() && IsValid(WardrobeTerminal->PresentationTarget);
+}
+
+bool ASSGameMode::BrowseWardrobe(int32 Direction)
+{
+    if (Panel != ESSPanel::Wardrobe || Direction == 0)
+        return false;
+    const auto Bodies = WardrobeBodies();
+    if (Bodies.IsEmpty())
+        return true;
+    const int32 Current =
+        Bodies.IndexOfByPredicate([this](const FSSHeroDefinition &Body) { return Body.Id == WardrobePreviewId; });
+    const int32 Next = Current == INDEX_NONE ? 0 : (Current + (Direction > 0 ? 1 : Bodies.Num() - 1)) % Bodies.Num();
+    WardrobePreviewId = Bodies[Next].Id;
+    OpenPanel(ESSPanel::Wardrobe);
+    return true;
+}
+
 FName ASSGameMode::WornHeroId() const
 {
     const auto *GI = GetGameInstance<USSGameInstance>();
@@ -1755,7 +1864,7 @@ FName ASSGameMode::WornHeroId() const
         return NAME_None;
     const auto &S = GI->Session;
     // No choice saved is the ordinary case for a new game, and it must stay the ordinary answer:
-    // roster order, which puts the squirrel on the deck.
+    // roster order, which puts the installed Cloth hero on the deck.
     if (S.account.hero < 0 || S.account.hero == static_cast<int32>(ESSHeroIdentity::Acornaut))
         return Tuning->SelectHero(ESSHeroSlot::Walker).Id;
     // A saved choice is a request, not a guarantee. SelectHero's preference overload falls through to
@@ -1784,9 +1893,41 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
+    if (NewPanel != ESSPanel::Wardrobe)
+        EndWardrobePreview();
+    else if (Panel != ESSPanel::Wardrobe)
+    {
+        EndWardrobePreview();
+        WardrobePreviewId = WornHeroId();
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        const APawn *Pawn = PC ? PC->GetPawn() : nullptr;
+        float Closest = MAX_flt;
+        for (TActorIterator<ASSOutpostTerminal> It(GetWorld()); It; ++It)
+            if (It->Action == ESSOutpostAction::CycleWardrobe && It->CanUse(Pawn))
+            {
+                const float Distance = FVector::DistSquared(It->GetActorLocation(), Pawn->GetActorLocation());
+                if (Distance < Closest)
+                {
+                    Closest = Distance;
+                    WardrobeTerminal = *It;
+                }
+            }
+    }
     auto &S = GI->Session;
     const bool SettingsRefresh = NewPanel == Panel && (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics ||
                                                        Panel == ESSPanel::Audio || Panel == ESSPanel::Controls);
+    if (NewPanel == ESSPanel::Graphics && !bGraphicsDraftActive)
+    {
+        GraphicsCapabilities = SSGraphics::Query();
+        GraphicsDraft = SSGraphics::Resolve(S.settings, GraphicsCapabilities);
+        if (GraphicsCapabilities.Reflex)
+            GraphicsDraft.reflex = S.settings.reflex;
+        bGraphicsDraftActive = true;
+        GraphicsSection = 0;
+        GraphicsFeedback.Empty();
+    }
+    else if (NewPanel != ESSPanel::Graphics)
+        bGraphicsDraftActive = false;
     const int32 SelectedAction =
         SettingsRefresh && Entries.IsValidIndex(SelectedEntry) ? Entries[SelectedEntry].Action : INDEX_NONE;
     if (Ship && Ship->IsMoored() && NewPanel != ESSPanel::Depot)
@@ -1881,15 +2022,7 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                            "Full source and reuse notes accompany this build in THIRD_PARTY.md.");
         break;
     case ESSPanel::Graphics:
-        PanelTitle = TEXT("GRAPHICS");
-        PanelDetail = TEXT("Simulation and warning readability are preserved at every quality level.");
-        AddEntry(FString::Printf(TEXT("Quality: %s"), S.settings.quality == 0   ? TEXT("Low")
-                                                      : S.settings.quality == 1 ? TEXT("Medium")
-                                                      : S.settings.quality == 2 ? TEXT("High")
-                                                                                : TEXT("Epic")),
-                 16);
-        AddEntry(FString::Printf(TEXT("Frame limit: %d FPS"), S.settings.frameLimit), 17);
-        AddEntry(FString::Printf(TEXT("Motion blur: %s"), S.settings.motionBlur ? TEXT("On") : TEXT("Off")), 18);
+        BuildGraphicsEntries();
         break;
     case ESSPanel::Audio:
         PanelTitle = TEXT("AUDIO");
@@ -1902,11 +2035,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         PanelDetail =
             TEXT("FLIGHT: Left stick: nose steering | LB/RB: dash / hold roll | Right stick: free-look.\nMouse: steer "
                  "| A D / R F: lateral / vertical thrust.\n"
-                 "RT: normal throttle. W/S: set keyboard throttle. Zero power coasts.\n"
+                 "RT / W S: throttle. Zero power coasts.\n"
                  "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
                  "E / X: flight interaction / landing.\n"
                  "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"
-                 "Shift / X: run | Space / A: jump | E / Y: use | Esc / Menu: pause");
+                 "Shift / X: run | Space / A: jump | E / Y: use / sit / stand | Esc / Menu: pause.\n"
+                 "T / R3: tap to talk, tap again to send.\n"
+                 "1-4 / hold LB + D-pad: crew actions.\n"
+                 "F8 / D-pad Up: photo mode | LB/RB: settings tabs.");
         AddEntry(FString::Printf(TEXT("Mouse sensitivity: %.1f"), S.settings.mouseSensitivity), 22);
         AddEntry(FString::Printf(TEXT("Controller sensitivity: %.1f"), S.settings.controllerSensitivity), 23);
         AddEntry(
@@ -2080,17 +2216,31 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Wardrobe:
     {
         PanelTitle = TEXT("CREW WARDROBE");
-        PanelDetail = TEXT("Who walks the deck. The choice is kept on your account for the rest of the game. "
-                           "The ship keeps its own pilot, so flying is unchanged.");
         const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
-        const FName Worn = WornHeroId();
-        for (int32 Index = 0; Index < Bodies.Num() && Index < 8; ++Index)
+        WardrobePreviewIndex =
+            Bodies.IndexOfByPredicate([this](const FSSHeroDefinition &Body) { return Body.Id == WardrobePreviewId; });
+        if (WardrobePreviewIndex == INDEX_NONE && !Bodies.IsEmpty())
         {
-            const bool Current = Bodies[Index].Id == Worn;
-            AddEntry(
-                FString::Printf(TEXT("%s%s"), *Bodies[Index].Id.ToString(), Current ? TEXT(" / wearing") : TEXT("")),
-                140 + Index, !Current);
+            WardrobePreviewIndex = 0;
+            WardrobePreviewId = Bodies[0].Id;
         }
+        const bool Available = Bodies.IsValidIndex(WardrobePreviewIndex);
+        bWardrobeProjectionReady =
+            Available && WardrobeTerminal.IsValid() && WardrobeTerminal->PreviewWardrobe(Bodies[WardrobePreviewIndex]);
+        if (WardrobeTerminal.IsValid() && !bWardrobeProjectionReady)
+            WardrobeTerminal->EndWardrobePreview();
+        FrameWardrobePreview();
+        PanelDetail = Available
+                          ? TEXT("Browse without changing your character. Select keeps your choice on this account. "
+                                 "White EX7 is the station default.")
+                          : TEXT("No character bodies are installed for this station.");
+        if (Available && !HasWardrobeProjection())
+            PanelDetail += TEXT("\nProjection unavailable here. Use the wardrobe pad to preview in the world.");
+        AddEntry(TEXT("Previous"), 148, Bodies.Num() > 1);
+        AddEntry(TEXT("Next"), 149, Bodies.Num() > 1);
+        const bool Current = Available && WardrobePreviewId == WornHeroId();
+        AddEntry(Current ? TEXT("Currently wearing") : TEXT("Select character"), 150, Available && !Current);
+        SelectedEntry = 2;
         // -1 is the default the account starts at, so this row is "forget my choice" rather than a body.
         AddEntry(TEXT("Station default"), 139, S.account.hero >= 0);
         break;
@@ -2168,6 +2318,8 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             {TEXT("General"), 5}, {TEXT("Graphics"), 10}, {TEXT("Audio"), 11}, {TEXT("Controls"), 12}};
         Entries.Insert(Tabs, 0);
         SelectedEntry = Tabs.Num();
+        if (Panel == ESSPanel::Graphics)
+            SelectedEntry = Tabs.Num() + 3;
     }
     if (!IsTitleMenu() && (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary()))
         AddEntry(TEXT("Back"), 0);
@@ -2185,6 +2337,20 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             SelectedEntry = Enabled;
     }
 }
+bool ASSGameMode::SwitchSettingsTab(int32 Direction)
+{
+    static const ESSPanel Tabs[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
+    if (Direction == 0)
+        return false;
+    for (int32 I = 0; I < 4; ++I)
+        if (Panel == Tabs[I])
+        {
+            OpenPanel(Tabs[(I + (Direction > 0 ? 1 : 3)) % 4]);
+            return true;
+        }
+    return false;
+}
+
 bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
 {
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -2193,6 +2359,11 @@ bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
           Panel == ESSPanel::Controls))
         return false;
     auto &Settings = GI->Session.settings;
+    if (Panel == ESSPanel::Graphics)
+    {
+        SelectedEntry = Index;
+        return HandleGraphicsAction(Entries[Index].Action, Direction);
+    }
     const int32 Step = Direction > 0 ? 1 : -1;
     switch (Entries[Index].Action)
     {
@@ -2229,6 +2400,9 @@ bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
         break;
     case 18:
         Settings.motionBlur = Step > 0;
+        break;
+    case 96:
+        Settings.diagnosticsOverlay = Step > 0;
         break;
     case 24:
         Settings.invertPitch = Step > 0;
@@ -2267,6 +2441,8 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
     // Mouse activation and keyboard/controller activation refresh the same selected action.
     SelectedEntry = Index;
     const ESSPanel Current = Panel;
+    if (Panel == ESSPanel::Graphics && HandleGraphicsAction(A))
+        return;
     if (A == 52)
     {
         StartFreeFlight();
@@ -2375,15 +2551,27 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
         OpenPanel(ESSPanel::History);
         return;
     }
-    if (A == 139 || (A >= 140 && A <= 147))
+    if (Panel == ESSPanel::Wardrobe && (A == 148 || A == 149))
+    {
+        BrowseWardrobe(A == 148 ? -1 : 1);
+        return;
+    }
+    if (Panel == ESSPanel::Wardrobe && (A == 139 || A == 150))
     {
         const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
-        const int32 HeroIndex = A - 140;
-        S.account.hero =
-            A == 139 || !Bodies.IsValidIndex(HeroIndex) ? -1 : static_cast<int>(Bodies[HeroIndex].Identity);
+        const int32 HeroIndex =
+            Bodies.IndexOfByPredicate([this](const FSSHeroDefinition &Body) { return Body.Id == WardrobePreviewId; });
+        if (A == 150 && !Bodies.IsValidIndex(HeroIndex))
+        {
+            OpenPanel(ESSPanel::Wardrobe);
+            Announce(TEXT("That character is no longer available. Choose an installed character."));
+            return;
+        }
+        S.account.hero = A == 139 ? -1 : static_cast<int>(Bodies[HeroIndex].Identity);
         if (!GI->PersistAccount())
             Announce(GI->LastSaveError);
         WearHero();
+        WardrobePreviewId = WornHeroId();
         OpenPanel(ESSPanel::Wardrobe);
         return;
     }
@@ -2414,7 +2602,7 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
         OpenPanel(ESSPanel::History);
         return;
     }
-    if (A >= 13 && A <= 27)
+    if ((A >= 13 && A <= 27) || A == 96)
     {
         switch (A)
         {
@@ -2435,6 +2623,9 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
             break;
         case 18:
             S.settings.motionBlur = !S.settings.motionBlur;
+            break;
+        case 96:
+            S.settings.diagnosticsOverlay = !S.settings.diagnosticsOverlay;
             break;
         case 19:
             S.settings.masterVolume = S.settings.masterVolume >= .99 ? 0 : S.settings.masterVolume + .1;
@@ -2735,6 +2926,7 @@ ASSPlayerController::ASSPlayerController()
 {
     PrimaryActorTick.bTickEvenWhenPaused = true;
     bShouldPerformFullTickWhenPaused = true;
+    PhotoMode = CreateDefaultSubobject<USSPhotoMode>(TEXT("PhotoMode"));
 }
 void ASSPlayerController::UpdateLastInputDevice()
 {
@@ -2811,6 +3003,18 @@ void ASSPlayerController::PlayerTick(float Dt)
             }
     // main tracks the same thing for its data-asset prompts; both stay current until one system is retired.
     UpdateLastInputDevice();
+    if (PhotoMode->IsActive())
+    {
+        PhotoMode->Update(!GM->bAutomatedSoakInput);
+        SuppressGamepadBoostUntilRelease = true;
+        SuppressGamepadFireUntilRelease = true;
+        return;
+    }
+    if (!GM->bAutomatedSoakInput && !GM->IsMenuOpen() &&
+        (WasInputKeyJustPressed(EKeys::F8) ||
+         (WasInputKeyJustPressed(EKeys::Gamepad_DPad_Up) && !IsInputKeyDown(EKeys::Gamepad_LeftShoulder))) &&
+        PhotoMode->Enter())
+        return;
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
         // A connected controller is polled even while an offscreen fixture window is not
@@ -2914,6 +3118,10 @@ void ASSPlayerController::PlayerTick(float Dt)
         if (StickStep)
             MenuRepeatSeconds = StickDirection == LastMenuStickDirection ? .13f : .38f;
         LastMenuStickDirection = StickDirection;
+        const int32 TabStep =
+            int32(Pressed(EKeys::Gamepad_RightShoulder)) - int32(Pressed(EKeys::Gamepad_LeftShoulder));
+        if (TabStep != 0 && GM->SwitchSettingsTab(TabStep))
+            return; // This press selects a tab, never a setting or a flight action.
         int32 MenuVertical = 0, MenuHorizontal = 0;
         if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up) || (GM->IsTitleMenu() && Pressed(EKeys::W)) ||
             (StickStep && StickDirection == -1))
@@ -2927,6 +3135,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             MenuHorizontal = 1;
         if (auto *HUD = Cast<ASSHUD>(GetHUD()); HUD && (MenuVertical || MenuHorizontal))
         {
+            if (MenuHorizontal && GM->BrowseWardrobe(MenuHorizontal))
+                return;
             if (MenuVertical || !GM->AdjustSetting(GM->SelectedEntry, MenuHorizontal))
                 HUD->NavigateMenu(MenuHorizontal, MenuVertical);
         }
@@ -3050,7 +3260,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             WalkPawn->Jump();
         if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
             WalkPawn->StopJumping();
-        if (GM->HandleCockpitModeInput(Pressed(EKeys::R), Pressed(EKeys::Gamepad_DPad_Left)))
+        if (GM->HandleCockpitModeInput(Pressed(EKeys::R),
+                                       (Pressed(EKeys::Gamepad_DPad_Left) && !Down(EKeys::Gamepad_LeftShoulder))))
             return; // A mode press cannot also sit/launch on this frame.
     }
     // Talk: tap T or R3 to start listening, tap again to send (owner, 2026-10-10: R3 is hard to keep holding;
@@ -3058,6 +3269,16 @@ void ASSPlayerController::PlayerTick(float Dt)
     // The game mode decides who is listening: a crew member or the villain.
     if (!MenuInput && GetPawn() && (Pressed(EKeys::T) || Pressed(EKeys::Gamepad_RightThumbstick)))
         GM->TapTalk();
+    // Crew actions: keyboard 1-4 or LB + D-pad. D-pad Up alone opens photo mode.
+    if (!MenuInput && Cast<ASSWalker>(GetPawn()))
+    {
+        static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
+        static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right, EKeys::Gamepad_DPad_Down,
+                                    EKeys::Gamepad_DPad_Left};
+        for (int32 I = 0; I < 4; ++I)
+            if (Pressed(Digits[I]) || (Down(EKeys::Gamepad_LeftShoulder) && Pressed(Pads[I])))
+                GM->TriggerNpcAction(I);
+    }
     GM->UpdateTalkEngagement(Dt);
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
@@ -3125,8 +3346,8 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
         {
             // A drone has nothing to say; a wardrobe hologram is the pilot's own reflection; someone walking a route
             // is passing through (owner: "the hallway NPC shouldn't trigger it").
-            if (It->bDrone || It->bAnimationManagedExternally || It->RoutePoints.Num() > 1 || !It->CharacterMesh ||
-                !It->CharacterMesh->GetSkeletalMeshAsset())
+            if (!It->bConversationEnabled || It->bDrone || It->bAnimationManagedExternally ||
+                It->RoutePoints.Num() > 1 || !It->CharacterMesh || !It->CharacterMesh->GetSkeletalMeshAsset())
                 continue;
             FSSTalkIdentity Who = SSNpcTalk::IdentityFromTags(It->CharacterMesh->ComponentTags,
                                                               It->CharacterMesh->GetSkeletalMeshAsset()->GetName());
@@ -3160,23 +3381,30 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
                 const auto *Body = It->FindComponentByClass<USkeletalMeshComponent>();
                 if (!Body || !Body->GetSkeletalMeshAsset())
                     continue;
-                FSSTalkIdentity Who;
-                Who.Name = Who.Type =
-                    Talk->ResolveAlias(SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName()));
-                if (!Talk->HasPersona(Who.Name))
+                // Its Talk* tags when it carries them (Silver's Blueprint does), else the name from its mesh.
+                FSSTalkIdentity Who =
+                    SSNpcTalk::PlacedIdentity(It->Tags, Body->ComponentTags, Body->GetSkeletalMeshAsset()->GetName(),
+                                              [Talk](const FString &Name) { return Talk->ResolveAlias(Name); });
+                if (!Talk->HasPersona(Who.Name) && !Talk->HasPersona(Who.Type))
                     continue;
                 const UAnimationAsset *Clip =
                     Body->GetSingleNodeInstance() ? Body->GetSingleNodeInstance()->GetAnimationAsset() : nullptr;
+                // The tags win; the clip only fills in what they left unsaid.
+                const TCHAR *ClipRole = nullptr, *ClipActivity = nullptr;
                 if (Clip && Clip->GetName().Contains(TEXT("Pole")))
                 {
-                    Who.Role = TEXT("Flirt");
-                    Who.Activity = TEXT("dancing on the pole on the stage");
+                    ClipRole = TEXT("Flirt");
+                    ClipActivity = TEXT("dancing on the pole on the stage");
                 }
                 else if (Clip && Clip->GetName().Contains(TEXT("Dance")))
                 {
-                    Who.Role = TEXT("Dancer");
-                    Who.Activity = TEXT("dancing");
+                    ClipRole = TEXT("Dancer");
+                    ClipActivity = TEXT("dancing");
                 }
+                if (ClipRole && Who.Role.IsEmpty())
+                    Who.Role = ClipRole;
+                if (ClipActivity && Who.Activity.IsEmpty())
+                    Who.Activity = ClipActivity;
                 Consider(Body, Who);
             }
         if (OutMesh)
@@ -3241,6 +3469,9 @@ FString ASSGameMode::NpcDigest(const FSSTalkIdentity &Who) const
 
 void ASSGameMode::BeginTalk()
 {
+    if (const auto *Crew = EngagedMesh.IsValid() ? Cast<ASSOutpostAmbientActor>(EngagedMesh->GetOwner()) : nullptr;
+        Crew && !Crew->bConversationEnabled)
+        Disengage();
     auto *Talk = NpcTalk();
     if (!Talk || !Talk->IsEnabled() || IsMenuOpen() || TalkingTo.IsValid())
         return;
@@ -3267,6 +3498,14 @@ void ASSGameMode::BeginTalk()
         Announce(Talk->LastError());
         return;
     }
+    // A reply still waiting for its voice is shown now instead of being dropped (2026-10-15: the owner pressed T
+    // during a 6-9 s voice render and the answer never appeared - "why can't I hear you?"). The crew's caption keeps
+    // the name of whoever said it; the Director's goes on his own channel.
+    const bool bShowedHeldLine = bCrewReplyHeld || (Target.Name == TEXT("Director") && bVillainReplyHeld);
+    if (bCrewReplyHeld)
+        ShowHeldCrewReply();
+    if (Target.Name == TEXT("Director") && bVillainReplyHeld)
+        ShowHeldVillainReply();
     // The microphone must not hear whoever was talking; the voice runs all session, this only brings it back if
     // it died.
     StopCrewRadio();
@@ -3274,7 +3513,8 @@ void ASSGameMode::BeginTalk()
         StopVillainRadio();
     Talk->EnsureVoice();
     TalkingTo = Target;
-    NpcName = Target.Name;
+    if (!bShowedHeldLine)
+        NpcName = Target.Name;
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
 }
@@ -3316,13 +3556,112 @@ FSSTalkIdentity ASSGameMode::TalkHint() const
     // second rather than every frame.
     if (!Walker || WalkerStillSeconds < 2.f)
         return FSSTalkIdentity();
+    if (const auto *Crew =
+            CachedHintMesh.IsValid() ? Cast<ASSOutpostAmbientActor>(CachedHintMesh->GetOwner()) : nullptr;
+        Crew && !Crew->bConversationEnabled)
+    {
+        CachedHint = FSSTalkIdentity();
+        CachedHintMesh.Reset();
+        CachedHintAt = -1.0;
+    }
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now - CachedHintAt > .25)
     {
-        CachedHint = TalkTarget();
+        const USceneComponent *Mesh = nullptr;
+        CachedHint = TalkTarget(&Mesh);
+        CachedHintMesh = Mesh;
         CachedHintAt = Now;
     }
     return CachedHint;
+}
+
+ASSOutpostAmbientActor *ASSGameMode::ActionTarget() const
+{
+    const USceneComponent *Mesh =
+        EngagedWith.IsValid() ? EngagedMesh.Get() : (TalkHint().IsValid() ? CachedHintMesh.Get() : nullptr);
+    auto *Crew = Mesh ? Cast<ASSOutpostAmbientActor>(Mesh->GetOwner()) : nullptr;
+    return Crew && Crew->bConversationEnabled && !Crew->Actions.IsEmpty() ? Crew : nullptr;
+}
+
+void ASSGameMode::TriggerNpcAction(int32 Index)
+{
+    ASSOutpostAmbientActor *Crew = ActionTarget();
+    if (!Crew || !Crew->TriggerAction(Index))
+        return;
+    const FSSNpcAction &Action = Crew->Actions[Index];
+    SpeakCrewLine(Crew, Action.Line);
+}
+
+void ASSGameMode::SpeakCrewLine(ASSOutpostAmbientActor *Crew, const FString &Line)
+{
+    if (!IsValid(Crew) || !Crew->bConversationEnabled || Line.IsEmpty())
+        return;
+    const USkeletalMesh *Body = Crew->CharacterMesh ? Crew->CharacterMesh->GetSkeletalMeshAsset() : nullptr;
+    const FString Who = Crew->TalkName.IsEmpty() ? SSNpcTalk::CharacterNameFromMesh(Body ? Body->GetName() : FString())
+                                                 : Crew->TalkName;
+    SpeakCrew(Who, Line, Crew->CharacterMesh);
+    HeldCrewName = Who;
+    HeldCrewLine = Line;
+    bCrewReplyHeld = true;
+    if (!bCrewVoiceWaiting && !CrewRadioReady.IsValid())
+        ShowHeldCrewReply();
+}
+
+bool ASSGameMode::CanAmbientCrewSpeak(const ASSOutpostAmbientActor *Crew) const
+{
+    return Crew && Crew->bConversationEnabled && Walker && !IsMenuOpen() && !TalkingTo.IsValid() &&
+           !EngagedWith.IsValid() && !bCrewVoiceWaiting && !CrewRadioReady.IsValid() && CrewRadioLeft <= 0.f &&
+           FVector::DistSquared(Walker->GetActorLocation(), Crew->GetActorLocation()) < FMath::Square(1400.f);
+}
+
+bool ASSGameMode::TryAmbientCrewLine(ASSOutpostAmbientActor *Crew, const FString &Line)
+{
+    if (Line.IsEmpty() || !CanAmbientCrewSpeak(Crew))
+        return false;
+    SpeakCrewLine(Crew, Line);
+    return true;
+}
+
+bool ASSGameMode::CrewChatter(ASSOutpostAmbientActor *Crew)
+{
+    if (const auto *Bar = Cast<ASSBarCrew>(Crew); Bar && (Bar->HasBarReservation() || Bar->bBarBreakActive))
+        return false;
+    if (!Crew || !Crew->bConversationEnabled || !Walker || !Crew->CharacterMesh || Crew->Chatter.IsEmpty())
+        return false;
+    auto *Talk = NpcTalk();
+    if (!Talk || !Talk->IsEnabled())
+        return false;
+    // Within earshot only, and never over a conversation or another crew line.
+    if (FVector::Dist(Walker->GetActorLocation(), Crew->GetActorLocation()) > 1400.f || TalkingTo.IsValid() ||
+        EngagedWith.IsValid() || bCrewVoiceWaiting || CrewRadioReady.IsValid() || CrewRadioLeft > 0.f)
+        return false;
+    const FString Full = Crew->TakeChatterLine();
+    FString Line = Full, ActionName;
+    if (!Full.Split(TEXT("|"), &Line, &ActionName))
+        Line = Full;
+    Line.TrimStartAndEndInline();
+    ActionName.TrimStartAndEndInline();
+    if (Line.IsEmpty())
+        return false;
+    for (int32 I = 0; I < Crew->Actions.Num(); ++I)
+        if (!ActionName.IsEmpty() && Crew->Actions[I].Name == ActionName)
+        {
+            Crew->TriggerAction(I);
+            break;
+        }
+    const USkeletalMesh *Body = Crew->CharacterMesh->GetSkeletalMeshAsset();
+    const FString Who = Talk->ResolveAlias(Crew->TalkName.IsEmpty()
+                                               ? SSNpcTalk::CharacterNameFromMesh(Body ? Body->GetName() : FString())
+                                               : Crew->TalkName);
+    if (Who.IsEmpty())
+        return false;
+    SpeakCrew(Who, Line, Crew->CharacterMesh);
+    HeldCrewName = Who;
+    HeldCrewLine = Line;
+    bCrewReplyHeld = true;
+    if (!bCrewVoiceWaiting && !CrewRadioReady.IsValid())
+        ShowHeldCrewReply();
+    return true;
 }
 
 void ASSGameMode::UpdateTalkEngagement(float Dt)
@@ -3331,8 +3670,9 @@ void ASSGameMode::UpdateTalkEngagement(float Dt)
     if (!EngagedWith.IsValid())
         return;
     const USceneComponent *Mesh = EngagedMesh.Get();
+    const auto *Crew = Mesh ? Cast<ASSOutpostAmbientActor>(Mesh->GetOwner()) : nullptr;
     // A few steps away ends it and the camera goes back (owner: "walking a few steps away disengages and goes back").
-    if (!Walker || Walker->IsDisembarking() || !Mesh ||
+    if (!Walker || Walker->IsDisembarking() || !Mesh || (Crew && !Crew->bConversationEnabled) ||
         FVector::Dist2D(Walker->GetActorLocation(), EngageAnchor) > 250.f)
     {
         Disengage();
@@ -3392,11 +3732,29 @@ void ASSGameMode::EndTalk()
     Talk->EndListeningAndAsk(TalkingTo);
 }
 
+void ASSGameMode::AppendChatLine(const FString &Speaker, const FString &Text)
+{
+    if (Text.TrimStartAndEnd().IsEmpty())
+        return;
+    FSSChatLine Line;
+    Line.Speaker = Speaker;
+    Line.Text = Text;
+    Line.ShownAt = GetWorld()->GetTimeSeconds();
+    ChatLines.Add(MoveTemp(Line));
+    if (ChatLines.Num() > 12)
+        ChatLines.RemoveAt(0, ChatLines.Num() - 12);
+}
+
 void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
 {
     TalkTranscript = Text;
+    AppendChatLine(TEXT("You"), Text);
     TalkTranscriptSeconds = 14.f;
     TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" is answering...");
+    // A spoken request moves her at once; her words come with the model's reply.
+    if (ASSOutpostAmbientActor *Crew = ActionTarget())
+        if (const int32 Index = Crew->MatchAction(Text); Index >= 0)
+            Crew->TriggerAction(Index);
 }
 
 void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)

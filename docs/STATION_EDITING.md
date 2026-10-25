@@ -1,5 +1,12 @@
 # Station editing and preserved Workshop
 
+## Daylight editing preview
+
+Open **Edit Current Station.cmd**, then choose **SS Prefabs > Daylight editing preview**. This adds temporary daylight, a blue sky and neutral ambient fill so layout work is easier to see. Choose **SS Prefabs > Restore game lighting** to return to the station lighting. Stop Play before using these controls.
+
+The preview lasts for this editor session; enable it again after reopening the map. Its actors are transient and editor-only. It does not save lighting actors, replace the station map, retune materials or change the game. Continue saving your actual station edits normally before Play, because Play loads the saved Wayfarer map through Survival. Daylight preview deliberately looks different from Play; the separate existing runtime/environment mismatch remains RPT-20261020-06.
+
+
 **October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
 
 **October 10 room-purpose amendment (owner plan, paraphrase):** Central holds easy-access core wave purchases/services and repair; R/club holds character swapping and future outfits/optional boosts; T is a six-display ship market (Phoenix stats/flight records plus five future unlock placeholders, permanent ownership on future purchase); L holds social/challenges/leaderboards/minigames; the market is an atmospheric entrance, with quick repair at the dock and in Central. [Authoritative room plan](GAME_SCOPE.md#owner-amendment--october-10-2026-station-room-purposes) supersedes conflicting earlier T/room-role holds below. This records design requirements, not implementation of the future mechanics. Preserve owner edits. The saved R stage is ready for owner live review; no further task editor is launched for this documentation checkpoint.
@@ -108,8 +115,19 @@ first. Do not reapply to an already adopted map: use `IntegrateStationCrew.verif
 and inspect current placements instead. Source meshes, materials and original kits
 are preserved; the caller owns final review and saving.
 
-`Scripts/IntegrateStationCrew.py` contains ten stable-label assignments: Dread as
-bartender; Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+`Scripts/IntegrateStationCrew.py` contains nine stable-label assignments (the
+bartender slot `Crew/Lounge guest` is Joy since 2026-10-14, owned by
+`Scripts/StationRecipes/JoyBartender/place_joy_bartender.py`: her mesh, clips, four
+player-triggered actions, unprompted chatter and talk identity live on that one
+actor; `place_joy_soft_tissue.py` adds her `BodyDynamics` component, the same
+`USSSoftTissueComponent` spring Silver uses, bound to the `ST_<Region>_<Axis>`
+morphs `author_soft_tissue.py` exports and `reimport_joy_soft_tissue.py` brings
+into SK_Joy. Her outfit is fitted by the same Blender recipe: `--jacket` (Fab cyber
+jacket, through its own MetaHuman body) and `--pants` (Fab sci-fi pants and
+sneakers, through the pack's Manny), with `make_joy_outfit_materials.py`,
+`remove_joy_waistcoat.py`, `set_joy_mesh_lift.py` (shoe soles) and
+`capture_joy_front.py` (front stills, foot heights); `place_bar_bottles.py` stands
+the MLR bottles on her counter); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
 security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
 visitor, now hidden/replaced as described above. It checks
 178cm mesh height, floor-level source soles, exact Skeleton identity for every role

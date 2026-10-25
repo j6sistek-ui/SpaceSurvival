@@ -1,5 +1,17 @@
 # Phase 1 content pipeline
 
+## Supplied playable heroes — October20
+
+Keep each supplied body on its own skeleton and preserve packed source PBR/UVs. Derive centimeter-native unit-root FBXs before Interchange import, bake additive references into standalone full poses, and measure planted-foot speeds/contact before activating tuning. Four cloth sections use the supplied low resolution simulation cages with body collision; a saved binding is separate from verified live simulation. Never rerun the authoring pipeline on adopted packages or use `AuthorContent.py` to activate a roster. The guarded scripts, source/native receipts and D-drive archive are described in [HeroIntegration](../Scripts/HeroIntegration/README.md); current checks and failures are in the [dated evidence](validation/2026-10-20-playable-heroes.md).
+
+## Astra eyes and voice — October 15
+
+The owner-selected WhitePurpleRings pair uses its own UV0/maps and a shared private eye rig; five UV-distinct presets must be swapped as mesh/material pairs. Packed Blender sources stay in the owner library. The native helper refuses unrelated assets or a differing reference rig; original body/skeleton remain untouched. Astra uses an original synthetic adult voice reference, with local CPU runtime cloning; Joy now has a separate original reference exclusive to her, with her rejected earlier audio preserved privately for recovery. [Paths and reproduction](production/WAITRESS_BAR_SERVICE.md).
+
+## Native waitress clothing — October 15
+
+Fit and export clothing only against the original female skeleton; preserve the native body, physics and post-process. Current V16 retains original UV/material separation and the product's open laced front. Import derived clothing into the private licensed root, assign slots by name and use the original body as Leader Pose. Validate ordinary moving views and fresh reload before accepting a fit. [Exact inputs, colors, reproducibility and limits](production/WAITRESS_BAR_SERVICE.md).
+
 ## Four-way cryo core/nozzle polish — October 24
 
 [CryoComparison](../Scripts/CryoComparison/README.md) retains originals and accepted
@@ -18,6 +30,13 @@ failed evidence remain recorded separately. [Current evidence](validation/2026-1
 Non-Unreal files stay on D:. Native/vendor/image content remains private and
 excluded from cook. Never reinterpret a source audit or historical v4 renderer
 pass as acceptance of the current display/glass revision.
+
+**October16 Kraken cuff derivative:** Saved V12 preserves original garment points and UV corners, body/eyes/rig/actions and all nine effective materials, including the rear-hem override. It transfers left-cuff/root weights and adds local cuff seam triangles; saved walking/reload improve visible arm coverage while retaining small intersections in the CPU audit. Original V11 remains available. Assign the derivative with existing component overrides intact; do not replay older material recipes. [Exact source and native evidence](validation/2026-10-16-kraken-cuff-fit.md).
+
+**October16 Kraken hem follow-up:** Saved/reloaded map `b5141cb6` now gives only the lower blue rear panel a smooth opacity increase to0.98; upper back stays0.65. This reduces bright floor showing between tentacles, without mesh/rig/route changes. All9,480 actor transforms and170 prior non-map files remain unchanged; saved-scene walk and final175-file preservation pass on unchanged module `a841a562`. Cuff contact and owner appearance remain open. [Evidence](validation/2026-10-16-kraken-hem-opacity.md).
+
+**Historical October16 initial Kraken gown/eye adoption:** Saved V11 combines the fitted gown and selected Purple Mandala eye caps on the existing243-bone rig, preserving the body, garment UVs/weights and34actions. Assign the nine native material slots by name; retain separate front0.9/chest0.75/back0.65 fabric controls and original gold/sheer behavior. Native save and fresh reload preserve9,473 actor transforms and verify all nine slots; five saved-mesh walking views retain the original head-groom attachment. Lower rear-hem patches and shallow cuff contact remain open, so these receipts establish adoption and bounded motion rather than final appearance acceptance. Original sources, V10 recovery and private native content remain local. [Exact V11 artifacts, checks and limits](validation/2026-10-16-kraken-blue-fit-eyes.md).
+
 
 **October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
 

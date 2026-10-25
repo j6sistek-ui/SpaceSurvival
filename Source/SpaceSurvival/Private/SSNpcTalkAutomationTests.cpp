@@ -1,8 +1,13 @@
 #include "Misc/AutomationTest.h"
 #include "SSNpcTalk.h"
+#include "Engine/GameInstance.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "HAL/FileManager.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include <type_traits>
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -203,16 +208,35 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
         SSNpcTalk::ParseVoiceProfile(TEXT("# the Director\nspeed = 0.92\nTreatment=Entity\nnonsense\n"), Profile);
         TestEqual(TEXT("a voice profile's speed is read"), Profile.Speed, .92);
         TestEqual(TEXT("a voice profile's treatment is read, lower-cased"), Profile.Treatment, FString(TEXT("entity")));
+        SSNpcTalk::ParseVoiceProfile(TEXT("Cache_Revision = reference-v2  \n"), Profile);
+        TestEqual(TEXT("a voice cache revision is read and trimmed"), Profile.CacheRevision,
+                  FString(TEXT("reference-v2")));
+        TestEqual(TEXT("a cache revision does not alter the voice's speed"), Profile.Speed, .92);
+        SSNpcTalk::ParseVoiceProfile(TEXT("cache_revision=  \n"), Profile);
+        TestTrue(TEXT("an explicitly empty revision restores legacy cache naming"), Profile.CacheRevision.IsEmpty());
         SSNpcTalk::FVoiceProfile Bare;
         SSNpcTalk::ParseVoiceProfile(TEXT(""), Bare);
         TestTrue(TEXT("no profile text means the server's own defaults"),
-                 Bare.Speed == .92 && Bare.Treatment == TEXT("none"));
+                 Bare.Speed == .92 && Bare.Treatment == TEXT("none") && Bare.CacheRevision.IsEmpty());
     }
     // The name the server's --prerender gives a line (md5 of "predator_ref_cut.wav|0.92|entity|Fetch.", Python):
     // the game must find the lines made ahead of time.
     TestEqual(TEXT("a line made ahead is found under the server's name for it"),
               SSNpcTalk::VoiceCacheName(TEXT("M:/anywhere/predator_ref_cut.wav"), .92f, TEXT("entity"), TEXT("Fetch.")),
               FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    TestEqual(TEXT("an explicitly empty revision keeps the legacy filename exactly"),
+              SSNpcTalk::VoiceCacheName(TEXT("predator_ref_cut.wav"), .92, TEXT("entity"), TEXT("Fetch."), TEXT("")),
+              FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    const FString JoyLine = TEXT("Only if we make one very important decision.");
+    TestEqual(TEXT("the existing Joy line retains its legacy cache filename"),
+              SSNpcTalk::VoiceCacheName(TEXT("Joy.wav"), .90, TEXT("none"), JoyLine),
+              FString(TEXT("9098a8788d3990c0fdfa04178c4bde80.pcm")));
+    TestEqual(TEXT("Joy's revision matches the Python prerender filename without changing her pace"),
+              SSNpcTalk::VoiceCacheName(TEXT("Joy.wav"), .90, TEXT("none"), JoyLine, TEXT("reference-v2")),
+              FString(TEXT("238e7861397bccd3156c587ef4c16f9a.pcm")));
+    TestEqual(TEXT("UTF-8 dialogue and revisions match Python cache naming"),
+              SSNpcTalk::VoiceCacheName(TEXT("Astra.wav"), .88, TEXT("none"), TEXT("Café."), TEXT("révision-2")),
+              FString(TEXT("99f23596df069069a86f71559a2ec524.pcm")));
     const FString ThreeDecimals =
         SSNpcTalk::VoiceCacheName(TEXT("Director.wav"), 0.985, TEXT("entity"), TEXT("Fetch."));
     const FString TwoDecimals = SSNpcTalk::VoiceCacheName(TEXT("Director.wav"), 0.98, TEXT("entity"), TEXT("Fetch."));
@@ -229,6 +253,142 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
     TestTrue(TEXT("a reply waits longer than a scripted line"),
              SSNpcTalk::VoiceDeadline(TEXT("Run to your station."), true) >
                  SSNpcTalk::VoiceDeadline(TEXT("Run to your station."), false));
+    // Placed characters (2026-10-15): their Talk* tags win over the mesh name, and the alias applies either way.
+    auto Alias = [](const FString &Name)
+    { return Name == TEXT("Sentinel_MotionFinish") ? FString(TEXT("Silver")) : Name; };
+    const FSSTalkIdentity Tagged = SSNpcTalk::PlacedIdentity(
+        {FName(TEXT("TalkName:Silver"))}, {FName(TEXT("TalkRole:Dancer")), FName(TEXT("TalkActivity:dancing at home"))},
+        TEXT("SK_Sentinel_MotionFinish"), Alias);
+    TestEqual(TEXT("a tagged placed character keeps its tag name"), Tagged.Name, FString(TEXT("Silver")));
+    TestEqual(TEXT("... and its tag role"), Tagged.Role, FString(TEXT("Dancer")));
+    TestEqual(TEXT("an untagged one is named from its mesh, through the alias"),
+              SSNpcTalk::PlacedIdentity({}, {}, TEXT("SK_Sentinel_MotionFinish"), Alias).Name, FString(TEXT("Silver")));
+
+    // How much of the language model goes on the GPU: never into the game's margin, CPU when unknown.
+    const int64 GB = 1ll << 30;
+    TestEqual(TEXT("no room beyond the margin: CPU"),
+              SSNpcTalk::ChooseGpuLayers(2 * GB, 5 * GB, 32, GB + GB / 2, GB / 2), 0);
+    TestEqual(TEXT("free memory unknown: CPU"), SSNpcTalk::ChooseGpuLayers(-1, 5 * GB, 32, 0, 0), 0);
+    TestEqual(TEXT("layer count unknown: CPU"), SSNpcTalk::ChooseGpuLayers(16 * GB, 5 * GB, -1, 0, 0), 0);
+    TestEqual(TEXT("room for the whole model: all layers"), SSNpcTalk::ChooseGpuLayers(16 * GB, 5 * GB, 32, GB, GB / 2),
+              999);
+    const int32 Some = SSNpcTalk::ChooseGpuLayers(4 * GB, 5 * GB, 32, GB + GB / 2, GB / 2);
+    TestTrue(TEXT("a partial fit stays out of the margin"),
+             Some > 0 && Some < 32 && int64(Some) * (5 * GB / 33) <= 4 * GB - (GB + GB / 2) - GB / 2);
+
+    // The layer count read from a GGUF header, past a string and a string array, as llama.cpp writes them.
+    TArray<uint8> Gguf;
+    auto U32 = [&Gguf](uint32 V) { Gguf.Append(reinterpret_cast<const uint8 *>(&V), 4); };
+    auto U64 = [&Gguf](uint64 V) { Gguf.Append(reinterpret_cast<const uint8 *>(&V), 8); };
+    auto Str = [&](const char *S)
+    {
+        U64(uint64(FCStringAnsi::Strlen(S)));
+        Gguf.Append(reinterpret_cast<const uint8 *>(S), FCStringAnsi::Strlen(S));
+    };
+    U32(0x46554747u); // "GGUF"
+    U32(3);
+    U64(0); // tensors
+    U64(3); // key/value pairs
+    Str("general.architecture");
+    U32(8);
+    Str("llama");
+    Str("general.tags");
+    U32(9);
+    U32(8);
+    U64(2);
+    Str("roleplay");
+    Str("uncensored");
+    Str("llama.block_count");
+    U32(4);
+    U32(32);
+    const FString GgufPath = FPaths::Combine(FPaths::AutomationTransientDir(), TEXT("NpcTalkHeader.gguf"));
+    TestTrue(TEXT("test header written"), FFileHelper::SaveArrayToFile(Gguf, *GgufPath));
+    TestEqual(TEXT("block_count read from a GGUF header"), SSNpcTalk::GgufBlockCount(GgufPath), 32);
+    const FString NotGguf = FPaths::Combine(FPaths::AutomationTransientDir(), TEXT("NpcTalkNotAModel.gguf"));
+    FFileHelper::SaveStringToFile(TEXT("not a model"), *NotGguf);
+    TestEqual(TEXT("anything else reads as unknown"), SSNpcTalk::GgufBlockCount(NotGguf), -1);
+    TestEqual(TEXT("a missing file reads as unknown"), SSNpcTalk::GgufBlockCount(GgufPath + TEXT(".missing")), -1);
+    // cut inside the string array: every length runs past the end, which must read as unknown, not assert
+    TArray<uint8> Cut(Gguf.GetData(), Gguf.Num() - 40);
+    FFileHelper::SaveArrayToFile(Cut, *NotGguf);
+    TestEqual(TEXT("a truncated header reads as unknown"), SSNpcTalk::GgufBlockCount(NotGguf), -1);
+    IFileManager::Get().Delete(*GgufPath);
+    IFileManager::Get().Delete(*NotGguf);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSNpcTalkHelperIdentityTest, "SpaceSurvival.NpcTalk.HelperIdentity",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSNpcTalkHelperIdentityTest::RunTest(const FString &)
+{
+    // Configuration only: do not initialize the subsystem, start helpers or access the microphone.
+    UGameInstance *Instance = NewObject<UGameInstance>();
+    USSNpcTalkSubsystem *Talk = NewObject<USSNpcTalkSubsystem>(Instance);
+    Talk->VoicePython = TEXT("C:/Test/Python/python.exe");
+    Talk->VoiceRepo = TEXT("C:/Test/VoiceEngine");
+    Talk->VoiceScript = TEXT("C:/Test/voice_server.py");
+    Talk->VoiceDirectory = TEXT("TestVoices/A");
+    Talk->WhisperServerExe = TEXT("C:/Test/whisper-server.exe");
+    Talk->WhisperModel = TEXT("C:/Test/speech.bin");
+    Talk->LlamaServerExe = TEXT("C:/Test/llama-server.exe");
+    const FString Model = TEXT("C:/Test/dialogue.gguf"), Extra = TEXT("--reasoning off");
+    const auto LlamaKey = [&]() { return Talk->LlamaServerKey(Model, Extra); };
+    const auto WhisperKey = [&]() { return Talk->WhisperServerKey(); };
+    const auto VoiceKey = [&]() { return Talk->VoiceServerKey(); };
+    const auto Changed = [&](const TCHAR *Label, auto Field, auto ReadKey)
+    {
+        const auto Before = Talk->*Field;
+        const FString Key = ReadKey();
+        if constexpr (std::is_same_v<std::decay_t<decltype(Before)>, FString>)
+            Talk->*Field += TEXT("-replacement");
+        else
+            ++(Talk->*Field);
+        TestNotEqual(Label, ReadKey(), Key);
+        Talk->*Field = Before;
+        TestEqual(TEXT("restoring identical configuration keeps the reusable identity"), ReadKey(), Key);
+    };
+    Changed(TEXT("speech port invalidates the kept recognizer"), &USSNpcTalkSubsystem::WhisperPort, WhisperKey);
+    Changed(TEXT("speech model invalidates the kept recognizer"), &USSNpcTalkSubsystem::WhisperModel, WhisperKey);
+    Changed(TEXT("speech executable invalidates the kept recognizer"), &USSNpcTalkSubsystem::WhisperServerExe,
+            WhisperKey);
+    Changed(TEXT("speech threads invalidate the kept recognizer"), &USSNpcTalkSubsystem::Threads, WhisperKey);
+    Changed(TEXT("reply port invalidates the kept model"), &USSNpcTalkSubsystem::LlamaPort, LlamaKey);
+    Changed(TEXT("reply executable invalidates the kept model"), &USSNpcTalkSubsystem::LlamaServerExe, LlamaKey);
+    Changed(TEXT("GPU margin change re-evaluates the next launch"), &USSNpcTalkSubsystem::LlamaVramMarginMB, LlamaKey);
+    Changed(TEXT("GPU fixed allowance change re-evaluates the next launch"), &USSNpcTalkSubsystem::LlamaVramFixedMB,
+            LlamaKey);
+    TestNotEqual(TEXT("flight/station model change still invalidates reuse"),
+                 Talk->LlamaServerKey(Model + TEXT(".other"), Extra), LlamaKey());
+    Changed(TEXT("voice folder change invalidates identical-name profiles"), &USSNpcTalkSubsystem::VoiceDirectory,
+            VoiceKey);
+    Changed(TEXT("voice Python change invalidates reuse"), &USSNpcTalkSubsystem::VoicePython, VoiceKey);
+    Changed(TEXT("voice engine change invalidates reuse"), &USSNpcTalkSubsystem::VoiceRepo, VoiceKey);
+    Changed(TEXT("voice script change invalidates reuse"), &USSNpcTalkSubsystem::VoiceScript, VoiceKey);
+    Changed(TEXT("voice port change invalidates reuse"), &USSNpcTalkSubsystem::VoicePort, VoiceKey);
+    SSNpcTalk::FVoiceProfile Joy, Astra;
+    Joy.Reference = TEXT("C:/Test/Voices/Joy.wav");
+    Astra.Reference = TEXT("C:/Test/Voices/Astra.wav");
+    Joy.CacheRevision = TEXT("joy-original-v1");
+    Astra.CacheRevision = TEXT("astra-original-v1");
+    Talk->Voices.Add(TEXT("Joy"), Joy);
+    Talk->Voices.Add(TEXT("Astra"), Astra);
+    const FString Original = VoiceKey();
+    Talk->Voices.Reset();
+    Talk->Voices.Add(TEXT("Astra"), Astra);
+    Talk->Voices.Add(TEXT("Joy"), Joy);
+    TestEqual(TEXT("profile enumeration order does not restart unchanged voices"), VoiceKey(), Original);
+    Talk->Voices[TEXT("Joy")].CacheRevision = TEXT("joy-original-v2");
+    TestNotEqual(TEXT("reference revision invalidates reuse even with identical file timestamps"), VoiceKey(),
+                 Original);
+    Talk->Voices[TEXT("Joy")] = Joy;
+    Talk->Voices[TEXT("Joy")].Speed = 0.85;
+    TestNotEqual(TEXT("loaded speed change invalidates reuse even with identical timestamps"), VoiceKey(), Original);
+    Talk->Voices[TEXT("Joy")] = Joy;
+    Talk->Voices[TEXT("Joy")].Treatment = TEXT("chrome");
+    TestNotEqual(TEXT("loaded treatment change invalidates reuse"), VoiceKey(), Original);
+    Talk->Voices[TEXT("Joy")] = Joy;
+    Talk->Voices[TEXT("Joy")].Reference = TEXT("C:/Test/OtherVoices/Joy.wav");
+    TestNotEqual(TEXT("same-name reference at another path invalidates reuse"), VoiceKey(), Original);
     return true;
 }
 

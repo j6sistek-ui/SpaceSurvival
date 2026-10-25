@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 if (-not $EngineRoot) {
-    $EngineRoot = @('C:\Program Files\EpicGames2\UE_5.8','C:\Program Files\Epic Games\UE_5.8') |
+    $EngineRoot = @('C:\Program Files\Epic Games\UE_5.8','C:\Program Files\EpicGames2\UE_5.8') |
         Where-Object { Test-Path -LiteralPath (Join-Path $_ 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe') } |
         Select-Object -First 1
     if (-not $EngineRoot) { throw 'Full UE 5.8 was not found. Supply -EngineRoot with the installed engine directory.' }

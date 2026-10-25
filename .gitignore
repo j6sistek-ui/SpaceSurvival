@@ -19,6 +19,8 @@ Build/Windows/FileOpenOrder/
 
 # Owner-licensed Fab source and local content (never publish raw assets).
 User downloaded assets/
+/SourceAssets/
+/LocalRuntime/
 Content/Asteroid_Library/
 Content/SciFiCorridor/
 # Licensed and derived content, excluded a level at a time rather than as a whole tree, because git
@@ -158,3 +160,10 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 /Content/AbductionAnimPack/
 /Content/Attaku/
 /Content/FreeAnimationsPack/
+
+# Owner-licensed character, spacecraft and inactive jetpack source collections.
+/Content/XANDRA/
+/Content/Flight/
+/Content/Sci-Fi_Spaceship/
+/Content/__ExternalActors__/Flight/
+/Content/__ExternalObjects__/Flight/

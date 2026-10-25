@@ -18,7 +18,7 @@ import bmesh
 from bpy.props import StringProperty
 from mathutils import Matrix, Vector
 
-ENGINE_ROOTS = [r'C:\Program Files\EpicGames2\UE_5.8', r'C:\Program Files\Epic Games\UE_5.8']
+ENGINE_ROOTS = [r'C:\Program Files\Epic Games\UE_5.8', r'C:\Program Files\EpicGames2\UE_5.8']
 REMOTE_EXEC = Path('Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python/remote_execution.py')
 TOOLS = Path('Tools/SSLiveLink')   # the sibling scripts: thumbnail renderer and gallery builder
 PROP_ASSET, PROP_LINK, PROP_MATERIALS = 'ss_asset', 'ss_link', 'ss_materials'

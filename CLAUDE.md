@@ -12,7 +12,7 @@ statements are noted together rather than one quietly overwriting the other.
 
 | Tool | State |
 |---|---|
-| Unreal Engine 5.8 | `C:\Program Files\EpicGames2\UE_5.8` — `Engine\Binaries\Win64\UnrealEditor-Cmd.exe` |
+| Unreal Engine 5.8 | `C:\Program Files\Epic Games\UE_5.8` — `Engine\Binaries\Win64\UnrealEditor-Cmd.exe` |
 | Python | 3.11.9, on PATH as `python` |
 | clang-format | 22.1.3 at `C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\Llvm\x64\bin\clang-format.exe` |
 | Docker | Desktop is usually **not running**, and `docker version` then *hangs* rather than failing fast. Start Docker Desktop if you need the container tooling; do not block a session waiting on it. |
@@ -57,7 +57,7 @@ The test gate demands *all* of: `succeeded >= 1`, `failed == 0`, `notRun == 0`, 
 Running one suite instead of all 67 takes seconds instead of minutes — prefer it while iterating:
 
 ```bash
-"C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" SpaceSurvival.uproject -unattended -NullRHI -stdout -FullStdOutLogOutput "-ExecCmds=Automation RunTests SpaceSurvival.Flight.DirectionalDodgeCollision" "-TestExit=Automation Test Queue Empty" -DisablePlugins=UAssetBrowser
+"C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" SpaceSurvival.uproject -unattended -NullRHI -stdout -FullStdOutLogOutput "-ExecCmds=Automation RunTests SpaceSurvival.Flight.DirectionalDodgeCollision" "-TestExit=Automation Test Queue Empty" -DisablePlugins=UAssetBrowser
 ```
 
 Source-level checks, all fast and all runnable without Unreal:
@@ -153,6 +153,10 @@ the reference here, not a lux figure. Terrestrial rules apply again only for a s
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
   `-RenderOffscreen` (renderer, no window). Automation uses `-NullRHI`; content authoring and captures need
   a real RHI, so they use `-RenderOffscreen`.
+- **Disposable test profiles use `-NoAssetRegistryCacheWrite`.** The installed5.8 `IAssetRegistry.h`
+  documents this switch. October20 found49.680GiB of repeated registries in isolated `.agent/local`
+  profiles. Keep normal editor shader/DDC caches; do not copy an entire private profile between runs.
+  This does not disable asset discovery or replace native load checks.
 - **Never commit `docs/production/UI_ART_REQUESTS.md`.** The owner keeps an uncommitted local edit there.
 - **A change that affects how the game plays or feels is a conversation, not a task.** Propose it and wait.
   Fixing something that is provably broken is work; changing a dial is a decision.

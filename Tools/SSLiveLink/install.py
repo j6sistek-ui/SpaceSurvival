@@ -61,7 +61,7 @@ if target.exists():
     shutil.rmtree(target)
 shutil.copytree(source, target, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
 
-engine = next((r for r in (r'C:\Program Files\EpicGames2\UE_5.8', r'C:\Program Files\Epic Games\UE_5.8')
+engine = next((r for r in (r'C:\Program Files\Epic Games\UE_5.8', r'C:\Program Files\EpicGames2\UE_5.8')
                if (Path(r) / 'Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python/remote_execution.py').exists()), '')
 config.write_text(json.dumps({'project_root': str(ROOT), 'engine_root': engine}, indent=1), encoding='utf-8')
 bpy.ops.preferences.addon_refresh()

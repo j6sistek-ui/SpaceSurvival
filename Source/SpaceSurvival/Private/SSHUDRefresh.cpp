@@ -115,6 +115,8 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
 {
     if (!Mode.IsMenuOpen())
         return false;
+    if (Mode.Panel == ESSPanel::Graphics)
+        return DrawGraphicsMenu(Mode);
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return false;
@@ -124,13 +126,13 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
     const bool Settings = IsSettingsPanel(Mode.Panel);
     const bool Wardrobe = Mode.Panel == ESSPanel::Wardrobe;
     const bool Pause = Mode.Panel == ESSPanel::Main;
-    const bool FullScreen = Settings || Wardrobe;
+    const bool FullScreen = Settings;
     const bool SaveError =
         !GI->LastSaveError.IsEmpty() && Mode.Announcement == GI->LastSaveError && Mode.IsAnnouncementVisible();
     const float ViewWidth = Canvas->SizeX / RefreshScale;
     // The world remains the backdrop for every in-game panel. Only the separately owned,
     // locked title menu draws its static artwork. Full pages use the actual viewport width.
-    if (!Live)
+    if (!Live && !Wardrobe)
         DrawRect(FLinearColor(.001f, .004f, .01f, FullScreen ? .72f : .42f), 0, 0, Canvas->SizeX, Canvas->SizeY);
     MenuBounds.Init(FBox2D(EForceInit::ForceInit), Mode.Entries.Num());
     if (ScrollPanel != static_cast<int32>(Mode.Panel))
@@ -141,8 +143,10 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
     }
     ScrollCount = 0;
     ScrollEntries.Reset();
-    const float PanelW = FullScreen ? ViewWidth - 96.f : FMath::Min(Live ? 650.f : 1280.f, ViewWidth - 96.f);
-    const float PanelX = Live ? ViewWidth - PanelW - 32.f : (ViewWidth - PanelW) * .5f;
+    const float PanelW = Wardrobe     ? FMath::Clamp(ViewWidth * .36f, 600.f, 680.f)
+                         : FullScreen ? ViewWidth - 96.f
+                                      : FMath::Min(Live ? 650.f : 1280.f, ViewWidth - 96.f);
+    const float PanelX = Live || Wardrobe ? ViewWidth - PanelW - 32.f : (ViewWidth - PanelW) * .5f;
     float PauseRowStep = 72.f;
     int32 PauseRows = 0;
     if (Pause)
@@ -160,8 +164,12 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                                           RefreshText(Mode.PanelTitle, 0, 0, 42.f, UIWhite, PanelW - 128.f, false) +
                                           32.f + PauseRows * PauseRowStep + 140.f
                                     : 0.f;
-    const float PanelH = FullScreen ? 772.f : Live ? 780.f : Pause ? FMath::Clamp(PauseHeight, 460.f, 930.f) : 930.f;
-    const float PanelY = FullScreen ? 202.f : Live ? 180.f : Pause ? (1080.f - PanelH) * .5f : 74.f;
+    const float PanelH = Wardrobe     ? 960.f
+                         : FullScreen ? 772.f
+                         : Live       ? 780.f
+                         : Pause      ? FMath::Clamp(PauseHeight, 460.f, 930.f)
+                                      : 930.f;
+    const float PanelY = Wardrobe ? 60.f : FullScreen ? 202.f : Live ? 180.f : Pause ? (1080.f - PanelH) * .5f : 74.f;
     // Nine-slice the approved frame: growing a page must not grow its ornamental border
     // until the usable content is squeezed into a small central box.
     if (auto *Frame = RefreshTexture(TEXT("Frame")))
@@ -183,14 +191,6 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
             }
     }
     const float InnerX = PanelX + 64.f, InnerW = PanelW - 128.f;
-    const float HeadingY = FullScreen ? 73.f : PanelY + PauseHeadingOffset;
-    RefreshText(Settings ? TEXT("PREFERENCES")
-                : Pause  ? TEXT("JOURNEY / PAUSED")
-                         : TEXT("SHIP / STATION"),
-                InnerX, FullScreen ? 35.f : PanelY + (Pause ? 64.f : 43.f), 18, UICyan);
-    const float HeadingH = RefreshText(Mode.PanelTitle, InnerX, HeadingY, Live ? 28.f : 42.f, UIWhite, InnerW);
-    const float BodyY = FullScreen ? 310.f : HeadingY + HeadingH + 32.f;
-    const float BackY = PanelY + PanelH - 112.f;
     auto Bound = [&](int32 Index, float X, float Y, float Width, float Height)
     { MenuBounds[Index] = RefreshBounds(X, Y, Width, Height); };
     auto Focus = [&](int32 Index, float X, float Y, float Width, float Height)
@@ -214,6 +214,88 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                     Width - 36.f);
     };
     const int32 Back = Mode.Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 0; });
+    if (Wardrobe)
+    {
+        // Keep the left side clear for the pad's world projection. These are the same
+        // entry indices consumed by pointer and keyboard/controller navigation.
+        const auto Bodies = Mode.WardrobeBodies();
+        const bool Available = Bodies.IsValidIndex(Mode.WardrobePreviewIndex);
+        const bool Wearing = Available && Bodies[Mode.WardrobePreviewIndex].Id == Mode.WornHeroId();
+        const FString Name =
+            Available ? Bodies[Mode.WardrobePreviewIndex].Id.ToString() : TEXT("No characters installed");
+        float Y = PanelY + 64.f;
+        Y += RefreshText(TEXT("STATION / WARDROBE"), InnerX, Y, 18.f, UICyan, InnerW) + 14.f;
+        Y += RefreshText(Name, InnerX, Y, 36.f, UIWhite, InnerW) + 12.f;
+        Y += RefreshText(Wearing     ? TEXT("CURRENTLY WEARING")
+                         : Available ? TEXT("PREVIEW / NOT SELECTED")
+                                     : TEXT("NO PREVIEW AVAILABLE"),
+                         InnerX, Y, 18.f, Wearing ? UICyan : UIAmber, InnerW) +
+             24.f;
+        const FString Hint = UsingGamepad()
+                                 ? TEXT("LEFT / RIGHT: PREVIEW\nUP / DOWN: BUTTONS\nA: SELECT | B: BACK")
+                                 : TEXT("LEFT / RIGHT: PREVIEW\nUP / DOWN: BUTTONS\nENTER / CLICK: SELECT | ESC: BACK");
+        const float HintY = PanelY + PanelH - 64.f - RefreshText(Hint, 0, 0, 17.f, UIWhite, InnerW, false);
+        float ActionY = HintY - 20.f;
+        for (const int32 Action : {0, 139, 150})
+        {
+            const int32 Index =
+                Mode.Entries.IndexOfByPredicate([Action](const FSSMenuEntry &Entry) { return Entry.Action == Action; });
+            if (Index == INDEX_NONE)
+                continue;
+            const float Height = FMath::Max(
+                60.f, RefreshText(Mode.Entries[Index].Label, 0, 0, 22.f, UIWhite, InnerW - 36.f, false) + 24.f);
+            ActionY -= Height;
+            Button(Index, InnerX, ActionY, InnerW, Height, 22.f);
+            ActionY -= 12.f;
+        }
+        constexpr float ArrowW = 72.f, ArrowH = 64.f;
+        const float BrowseY = ActionY - ArrowH;
+        for (const int32 Action : {148, 149})
+        {
+            const int32 Index =
+                Mode.Entries.IndexOfByPredicate([Action](const FSSMenuEntry &Entry) { return Entry.Action == Action; });
+            if (Index == INDEX_NONE)
+                continue;
+            const float X = Action == 148 ? InnerX : InnerX + InnerW - ArrowW;
+            const FBox2D Bounds = RefreshBounds(X, BrowseY, ArrowW, ArrowH);
+            DrawRect(FLinearColor(.07f, .12f, .17f, .65f), Bounds.Min.X, Bounds.Min.Y, Bounds.GetSize().X,
+                     Bounds.GetSize().Y);
+            Focus(Index, X, BrowseY, ArrowW, ArrowH);
+            Bound(Index, X, BrowseY, ArrowW, ArrowH);
+            const FLinearColor Color = Mode.Entries[Index].Enabled ? UICyan : FLinearColor(.38f, .44f, .5f);
+            const FVector2D Tip = RefreshBounds(X + (Action == 148 ? 28.f : 44.f), BrowseY + 32.f, 0, 0).Min;
+            const float Direction = Action == 148 ? 1.f : -1.f;
+            DrawLine(Tip.X, Tip.Y, Tip.X + Direction * 12.f * RefreshScale, Tip.Y - 12.f * RefreshScale, Color,
+                     2.f * RefreshScale);
+            DrawLine(Tip.X, Tip.Y, Tip.X + Direction * 12.f * RefreshScale, Tip.Y + 12.f * RefreshScale, Color,
+                     2.f * RefreshScale);
+        }
+        const FString Counter =
+            FString::Printf(TEXT("CHARACTER %d / %d"), Available ? Mode.WardrobePreviewIndex + 1 : 0, Bodies.Num());
+        RefreshText(Counter, InnerX + ArrowW + 24.f, BrowseY + 16.f, 18.f, UIWhite, InnerW - 2.f * (ArrowW + 24.f));
+        FString Detail = Mode.HasWardrobeProjection()
+                             ? TEXT("Preview only. Select to change your character.\nYour ship's pilot stays the same.")
+                             : Mode.PanelDetail;
+        if (SaveError)
+            Detail = Mode.Announcement;
+        else if (Detail.IsEmpty())
+            Detail = TEXT("Preview only. Use the wardrobe pad to view a character, then select your choice.");
+        float DetailPixels = 20.f;
+        while (DetailPixels > 16.f &&
+               RefreshText(Detail, 0, 0, DetailPixels, UIWhite, InnerW, false) > BrowseY - Y - 24.f)
+            DetailPixels -= 1.f;
+        RefreshText(Detail, InnerX, Y, DetailPixels, SaveError ? UIAmber : UIWhite, InnerW);
+        RefreshText(Hint, InnerX, HintY, 17.f, UIWhite, InnerW);
+        return true;
+    }
+    const float HeadingY = FullScreen ? 73.f : PanelY + PauseHeadingOffset;
+    RefreshText(Settings ? TEXT("PREFERENCES")
+                : Pause  ? TEXT("JOURNEY / PAUSED")
+                         : TEXT("SHIP / STATION"),
+                InnerX, FullScreen ? 35.f : PanelY + (Pause ? 64.f : 43.f), 18, UICyan);
+    const float HeadingH = RefreshText(Mode.PanelTitle, InnerX, HeadingY, Live ? 28.f : 42.f, UIWhite, InnerW);
+    const float BodyY = FullScreen ? 310.f : HeadingY + HeadingH + 32.f;
+    const float BackY = PanelY + PanelH - 112.f;
     if (Back != INDEX_NONE)
         Button(Back, InnerX, BackY, FullScreen ? 260.f : InnerW, 58.f, 24.f);
     if (!SaveError)
@@ -233,6 +315,8 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                             : ViewWidth - 128.f);
     if (Settings)
     {
+        if (UsingGamepad())
+            RefreshText(TEXT("LB / RB: SWITCH TABS"), InnerX, 140.f, 18.f, UIWhite, InnerW);
         const int Actions[] = {5, 10, 11, 12};
         const TCHAR *Names[] = {TEXT("GENERAL"), TEXT("GRAPHICS"), TEXT("AUDIO"), TEXT("CONTROLS")};
         const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
@@ -288,11 +372,14 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
             }
             Value.TrimStartAndEndInline();
             RefreshText(Label, InnerX + 18.f, Y, RowPixels, UIWhite, LabelW - 18.f);
-            const bool Toggle = Entry.Action == 13 || Entry.Action == 15 || Entry.Action == 18;
+            const bool Toggle = Entry.Action == 13 || Entry.Action == 15 || Entry.Action == 18 || Entry.Action == 96;
             const bool Slider = (Entry.Action >= 19 && Entry.Action <= 23);
             if (Toggle)
             {
-                const bool On = Entry.Action == 13 ? V.subtitles : Entry.Action == 15 ? V.cameraShake : V.motionBlur;
+                const bool On = Entry.Action == 13   ? V.subtitles
+                                : Entry.Action == 15 ? V.cameraShake
+                                : Entry.Action == 96 ? V.diagnosticsOverlay
+                                                     : V.motionBlur;
                 RefreshImage(On ? TEXT("ToggleOn") : TEXT("ToggleOff"), ControlX, Y - 20, 162, 88);
             }
             else if (Slider)
@@ -328,7 +415,7 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
         if (Controls)
         {
             const float GuideX = InnerX + RowW + 44.f, GuideW = InnerW - RowW - 44.f;
-            const float GuideH = RefreshText(TEXT("CURRENT FLIGHT PRESET"), GuideX, BodyY, 26, UICyan, GuideW);
+            const float GuideH = RefreshText(TEXT("CURRENT CONTROLS"), GuideX, BodyY, 26, UICyan, GuideW);
             RefreshText(Mode.PanelDetail, GuideX, BodyY + GuideH + 22.f, 20, UIWhite, GuideW);
         }
         else if (!Mode.PanelDetail.IsEmpty())
@@ -336,18 +423,12 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
     }
     else
     {
-        const float TextPixels = Wardrobe ? 30.f : Live ? 21.f : 26.f;
-        const float ListW = Wardrobe ? InnerW * .68f : Pause ? InnerW : InnerW - 50.f;
+        const float TextPixels = Live ? 21.f : 26.f;
+        const float ListW = Pause ? InnerW : InnerW - 50.f;
         float RowStart = BodyY;
-        if (Wardrobe)
-        {
-            const float InfoX = InnerX + ListW + 64.f, InfoW = InnerW - ListW - 64.f;
-            const float InfoH = RefreshText(TEXT("CHOOSE YOUR CHARACTER"), InfoX, BodyY, 26, UICyan, InfoW);
-            RefreshText(Mode.PanelDetail, InfoX, BodyY + InfoH + 24.f, 23, UIWhite, InfoW);
-        }
-        else if (!Pause && !Mode.PanelDetail.IsEmpty())
+        if (!Pause && !Mode.PanelDetail.IsEmpty())
             RowStart += RefreshText(Mode.PanelDetail, InnerX, BodyY, Live ? 19.f : 23.f, UIWhite, InnerW) + 26.f;
-        float RowStep = Wardrobe ? 82.f : Pause ? PauseRowStep : 72.f;
+        float RowStep = Pause ? PauseRowStep : 72.f;
         for (int32 I = 0; I < Mode.Entries.Num(); ++I)
         {
             if (I == Back)
@@ -506,6 +587,62 @@ bool ASSHUD::NavigateMenu(int32 Horizontal, int32 Vertical)
     const auto Enabled = [&](int32 Index) { return GM->Entries.IsValidIndex(Index) && GM->Entries[Index].Enabled; };
     const int32 Current = FMath::Clamp(GM->SelectedEntry, 0, GM->Entries.Num() - 1);
     const bool Settings = IsSettingsPanel(GM->Panel) && GM->Entries.Num() > 4;
+    if (GM->Panel == ESSPanel::Graphics)
+    {
+        if (Current < 4)
+        {
+            if (Horizontal)
+                GM->SelectedEntry = FMath::Clamp(Current + FMath::Sign(Horizontal), 0, 3);
+            else if (Vertical > 0)
+                GM->SelectedEntry = 4 + GM->GraphicsSection;
+            return true;
+        }
+        if (Current <= 6)
+        {
+            if (Horizontal)
+                GM->SelectedEntry = FMath::Clamp(Current + FMath::Sign(Horizontal), 4, 6);
+            else if (Vertical < 0)
+                GM->SelectedEntry = 1;
+            else if (Vertical > 0)
+                for (int32 I = 7; I < GM->Entries.Num(); ++I)
+                    if (Enabled(I))
+                    {
+                        GM->SelectedEntry = I;
+                        break;
+                    }
+            return true;
+        }
+        const auto IsRow = [&](int32 I) { return GM->Entries.IsValidIndex(I) && !GM->Entries[I].Help.IsEmpty(); };
+        int32 First = INDEX_NONE, Last = INDEX_NONE;
+        for (int32 I = 7; I < GM->Entries.Num(); ++I)
+            if (Enabled(I) && IsRow(I))
+            {
+                if (First == INDEX_NONE)
+                    First = I;
+                Last = I;
+            }
+        if (Current == First && Vertical < 0)
+        {
+            GM->SelectedEntry = 4 + GM->GraphicsSection;
+            return true;
+        }
+        if (!IsRow(Current))
+        {
+            if (Vertical < 0 && Last != INDEX_NONE)
+                GM->SelectedEntry = Last;
+            else if (Horizontal)
+            {
+                TArray<int32> Footer;
+                for (int32 Action : {0, 223, 224})
+                    Footer.Add(
+                        GM->Entries.IndexOfByPredicate([Action](const FSSMenuEntry &E) { return E.Action == Action; }));
+                const int32 Position = Footer.IndexOfByKey(Current);
+                if (Position != INDEX_NONE)
+                    GM->SelectedEntry = Footer[FMath::Clamp(Position + FMath::Sign(Horizontal), 0, 2)];
+            }
+            return true;
+        }
+    }
     if (Settings && Current < 4)
     {
         if (Horizontal != 0)

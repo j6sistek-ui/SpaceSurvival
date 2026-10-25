@@ -104,6 +104,12 @@ restarted after the Python update; Blender must remain open to pick up changes. 
 offline snapshots: refresh them with Export/Import. Dependency-only texture/material edits are not
 detected by mesh timestamps; rebuild with forced thumbnails when those previews need updating.
 
+The October21 callback guard prevents export work that pumps Slate from re-entering
+the active generator and repeatedly restarting the library pass. Disable/re-enable
+clears the interrupted scan state. A genuine export error still backs off60seconds.
+Four focused regressions pass; full-library responsiveness remains an owner retest
+under RPT-20261020-13. The update does not toggle the checkbox or existing marker.
+
 ### Per-object materials
 
 Select a placed mesh and use **Surface**, **Glass** or **Mirror finish** under **Surface overrides**.

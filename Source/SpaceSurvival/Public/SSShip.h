@@ -107,6 +107,9 @@ public:
     /** Reapplies the account's paint bay choices to the hull: after the hull loads, and when paint changes. */
     void RefreshPaint();
     bool CanAdoptBoardedPilot(const class ASSWalker *Walker) const;
+    /** Nobody takes the seat for now (owner 2026-10-12): a flight from the chair shows no pilot figure. Cleared
+     *  when the ship docks. */
+    void SetPilotFigureHidden(bool bOutOfSight);
     /** Carry the same visible seated hero into the ship before releasing the walking pawn. */
     void AdoptBoardedPilot(class ASSWalker *Walker);
     /** The hero in the seat. Not always the one walking the deck: a stand-in that has never been
@@ -152,6 +155,7 @@ public:
 
 private:
     bool bBoardedPilot = false;
+    bool bPilotFigureHidden = false;
     float WormholeDuration = 0.f, WormholeElapsed = 0.f, WormholeExitSpeed = 0.f;
     FVector WormholeOrigin = FVector::ZeroVector, WormholeForward = FVector::ForwardVector;
     FVector WormholeRight = FVector::RightVector, WormholeUp = FVector::UpVector;

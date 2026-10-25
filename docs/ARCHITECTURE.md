@@ -1,5 +1,31 @@
 # SpaceSurvival Phase 1 architecture
 
+**October23 graphics settings:** `SSGraphics` isolates optional NVIDIA SDK calls behind `SS_WITH_NVIDIA`, queries live capabilities and resolves safe runtime settings. `NVIDIA1` extends the settings codec without changing account/run formats. `ASSGameMode` owns a staged graphics draft; Apply persists through the existing guarded writer, Back cancels and Defaults stages. Standalone Init can precede renderer plugin startup, so calls are gated and saved settings are reapplied on the first engine tick. `ASSHUD` draws the Figma-derived sections and distinct rendered/presented metrics. No driver-global settings are changed. [Usage and evidence](production/NVIDIA_GRAPHICS_UI.md).
+
+**October20 playable heroes:** Four appended stable identities retain the eight earlier values. Each new body owns its skeleton/PBR/gameplay clips; the white-first data roster preserves existing explicit account choices. Existing hologram browsing remains a preview until Select. A scoped first-idle recovery handles an empty transient single-node asset after initialization. Editor-only authoring/inspection helpers never authorize runtime asset writes. Cloth binding and live deformation are separate gates; current cloth mappings are missing. [Evidence](validation/2026-10-20-playable-heroes.md).
+
+**October16 runtime diagnostics candidate:** `SS::Settings::diagnosticsOverlay` is an optional trailing settings field, default false for older saves. Existing Graphics action96 owns activation/left-right adjustment and persistence. `USSGameInstance::SetDiagnosticsEnabled` also exposes that preference through normal persistence, with `IsDiagnosticsEnabled` for inspection. `ASSHUD` owns short-lived frame averages and draws through the current refresh fonts/colors; hidden/menu/photo/gallery paths clear its samples. `USSNpcTalkSubsystem::Diagnostics()` supplies a read-only sanitized snapshot without starting helpers or network requests. Runtime `RenderCore`/`RHI` dependencies supply thread/GPU timing. Account/run serialization is unchanged; old executables do not read the appended settings field. [Evidence and limits](validation/2026-10-16-runtime-diagnostics.md).
+
+**October16 wardrobe preview candidate:** `ASSGameMode` owns the transient
+browsed stable character ID and temporary framing camera. Canvas displays the
+installed roster and routes input to browse or the separate existing equip/save
+transaction. `ASSOutpostTerminal` owns a temporary skeletal component using its
+existing projection target/material; original mesh, materials and animation are
+preserved, visibility restored on close/teardown. Horizontal input browses
+without account writes. Panel changes remove temporary objects and restore the
+previous view. This does not add character stats, inventory or roster entries.
+[Verification and limits](validation/2026-10-16-wardrobe-hologram.md).
+
+## Astra social presentation and seating — October 15
+
+`SSBarCrewSocial` owns the optional reserved two-NPC break using the existing spatial speech channel; a finite shuffled bank stays data-driven. `SSStationSeat`/`SSWalkerSeating` provide separate social seating with collision-checked exits and compatible clips. `SSHUDChat` renders bounded session history under the existing radar safe area, without new focus/input capture. Native eye authoring is restricted to five private meshes sharing identical bones. [Guide](production/WAITRESS_BAR_SERVICE.md).
+
+## Waitress bar service — October 15
+
+Staff breaks may select `BarShotAnimation` per character; a missing override falls back to the normal drink clip, while an incompatible skeleton prevents the break. The shared ambient action helper retains its compatibility/timing checks without rewriting the normal action array. Normal orders keep their own clip and grip. Private retargeted patron loops use existing ambient actors rather than a new behavior system.
+
+`ASSBarCrew` specializes ambient NPC actions while retaining the existing GameMode keyword/action and spatial voice/caption channel. `ASSBarTable` supplies authored seat/drink contacts; private Blueprints own clips, grips and routes. Native body post-process leads clothing skinning. Service state, collision checks and reservation cleanup stay in C++; no new inventory or economy system. Existing ClosePanel and TriggerNpcAction methods are exposed to Blueprint for scripted integration review without adding a second interaction implementation. [Behavior and limits](production/WAITRESS_BAR_SERVICE.md).
+
 ## Cryo presentation interaction — October 22
 
 The owner-requested four-second hypercooling action lives in the small
@@ -37,7 +63,7 @@ nozzle streams with a shared new system. They continue independently through the
 stronger interaction cycle. Saved references and fresh native observers verify
 all eight after bounded natural startup; no Python activation owns gameplay.
 
-## Silver groom authoring â€” October 14
+## Silver groom authoring — October 14
 
 `USSGroomAuthoring` lives only in SpaceSurvivalEditor. It exports the private source strand description and creates a bounded new two-group derivative with rebuilt interpolation data. It refuses overwrite and defaults to dry run. Production runtime uses the existing GroomComponent and native solver: head-attached rigid group0, dynamic tail group1. No new runtime component or general asset-writing service. [Native evidence](validation/2026-10-14-silver-ponytail.md).
 
@@ -555,3 +581,7 @@ Only supported mesh, light and Niagara actors/components are accepted. Hidden tr
 Canvas menus keep viewport input ownership (GameOnly; visible cursor unless a live reward captures flight look). No Slate widget owns these menus. Controller left-stick Y navigation has a deadzone and delayed repeat; D-pad/A/B remain. The legacy full-width message bar is replaced by a bounded center message column, clear of the refreshed HUD heading/radar. Remapping remains deferred.
 
 World-cell mix includes the existing area recipes' panel/beam debris and a larger non-rock landmark piece outside the launch cell. These use shared mesh batches and preserved world transforms, independent of Director pressure. Both near-field and regional scenery block simulated PhysicsBody plus Pawn/Visibility. Free Flight and Survival retain unrestricted steering; a Survival-only directed route is a future owner decision, not an implemented constraint.
+
+### Bounded photo mode and tab shortcuts (October 15)
+
+`USSPhotoMode` belongs to `ASSPlayerController`, retains possession and the prior camera/pause state, and advances its temporary camera with real time while the world is paused. A fixed 40 m anchor and swept visibility collision bound travel. Screenshot completion checks the unique PNG file; `SSHUDPhoto` hides all Canvas UI during capture. Context routing gives menu bumpers to settings tabs, gameplay LB plus D-pad to crew actions, and D-pad Up alone to photo mode. The existing raw-controller automation covers tab cycling and photo entry/exit separately from physical-input acceptance.

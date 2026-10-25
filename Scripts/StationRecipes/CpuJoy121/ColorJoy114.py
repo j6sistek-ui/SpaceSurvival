@@ -5,7 +5,7 @@ import json
 from array import array
 from pathlib import Path
 
-SOURCE = Path('M:/Local AI/Projects/JoySkinPreview_20261008/selected_deep_purple/Joy_Purple_HairFitted.blend')
+SOURCE = Path(__file__).resolve().parents[3] / 'SourceAssets/MigratedProjects/JoySkinPreview_20261008/selected_deep_purple/Joy_Purple_HairFitted.blend'
 OUT = Path(__file__).resolve().parents[3] / '.agent/local/StationRefinement/CpuJoy121/JoyBlue114'
 TARGET = OUT / 'Joy_LightBlue_HairFitted.blend'
 EXPECTED = 'ea6f4be979d1381b15899b16cded8059578d8529c9d2deed962fc6f09b5576a6'

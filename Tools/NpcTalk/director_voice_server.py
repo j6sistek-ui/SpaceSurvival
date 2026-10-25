@@ -7,8 +7,9 @@ heavy tax") - and clones short reference recordings. A voice is a file in the vo
   <Name>.wav   a 4-7 s recording of the voice, cut at a pause between sentences (a mid-word cut leaks that word
                into every line); how it was made does not matter - designed, recorded, bought
   <Name>.txt   optional settings: speed=0.92 (pace, ~ speed squared), treatment=entity|chrome|none
+               cache_revision=<version or reference hash> when replacing a recording at the same filename
 
-The Director's is "predator entity" (design, recipe and approved sample: M:/Local AI/DirectorTTS/director_voice_final).
+The Director's is "predator entity" (design, recipe and approved sample: LocalRuntime/DirectorVoice).
 
   POST /speak   header X-Voice: <Name> (default: --default), body = the line as UTF-8 text
                 200 -> raw mono PCM16 little-endian, header X-Sample-Rate (48000)
@@ -54,9 +55,11 @@ def watch_parent(pid):
     threading.Thread(target=wait, daemon=True).start()
 
 
-def cache_key(reference, speed, treatment, text):
-    """Same string and hash as SSNpcTalk::VoiceCacheName: a new recording, speed or treatment makes every line again."""
+def cache_key(reference, speed, treatment, text, cache_revision=""):
+    """Same hash as SSNpcTalk::VoiceCacheName; an omitted/empty revision preserves every legacy cache key."""
     material = "%s|%.2f|%s|%s" % (os.path.basename(reference), speed, treatment, text)
+    if cache_revision:
+        material += "|cache_revision=" + cache_revision
     return hashlib.md5(material.encode("utf-8")).hexdigest()
 
 
@@ -67,12 +70,14 @@ def read_voices(folder):
         if not file.lower().endswith(".wav"):
             continue
         name = file[:-4]
-        settings = {"speed": 0.92, "treatment": "none"}
+        settings = {"speed": 0.92, "treatment": "none", "cache_revision": ""}
         txt = os.path.join(folder, name + ".txt")
         if os.path.exists(txt):
             try:
                 # utf-8-sig: a BOM (PowerShell's default) must not become part of the first key.
-                for line in open(txt, encoding="utf-8-sig", errors="replace"):
+                with open(txt, encoding="utf-8-sig", errors="replace") as profile_file:
+                    lines = profile_file.readlines()
+                for line in lines:
                     key, _, value = line.partition("=")
                     key, value = key.strip().lower(), value.strip()
                     if key == "speed":
@@ -82,6 +87,8 @@ def read_voices(folder):
                             pass
                     elif key == "treatment":
                         settings["treatment"] = value.lower() or "none"
+                    elif key == "cache_revision":
+                        settings["cache_revision"] = value
             except OSError as error:
                 print("voice: %s unreadable (%s), defaults used" % (txt, error), flush=True)
         # Keyed case-insensitively, as the game looks names up; the file's own spelling is kept for listing.
@@ -93,6 +100,12 @@ def load_engine(args):
     """Returns speak(voice, text, pace) -> (pcm16 bytes, rate). Imports here: the parent watch and the argument
     checks run first."""
     os.environ["HF_HUB_OFFLINE"] = "1"  # everything is on disk; never reach for the network from inside the game
+    # A migrated local installation keeps its offline weights beside the game. Standalone installs without
+    # this directory retain their normal Hugging Face cache. Set both before any model-library imports.
+    local_cache = os.path.join(os.path.dirname(os.path.abspath(args.lux_repo)), "HuggingFace")
+    if os.path.isdir(os.path.join(local_cache, "hub")):
+        os.environ["HF_HOME"] = local_cache
+        os.environ["HF_HUB_CACHE"] = os.path.join(local_cache, "hub")
     # The thread budget is the game's ("the game is running beside it"): LuxTTS only hands it to ONNX, so the torch
     # vocoder and numpy would otherwise take every core. Set before the first numpy/torch import.
     for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
@@ -211,11 +224,13 @@ def live_pace(text):
 def prerender(args, voice, speak):
     """Scripted lines, made once. With --check each take is transcribed and a line that loses words is said again,
     slower."""
-    lines = [l.strip() for l in open(args.prerender, encoding="utf-8") if l.strip() and not l.startswith("#")]
+    with open(args.prerender, encoding="utf-8") as line_file:
+        lines = [l.strip() for l in line_file if l.strip() and not l.startswith("#")]
     os.makedirs(args.cache, exist_ok=True)
     made = kept = failed = 0
     for text in lines:
-        path = os.path.join(args.cache, cache_key(voice["reference"], voice["speed"], voice["treatment"], text) + ".pcm")
+        key = cache_key(voice["reference"], voice["speed"], voice["treatment"], text, voice.get("cache_revision", ""))
+        path = os.path.join(args.cache, key + ".pcm")
         if os.path.exists(path):
             kept += 1
             continue

@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "SSNpcTalk.h"
+#include "SSGraphicsSettings.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "SSContentTypes.h"
@@ -50,6 +51,19 @@ struct FSSMenuEntry
     FString Label;
     int32 Action = 0;
     bool Enabled = true;
+    FString Help;
+};
+
+USTRUCT(BlueprintType)
+struct FSSChatLine
+{
+    GENERATED_BODY()
+    UPROPERTY(BlueprintReadOnly)
+    FString Speaker;
+    UPROPERTY(BlueprintReadOnly)
+    FString Text;
+    UPROPERTY(BlueprintReadOnly)
+    float ShownAt = 0.f;
 };
 
 UCLASS()
@@ -61,6 +75,7 @@ public:
     virtual void BeginPlay() override;
     virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     ASSStation *GetStation() const
     {
@@ -81,6 +96,7 @@ public:
     /** The villain's transmissions, on his own caption so no announcement, reaction or warning is displaced.
      *  Story cues always speak; Launch, Hit and Kill wait out his chatter cooldown and chance. True if he spoke. */
     bool VillainSpeak(ESSVillainCue Cue);
+    UFUNCTION(BlueprintCallable, Category = "Interaction")
     void Interact();
     /** Push-to-talk (SSNpcTalk): the crew member the walker faces, or the villain once he has spoken this run.
      *  Begin on key down, End on release. */
@@ -106,13 +122,36 @@ public:
     FSSTalkIdentity TalkTarget(const USceneComponent **OutMesh = nullptr) const;
     /** What the HUD offers: the talk target once the pilot has stood still a couple of seconds, otherwise nobody. */
     FSSTalkIdentity TalkHint() const;
+    /** The crew member whose actions the pilot can trigger: the conversation partner, else the talk hint target. */
+    class ASSOutpostAmbientActor *ActionTarget() const;
+    /** Key 1-4 or a spoken keyword: play that crew member's action and say its line (owner 2026-10-14). */
+    UFUNCTION(BlueprintCallable, Category = "Talk")
+    void TriggerNpcAction(int32 Index);
+    /** A crew member's unprompted line, spoken if the pilot is in earshot and no conversation or crew line is
+     *  under way; returns whether it was. */
+    bool CrewChatter(class ASSOutpostAmbientActor *Crew);
+    /** Scripted bar handoff uses the same spatial voice and caption channel as player requests. */
+    void SpeakCrewLine(class ASSOutpostAmbientActor *Crew, const FString &Line);
+    bool CanAmbientCrewSpeak(const class ASSOutpostAmbientActor *Crew) const;
+    bool TryAmbientCrewLine(class ASSOutpostAmbientActor *Crew, const FString &Line);
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
+    UFUNCTION(BlueprintCallable, Category = "Interface")
     void ClosePanel();
     void ActivateEntry(int32 Index, bool FromPointer = false);
     /** Directional controller adjustment. Bounded values never wrap at their limits. */
     bool AdjustSetting(int32 Index, int32 Direction);
+    void BuildGraphicsEntries();
+    bool HandleGraphicsAction(int32 Action, int32 Direction = 0);
+    SS::Settings GraphicsDraft;
+    SSGraphics::FCapabilities GraphicsCapabilities;
+    int32 GraphicsSection = 0;
+    bool bGraphicsDraftActive = false;
+    FString GraphicsFeedback;
+    /** LB/RB selects the adjacent settings tab without changing a setting. */
+    UFUNCTION(BlueprintCallable, Category = "Interface")
+    bool SwitchSettingsTab(int32 Direction);
     void StartNewRun();
     void StartFreeFlight();
     void EndFreeFlight();
@@ -155,6 +194,10 @@ public:
     /** Push-to-talk captions: what the pilot was heard to say, a crew member's answer, and where the loop is. */
     FString NpcName, NpcLine, TalkTranscript, TalkStatus;
     float NpcLineSeconds = 0.f, TalkTranscriptSeconds = 0.f;
+    /** Session-only conversation display; appended when a transcript or audible reply is actually shown. */
+    UPROPERTY(BlueprintReadOnly, Category = "Talk")
+    TArray<FSSChatLine> ChatLines;
+    void AppendChatLine(const FString &Speaker, const FString &Text);
     /** His last word on a run that ended in death, for the results panel. Cleared when the next run starts. */
     FString VillainEpitaph;
     /** Counts down after a player shot connects, so the reticle can flash its hit state. */
@@ -173,6 +216,11 @@ public:
     TObjectPtr<class USSPhase1Data> Tuning;
     /** Every hero this build can actually put on the deck, in roster order. What the wardrobe lists. */
     TArray<FSSHeroDefinition> WardrobeBodies() const;
+    /** Changes the projection only. Equipping requires the separate Select action. */
+    UFUNCTION(BlueprintCallable, Category = "Interface")
+    bool BrowseWardrobe(int32 Direction);
+    bool HasWardrobeProjection() const;
+    int32 WardrobePreviewIndex = INDEX_NONE;
     /** The body the deck should be wearing: the saved choice when it is installed, otherwise whatever
      *  roster order gives. Never returns a hero this build does not carry. */
     FName WornHeroId() const;
@@ -186,11 +234,20 @@ private:
     friend class ASSHUD; // DrawPrompt reads the glyph sets; main did not build without this.
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
+    friend class FSSRestingCrewInteraction;
     friend class FSSTitleMenuNavigation;
     friend class FSSDirectorVillainVoice;
     friend class FSSPhoenixCockpitDeparture;
     bool bAutomatedSoakInput = false;
     bool bTitleSettingsNavigation = false;
+    FName WardrobePreviewId;
+    TWeakObjectPtr<class ASSOutpostTerminal> WardrobeTerminal;
+    TWeakObjectPtr<AActor> WardrobePreviousView;
+    UPROPERTY(Transient)
+    TObjectPtr<class ACameraActor> WardrobeCamera;
+    bool bWardrobeProjectionReady = false;
+    void EndWardrobePreview();
+    void FrameWardrobePreview();
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()
@@ -305,6 +362,7 @@ private:
     FVector SavedSocketOffset = FVector::ZeroVector;
     float WalkerStillSeconds = 0.f;
     mutable FSSTalkIdentity CachedHint;
+    mutable TWeakObjectPtr<const USceneComponent> CachedHintMesh;
     mutable double CachedHintAt = -1.0;
     void Disengage();
     FString NpcDigest(const FSSTalkIdentity &Who) const;
@@ -362,6 +420,8 @@ class SPACESURVIVAL_API ASSPlayerController : public APlayerController
     GENERATED_BODY()
 public:
     ASSPlayerController();
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<class USSPhotoMode> PhotoMode;
     virtual void PlayerTick(float DeltaSeconds) override;
     UFUNCTION(Exec)
     void SSReviewExit();

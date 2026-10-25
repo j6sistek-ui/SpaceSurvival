@@ -555,7 +555,7 @@ void TrimCrew(const TArray<TObjectPtr<AActor>> &Actors)
     // By the authored labels in L_WayfarerRuntime: the pool match, the bartender, the two desks, the stage.
     static const TCHAR *Keep[] = {TEXT("Refine/OrbitPool/"), TEXT("Crew/Lounge guest"), TEXT("Crew/Atrium A"),
                                   TEXT("Crew/Atrium B"),     TEXT("R/Performance/"),    TEXT("HomeHub/Residents/"),
-                                  TEXT("TalkTest/")};
+                                  TEXT("TalkTest/"),         TEXT("Crew/Bar waitress")};
     int32 Hidden = 0;
     for (AActor *Actor : Actors)
     {
@@ -571,7 +571,8 @@ void TrimCrew(const TArray<TObjectPtr<AActor>> &Actors)
         if (const auto *Ambient = Cast<ASSOutpostAmbientActor>(Actor); Ambient && Ambient->bDrone)
             continue;
         const FString Label = Actor->GetActorLabel();
-        bool bKeep = false;
+        // The owner explicitly restored Kraken after the temporary population reduction.
+        bool bKeep = Label == TEXT("Crew/Kraken visitor");
         for (const TCHAR *Prefix : Keep)
             bKeep |= Label.StartsWith(Prefix);
         if (bKeep)
