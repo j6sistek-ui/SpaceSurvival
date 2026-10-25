@@ -1,0 +1,154 @@
+{
+  "measured_utc": "2026-10-22T03:15:23.375565+00:00",
+  "status": "STATIC_METRICS_ONLY_NO_RANKING_OR_RUNTIME_BENCHMARK",
+  "method": {
+    "geometry": "Counts read from all finished component OBJ files; native LOD0 section counts from successful author receipt.",
+    "native_bytes": "Actual uncooked .uasset file lengths, not resident RAM/VRAM, cooked package size or load time.",
+    "texture_estimate": "All mips down to 1x1; each dimension rounded up to 4x4 blocks, minimum one block. BC1 8 bytes/block for opaque color and ORM; BC3 16 bytes/block for color with nonopaque alpha; BC5 16 bytes/block for normal.",
+    "format_authority": "Installed UE5.8 Engine/Source/Runtime/Core/Private/Misc/PixelFormat.cpp:39,41,57.",
+    "excluded_from_gpu_estimate": [
+      "Niagara donor texture formats and residency",
+      "material shader storage",
+      "mesh buffers",
+      "render targets",
+      "translucency overdraw",
+      "volumetric grid",
+      "particle buffers",
+      "driver alignment",
+      "streaming policy"
+    ],
+    "no_runtime_claim": "No engine launch, cook, packaged FPS, GPU timing, draw-call measurement or performance ranking was performed.",
+    "file_size_note": "GLB disk bytes include compressed image media; this does not assert Draco/meshopt compressed geometry.",
+    "shared_accounting": "Shared texture/native effects bytes counted once in common; do not multiply by four. Per-model rows exclude common Niagara references.",
+    "active_recovery_accounting": "Active per-model meshes/materials follow final manifest and final native author receipt. Eight superseded console meshes, M_Console and T_Cryo_Console are classified as recovery. Other namespace materials/effects/sequence are retained scene support by final authoring records; no new runtime dependency-registry probe was run."
+  },
+  "models": [
+    {
+      "id": "A",
+      "label": "Cybernetic Cat",
+      "source_sha256": "2b3cd6d100b179ff05fe7303c50f9fe1d1c7e22188f95f46a0e7ae1095a08591",
+      "source_hash_unchanged": true,
+      "source_glb_MiB": 19.433075,
+      "source_triangles": 25491,
+      "finished_triangles": 32101,
+      "added_triangles": 6610,
+      "mesh_components": 19,
+      "static_material_sections": 19,
+      "native_model_owned_uasset_MiB": 18.018126,
+      "estimated_body_texture_full_mip_MiB": 42.666718,
+      "warnings": [
+        {
+          "mesh": "SM_A_Body",
+          "message": "nearly zero tangents which can create some issues. (Tolerance of 1E-4)"
+        },
+        {
+          "mesh": "SM_A_Body",
+          "message": "nearly zero bi-normals which can create some issues. (Tolerance of 1E-4)"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "label": "Futuristic Cat",
+      "source_sha256": "e83654d7ddda79e226d97e5260cccd88d8d82da368c5219f407624141f6a4ffa",
+      "source_hash_unchanged": true,
+      "source_glb_MiB": 32.768497,
+      "source_triangles": 49838,
+      "finished_triangles": 56448,
+      "added_triangles": 6610,
+      "mesh_components": 19,
+      "static_material_sections": 19,
+      "native_model_owned_uasset_MiB": 30.455718,
+      "estimated_body_texture_full_mip_MiB": 74.666718,
+      "warnings": [
+        {
+          "mesh": "SM_B_Body",
+          "message": "nearly zero tangents which can create some issues. (Tolerance of 1E-4)"
+        },
+        {
+          "mesh": "SM_B_Body",
+          "message": "nearly zero bi-normals which can create some issues. (Tolerance of 1E-4)"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "label": "Futuristic Fox",
+      "source_sha256": "1afd42aace7e823e89684e4928c6b61431d04b71c1d5fbd1cfecfa928f81457b",
+      "source_hash_unchanged": true,
+      "source_glb_MiB": 30.525314,
+      "source_triangles": 51101,
+      "finished_triangles": 57711,
+      "added_triangles": 6610,
+      "mesh_components": 19,
+      "static_material_sections": 19,
+      "native_model_owned_uasset_MiB": 20.994503,
+      "estimated_body_texture_full_mip_MiB": 42.666718,
+      "warnings": [
+        {
+          "mesh": "SM_C_Body",
+          "message": "nearly zero tangents which can create some issues. (Tolerance of 1E-4)"
+        },
+        {
+          "mesh": "SM_C_Body",
+          "message": "nearly zero bi-normals which can create some issues. (Tolerance of 1E-4)"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "label": "Meshy Raccoon",
+      "source_sha256": "a48764b7c217cf9cd780da3961da241cd1529b0701d0bc9f55505fd49d779fad",
+      "source_hash_unchanged": true,
+      "source_glb_MiB": 79.767696,
+      "source_triangles": 103888,
+      "finished_triangles": 110498,
+      "added_triangles": 6610,
+      "mesh_components": 19,
+      "static_material_sections": 19,
+      "native_model_owned_uasset_MiB": 88.035093,
+      "estimated_body_texture_full_mip_MiB": 74.666718,
+      "warnings": []
+    }
+  ],
+  "common": {
+    "estimated_shared_texture_full_mip_MiB": 10.666817,
+    "native_effect_instances": {
+      "niagara_system_actors": 4,
+      "local_fog_volumes": 4,
+      "global_exponential_volumetric_fog": 1,
+      "added_shadowless_point_lights": 4,
+      "modified_existing_point_lights": 4,
+      "animated_intensity_tracks": 8,
+      "loop_period_seconds": 6.0,
+      "all_eight_animated_lights_cast_shadows": false,
+      "sequence_asset": "/Game/SpaceSurvival/CryoComparison/Sequences/LS_CryoBreathing_Cyan",
+      "light_effect_evidence": "D:\\Codex\\CryoComparison_20261021\\work\\CryoBreathingLights.json",
+      "runtime_cost": "UNMEASURED; identical per-chamber effect setup is not a GPU timing or FPS result."
+    },
+    "donor_reference_limit": "Original copied 16-package closure retained. Bounded Niagara now overrides the sprite material/cutout; exact final live subset of donor packages was not re-probed, so these bytes describe stored dependency support, not per-chamber or resident runtime cost."
+  },
+  "totals": {
+    "triangles_all_four_static_assemblies": 256758,
+    "static_material_sections_all_four": 76,
+    "namespace_stored_uassets_including_recovery": {
+      "count": 124,
+      "bytes": 178009418,
+      "MiB": 169.76301
+    },
+    "namespace_active_and_scene_support_uassets": {
+      "count": 114,
+      "bytes": 175989722,
+      "MiB": 167.836878
+    },
+    "estimated_body_plus_shared_texture_gpu_full_mips_bytes": 257251016,
+    "estimated_body_plus_shared_texture_gpu_full_mips_MiB": 245.333687
+  },
+  "read_only_validation": {
+    "input_hash_count": 104,
+    "all_inputs_unchanged": true,
+    "prior_metrics_json_unchanged": true,
+    "source_glb_hashes_match_baseline": true,
+    "engine_launched": false
+  }
+}

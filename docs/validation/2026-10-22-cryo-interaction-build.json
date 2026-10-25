@@ -1,0 +1,121 @@
+{
+  "utc": "2026-10-22T04:42:34.496127+00:00",
+  "status": "NATIVE_SOURCE_BUILD_STAGE_RUNTIME_AND_OWNER_COMPATIBILITY_PASS",
+  "engine": "UE5.8.4",
+  "plugin_editor_build": {
+    "success": true,
+    "seconds": 103.34,
+    "incremental_actions": 4,
+    "stage_dll_sha256": "1af4319814c3324b1cb9eee8c91eba5bc437d896548e24b613c6907a1d5c3baa",
+    "scope": "Initial plugin build before body-collision component; retained as history."
+  },
+  "isolated_game_editor_build": {
+    "command": "Build.bat SpaceSurvivalEditor Win64 Development -Project=<isolated repo>/SpaceSurvival.uproject -WaitMutex -NoHotReloadFromIDE -NoUBA",
+    "success": true,
+    "seconds": 7.36,
+    "actions": 4,
+    "change": "Keep jets visible through0.65s, reach full frost1.25s, preserve four-second reset.",
+    "game_module_sha256": "4126f300db3f23fa7644e32ff4d444f7988b3d06fb3c91f7cdd8a25fda247b44",
+    "plugin_module_sha256": "d8f931b8898c034373cde8625e50fcb989741d12ffa1b6bb94878801d4336123"
+  },
+  "retained_build_history": [
+    "Initial preview compile failed on local Pawn hiding AController::Pawn; fixed as ReviewPawn.",
+    "Slow incremental UBA attempt preserved; successful plugin retry used -NoUBA.",
+    "Collision rebuild first attempt stalled; preserved and retried with -NoUBA. Retry progressed after parallel Stage startup stopped; cause is unconfirmed. No native asset edits occurred in the interrupted import."
+  ],
+  "warning_scope": [
+    "Installed MSVC14.51 is newer than preferred14.50.",
+    "Installed engine header deprecations.",
+    "Existing project dependency warning: SpaceSurvivalEditor uses HairStrandsCore without explicit HairStrands descriptor entry."
+  ],
+  "checks": {
+    "source_structural_checks": 45,
+    "changed_cpp_format": "PASS using installed clang-format22.1.3; CI clang-format14 remains authoritative",
+    "documentation_gate": "PASS",
+    "diff_whitespace": "PASS"
+  },
+  "source_files": [
+    {
+      "relative_path": "Plugins/SSCryoRuntime/SSCryoRuntime.uplugin",
+      "sha256": "6c99a2cfaac99a303ca38ece7f3d13bec7eda581e0228d7ef481a739cb3a8332"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/SSCryoRuntime.Build.cs",
+      "sha256": "3381e358acda46daa716e91e0abc77148ec9afbed4dd3427899fe07a8c8b3f56"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Private/SSCryoChamber.cpp",
+      "sha256": "fbe5a87140c3a661125fed9871fcebf4e730c9fbb1f5eb578829c8e897998331"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Private/SSCryoPreview.cpp",
+      "sha256": "67596b60865bf3b736037dfd26e353dd6caa3ad448c4a13e2e0bac43c3e4b59a"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Private/SSCryoRuntime.cpp",
+      "sha256": "54f362861b6002f8d0275bb71c56e677fd08bbac3b69526c26d841f4cd7f6cc7"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Public/SSCryoChamber.h",
+      "sha256": "8a69cad56f9776ac2042b95ba00b43e210c859b0b1e452b85421423d5614777b"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Public/SSCryoPreview.h",
+      "sha256": "d798bd04654c0eedff44ea50b1d71d8a3b37722e263946f1e69491689863497b"
+    },
+    {
+      "relative_path": "Source/SpaceSurvival/Private/SSOutpostSandbox.cpp",
+      "sha256": "5965fcda65ce8269549c621909051fc5ee996b10e8eae8aa9a4aaa1263935bfe"
+    },
+    {
+      "relative_path": "Source/SpaceSurvival/Public/SSOutpostSandbox.h",
+      "sha256": "54160fa0c0a86218ca788f89be966b3fa0e98712a8f20b014f51c44a51afcb42"
+    },
+    {
+      "relative_path": "Source/SpaceSurvival/Private/SSStationOutpost.cpp",
+      "sha256": "c6c0b60ccf769557637347e68a840e610a6f522417ff67015fb4b26ea6047011"
+    },
+    {
+      "relative_path": "Source/SpaceSurvival/Private/SSHUD.cpp",
+      "sha256": "60c97167d5aaa17659bcd8ed0427bf6b2fe45b2c44d600b08088a252d698b31a"
+    },
+    {
+      "relative_path": "Source/SpaceSurvival/SpaceSurvival.Build.cs",
+      "sha256": "01eaf4c3a8ac18ecb58d0bd7bc5d6c6d330d8fe54ee9447960272c9c92fa1955"
+    },
+    {
+      "relative_path": "SpaceSurvival.uproject",
+      "sha256": "2758f0808fd40cbe4d8f3a5ffaa573fd6dd01f67c4143bf59a7accb11df9c306"
+    }
+  ],
+  "limits": [
+    "This receipt retains isolated build history; current rendered and owner compatibility results are linked separately.",
+    "Physical input and packaged performance remain untested.",
+    "Private copied ShipCore dependency excluded from Git."
+  ],
+  "initial_isolated_game_editor_build": {
+    "command": "Scripts/Build.ps1 -Target Editor",
+    "success": true,
+    "seconds": 91.3,
+    "actions": 50,
+    "game_module_sha256": "1836b3a783c5b4051783ec2f5945a370a46046deba6905c85a1f8f6cd37e715a",
+    "plugin_module_sha256": "4ea3df169b7c6e028c6ddd6c152dd752f1c9e5de47b7c5cf9a880a83d9b320e4"
+  },
+  "current_stage_plugin_copy": {
+    "verified": true,
+    "file_count": 11,
+    "plugin_module_sha256": "d8f931b8898c034373cde8625e50fcb989741d12ffa1b6bb94878801d4336123",
+    "engine_build_id": "55116800"
+  },
+  "collision_isolated_game_editor_build": {
+    "command": "Build.bat SpaceSurvivalEditor Win64 Development -Project=<isolated repo>/SpaceSurvival.uproject -WaitMutex -NoHotReloadFromIDE -NoUBA",
+    "success": true,
+    "seconds": 144.71,
+    "actions": 9,
+    "change": "Add Pawn-only core capsule to imported no-collision chamber bodies.",
+    "game_module_sha256": "4126f300db3f23fa7644e32ff4d444f7988b3d06fb3c91f7cdd8a25fda247b44",
+    "plugin_module_sha256": "835fdc993b3eea367c607a1a354a850db1ff197322467e39ded4417a43a7320b"
+  },
+  "native_runtime_receipt": "2026-10-22-cryo-runtime.json",
+  "owner_build_receipt": "2026-10-22-cryo-owner-build.json"
+}

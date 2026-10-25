@@ -1,0 +1,322 @@
+{
+  "status": "FRESH_LOAD_AND_CAPTURE_PASS_VISUAL_REVIEW_PENDING",
+  "started_utc": "2026-10-22T02:59:19.516624+00:00",
+  "finished_utc": "2026-10-22T03:00:00.615581+00:00",
+  "engine": "5.8.4-58902052+++UE5+Release-5.8",
+  "real_rhi_requested": true,
+  "offscreen_requested": true,
+  "fog_console_variables": {
+    "r.VolumetricFog": 1,
+    "r.LocalFogVolume": 1,
+    "r.SupportLocalFogVolumes": 1,
+    "r.LocalFogVolume.RenderIntoVolumetricFog": 1,
+    "r.LocalFogVolume.ApplyOnTranslucent": 0,
+    "r.LocalFogVolume.GlobalStartDistance": 0.0
+  },
+  "protected_native_package_count": 125,
+  "fresh_loaded_asset_count": 124,
+  "material_count": 20,
+  "counts": {
+    "bodies": 4,
+    "niagara_actors": 4,
+    "local_fog_volumes": 4
+  },
+  "natural_editor_light_loop": {
+    "sample_count": 69,
+    "ranges": {
+      "A_InteriorGlow": [
+        5.0,
+        11.988865852355957
+      ],
+      "A_RimGlow": [
+        4.0,
+        9.990456581115723
+      ],
+      "B_InteriorGlow": [
+        5.0,
+        11.988865852355957
+      ],
+      "B_RimGlow": [
+        4.0,
+        9.990456581115723
+      ],
+      "C_InteriorGlow": [
+        5.0,
+        11.988865852355957
+      ],
+      "C_RimGlow": [
+        4.0,
+        9.990456581115723
+      ],
+      "D_InteriorGlow": [
+        5.0,
+        11.988865852355957
+      ],
+      "D_RimGlow": [
+        4.0,
+        9.990456581115723
+      ]
+    }
+  },
+  "native_packages_unchanged": true,
+  "changed_native_packages": [],
+  "new_native_packages": [],
+  "source_hashes_unchanged": true,
+  "temporal_pixel_analysis": {
+    "same_camera": true,
+    "separation_seconds": 3.203,
+    "regions": {
+      "holo": {
+        "rectangle_pixels": [
+          338,
+          531,
+          557,
+          856
+        ],
+        "sampled_pixels": 17930,
+        "mean_absolute_rgb_difference_0_255": 3.2622,
+        "percent_pixels_with_channel_change_ge_8": 18.2041,
+        "max_channel_difference": 54
+      },
+      "cold_vapor_interior": {
+        "rectangle_pixels": [
+          368,
+          453,
+          592,
+          910
+        ],
+        "sampled_pixels": 25648,
+        "mean_absolute_rgb_difference_0_255": 2.4187,
+        "percent_pixels_with_channel_change_ge_8": 13.1511,
+        "max_channel_difference": 54
+      },
+      "static_corner_control": {
+        "rectangle_pixels": [
+          20,
+          20,
+          150,
+          150
+        ],
+        "sampled_pixels": 4225,
+        "mean_absolute_rgb_difference_0_255": 0.0,
+        "percent_pixels_with_channel_change_ge_8": 0.0,
+        "max_channel_difference": 0
+      }
+    },
+    "status": "VISIBLE_ANIMATION_REQUIRES_REVIEW_OF_THE_CAPTURE_PAIR",
+    "interpretation": "Localized changes with stable control support temporal change; pixel differences alone do not prove correct Niagara motion."
+  },
+  "limits": [
+    "Editor/offscreen captures are not a packaged benchmark or owner acceptance.",
+    "Active components and bounds do not by themselves prove particles are visible.",
+    "Temporal image differences may include temporal AA, volumetric history or lighting; review both frames.",
+    "Native particle-count access is reported unavailable when the installed reflected API lacks it.",
+    "No PIE, game-mode transition, source package save or production save is invoked.",
+    "180-second deadline is checked on Slate callbacks; an external watchdog must handle native hangs."
+  ],
+  "errors": [],
+  "warnings": [],
+  "receipt_identity": "Unreal_20261022T025919Z_52468",
+  "screenshots": [
+    {
+      "name": "AllFour_Overview",
+      "sha256": "93aa2dc1a19202587cd3b8f7686d3ee8bf1bbc9540fc107cb631894a80bc0140",
+      "bytes": 853781,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "camera": "CAM_AllFour_Comparison",
+      "elapsed_seconds": 11.234,
+      "filename": "AllFour_Overview.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "A_Individual",
+      "sha256": "c9fe0bda6a9d6366b9bc04c58ca8d2018cc77fcd36628b7d2ee056d1ce2b7461",
+      "bytes": 817240,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_A_Cybernetic_Cat",
+      "elapsed_seconds": 13.75,
+      "filename": "A_Individual.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "B_Individual",
+      "sha256": "7e213c44e17ade53c7d86db1f649ef95f334cab8d4bfbef75ac6297f261d78fe",
+      "bytes": 920608,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_B_Futuristic_Cat",
+      "elapsed_seconds": 16.219,
+      "filename": "B_Individual.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "C_Individual",
+      "sha256": "cab3fba6c0a45a540459a1ac2ff16ca0d09dfedc2b68d78ddf6735aedb145eb9",
+      "bytes": 804559,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_C_Futuristic_Fox",
+      "elapsed_seconds": 18.703,
+      "filename": "C_Individual.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "D_Individual",
+      "sha256": "3ed52c68a32bf2c85f59d160f201148c08534633d98bce7b388fa953231161ec",
+      "bytes": 1059324,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_D_Meshy_Raccoon",
+      "elapsed_seconds": 21.172,
+      "filename": "D_Individual.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "A_motion_t0",
+      "sha256": "1b185e09be23701d4274e800c349d1d17a2710f81726c918fc6698184a7de77f",
+      "bytes": 826360,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_A_Cybernetic_Cat",
+      "elapsed_seconds": 23.656,
+      "filename": "A_motion_t0.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "A_motion_t1",
+      "sha256": "fd35445845cd42dca154b4462106123908b7b13b86c3cbc71a33b5aa44516b5b",
+      "bytes": 826249,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_A_Cybernetic_Cat",
+      "elapsed_seconds": 26.859,
+      "filename": "A_motion_t1.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "D_Console_t0",
+      "sha256": "6e053fa27a7f3bb6efc4377702e514914c02dac1a4459dc7bae6f97305d4a978",
+      "bytes": 1056393,
+      "resolution": [
+        1280,
+        720
+      ],
+      "camera": "DETAIL_D_Consoles",
+      "elapsed_seconds": 30.062,
+      "filename": "D_Console_t0.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "D_Console_t1",
+      "sha256": "8b8f49cfa07c3c554602c440fadc64cbf66a0e5ec2d1144d86250ace30870d73",
+      "bytes": 1058341,
+      "resolution": [
+        1280,
+        720
+      ],
+      "camera": "DETAIL_D_Consoles",
+      "elapsed_seconds": 33.265,
+      "filename": "D_Console_t1.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "A_PulseLow",
+      "sha256": "8437ae285084d4661e6f72e97db77cd3bc498d528d1c3852180bdad04e78ab12",
+      "bytes": 834574,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_A_Cybernetic_Cat",
+      "elapsed_seconds": 35.765,
+      "filename": "A_PulseLow.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    },
+    {
+      "name": "A_PulseHigh",
+      "sha256": "65c635324858e2042a4e90e292e35d0a6e65b137aebcdbc2bb070f2336ca88c1",
+      "bytes": 837733,
+      "resolution": [
+        960,
+        1200
+      ],
+      "camera": "CAM_A_Cybernetic_Cat",
+      "elapsed_seconds": 38.265,
+      "filename": "A_PulseHigh.png",
+      "niagara_component_active_flags": {
+        "A_NiagaraColdMist": false,
+        "B_NiagaraColdMist": false,
+        "C_NiagaraColdMist": false,
+        "D_NiagaraColdMist": false
+      }
+    }
+  ],
+  "runtime_autoplay_and_fog_restoration": "PENDING separate native runtime verification; this editor capture used stage-only GlobalStartDistance=0.",
+  "niagara_editor_limit": "All four components report inactive at all eleven screenshot requests. Native actors and temporal pixels do not prove live Niagara here; actual-game activation and visual behavior require separate evidence."
+}

@@ -1,4 +1,5 @@
 #include "SSOutpostSandbox.h"
+#include "SSCryoChamber.h"
 #include "SSNPCHeadFillComponent.h"
 #include "SSStation.h"
 #include "SSGameMode.h"
@@ -168,6 +169,12 @@ FString ASSOutpostTerminal::Use(APlayerController *User)
 {
     if (!User || !CanUse(User->GetPawn()))
         return TEXT("Move closer to the console and keep the access point in view.");
+    if (Action == ESSOutpostAction::CryoChill)
+    {
+        if (auto *Chamber = Cast<ASSCryoChamber>(PresentationTarget))
+            return Chamber->Interact(User->GetPawn());
+        return TEXT("No cryogenic chamber is connected to this console.");
+    }
     if (auto *Game = GetWorld()->GetAuthGameMode<ASSGameMode>();
         Game && Game->GetStation() && Game->GetStation()->IsUsingOutpost())
     {
@@ -334,6 +341,9 @@ void ASSOutpostSandboxHUD::DrawHUD()
         FString Action = TEXT("Read station information");
         switch (Terminal->Action)
         {
+        case ESSOutpostAction::CryoChill:
+            Action = TEXT("Hypercool chamber for 4 seconds");
+            break;
         case ESSOutpostAction::CycleShipPaint:
             Action = TEXT("Preview next ship color");
             break;

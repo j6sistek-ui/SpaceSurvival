@@ -1,5 +1,20 @@
 # Build and run
 
+**October 24 cryo v6:** current content is installed at
+`/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison`. Open it, Play and compare
+the forward cores and small constant nozzle streams. Approach a chamber and use
+E/controller X for the stronger four-second freeze. Native controller invocation
+passes; physical input/feel remains untested.
+
+Content-only adoption and fresh owner smoke verify 261 cryo/277 installed packages.
+V6 changes no C++; earlier owner-source builds remain historical. Do not rerun
+adopted recipes or copy an isolated game DLL. Native authoring/captures are
+serialized; the bounded initial Niagara readiness period is not load-time data.
+The review namespace remains excluded from cooking.
+[Bundle guide](../Scripts/CryoComparison/README.md),
+[current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
+[historical owner build](validation/2026-10-22-cryo-owner-build.json).
+
 **October 13 Silver body-dynamics build:** `Scripts/Build.ps1 -Target Editor` succeeds; current runtime module DLL hash is `f731b83f`. The saved private Silver Blueprint includes the new `SSSoftTissueComponent`, configured as **BodyDynamics**. Open her existing apartment Blueprint to tune its Regions/Spring settings, save, and start a fresh Play session. Launchers and tool dependencies are unchanged; this does not update the packaged game. [Validation and settings](validation/2026-10-13-silver-runtime-springs.md).
 
 **October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha upload is in progress. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.
@@ -10,7 +25,7 @@ Full Editor Build55 links successfully and was verified loaded in the offscreen
 editor (DLL`7b0ea67f`), including the streamed-station BeginPlay correction. The
 root-owned test editor was then closed cleanly to release VRAM; open the saved
 station normally through the existing launcher below.
-Earlier DLL-lock/object-only Build39–46 receipts are historical. Verify the actual
+Earlier DLL-lock/object-only Build39â€“46 receipts are historical. Verify the actual
 running editor and dirty packages before any later link/restart; do not close an
 owner session merely to validate a scene-only trial. [Current evidence](validation/2026-10-09-station-crew-central-r.md).
 
@@ -43,7 +58,7 @@ The private profile must exist before launch. [Recovery and review receipt](vali
 
 For packaged review, use `Play Packaged Review.cmd` in the checkout that holds the verified archive identified by [Project State](PROJECT_STATE.md#source-build-and-release). The October1 archive remains separate from the canonical Editor rebuild. Earlier Package8/source89b1f3c and September22 release instructions are historical. Use Free Flight for casual controls/field testing or Start/Continue Survival for the run.
 
-**`Play Packaged Review.cmd`** opens only its checkout's `Artifacts/Windows/SpaceSurvival.exe` at 1600×900 with a separate persistent profile in `Artifacts/PackagedReviewUser`; it does not import existing saves, build, install prerequisites or apply ship-refresh/account changes. `Scripts/PlayPackagedReview.ps1 -DryRun` checks the paths and prints the command without opening the game or writing files. The final candidate passed that dry run; the agent did not open an interactive game window. Keep the whole packaged directory together.
+**`Play Packaged Review.cmd`** opens only its checkout's `Artifacts/Windows/SpaceSurvival.exe` at 1600Ã—900 with a separate persistent profile in `Artifacts/PackagedReviewUser`; it does not import existing saves, build, install prerequisites or apply ship-refresh/account changes. `Scripts/PlayPackagedReview.ps1 -DryRun` checks the paths and prints the command without opening the game or writing files. The final candidate passed that dry run; the agent did not open an interactive game window. Keep the whole packaged directory together.
 
 `Play Development Build.cmd` remains the separate editor-game entry point. It uses `Artifacts/DevelopmentReviewUser` and disables `UAssetBrowser` and the secondary `NwiroIntegrationKit` server. Neither launcher replaces the installed game's saves. An older executable or the already-open owner editor does not contain this reset merely because its source is present.
 
@@ -104,7 +119,7 @@ $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
 
 The importer creates only `/Game/SpaceSurvival/UI/MainMenu` assets, preserves the committed source bytes and rejects unknown or changed prior outputs. Matching recorded textures can be reused unchanged. `Artifacts/FigmaMainMenu/author.json` records output hashes; the existing SpaceSurvival cook root covers this family. Do not run the baseline Content author to install this menu. Import, native build, input, rendered fidelity and cooked inclusion have separate checks in the validation record.
 
-On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home, where the pilot chooses Waves / Free Flight at the cockpit chair before sitting to depart; Settings opens the current settings panel; Exit Game quits. The station's flight briefing also retains explicit Continue saved Survival when a checkpoint is available. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
+On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home, where the pilot chooses Waves / Free Flight at the cockpit chair before sitting to depart; Settings opens the current settings panel; Exit Game quits. The station's flight briefing also retains explicit Continue saved Survival when a checkpoint is available. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920Ã—1080 and do not establish 4K or shader-animation acceptance.
 
 ## Orbital wreck authoring and comparison (target unaccepted)
 
@@ -120,9 +135,9 @@ The ALIEN WORLD service is removed in Package 5. The following authoring notes a
 
 After `./Scripts/Build.ps1 -Target Editor`, run these scripts **in order**, one completed Unreal editor Python process at a time, using the `-ExecutePythonScript` runner below:
 
-1. `Scripts/AuthorWreckAssemblies.py` — creates private three-dimensional assemblies from owned megastructure meshes in a disposable unsaved map.
-2. `Scripts/AuthorSpaceAreas.py` — backs up the private look asset and authors the four recipes using those assemblies and the existing owned asteroid/atmosphere content.
-3. `Scripts/AuthorAlienGallery.py` — authors `/Game/SpaceSurvival/Licensed/AlienGallery/DA_AlienGalleryCook`, selecting both complete vendor maps and recursive dependencies for licensed cooks.
+1. `Scripts/AuthorWreckAssemblies.py` â€” creates private three-dimensional assemblies from owned megastructure meshes in a disposable unsaved map.
+2. `Scripts/AuthorSpaceAreas.py` â€” backs up the private look asset and authors the four recipes using those assemblies and the existing owned asteroid/atmosphere content.
+3. `Scripts/AuthorAlienGallery.py` â€” authors `/Game/SpaceSurvival/Licensed/AlienGallery/DA_AlienGalleryCook`, selecting both complete vendor maps and recursive dependencies for licensed cooks.
 
 Keep `Content/Megastructure_Scifi_World` intact, including `Level/L_Showcase_level` and `Level/L_assets`. The scripts preserve vendor packages; generated assets and the cook label remain private. Existing Asteroid Library, atmosphere and orbital-wreck derivatives are prerequisites. These authoring scripts intentionally update their private outputs; preserve manual changes before rerunning. Do not run them over an owner's unsaved editor session. A label is cook intent, not evidence that an existing package contains either map.
 
@@ -337,13 +352,13 @@ Package 11/source `6912684223f4a93f4010cd12201aee7fb42395f3` is historical. It b
 
 Package 9/source 4178 built in 74.18 seconds and audited all 78 project packages/Engine Cube. Native Station 1 showed full 2K deck residency; its full Wave 10 fixture has a separate [package](validation/2026-09-13-windows-visual-package.json) and [performance](validation/2026-09-13-endgame-performance.json) identity. Package 8/source 442ff06 built in 86.44 seconds with 62 project packages plus Cube; its 13-test/524-domain-assertion results remain historical.
 
-**Package 8 exit smoke:** Package 8's guarded SSReviewExit replay visibly reached seated, airborne, landing and full standing poses, suppressed interaction prompts during exit, then allowed service E and departure into Wave 6. It used a prepared station profile and Slomo 0.1, restored to 1 afterward; it does not establish natural docking/camera feel. Neutral Wave 7 death then displayed score 11,800, 510 XP, level 3 and both unlocks from the seeded 100-kill fixture. The owned launch closed normally and production-save hashes remained unchanged. See [VALIDATION.md](VALIDATION.md) and the [package 8 receipt](validation/2026-09-13-windows-exit-package.json) for exact fixture limits and audit provenance. Panorama v1 residency was observed at 2048×1024/12 mips; seams, poles and flight readability remain unaccepted.
+**Package 8 exit smoke:** Package 8's guarded SSReviewExit replay visibly reached seated, airborne, landing and full standing poses, suppressed interaction prompts during exit, then allowed service E and departure into Wave 6. It used a prepared station profile and Slomo 0.1, restored to 1 afterward; it does not establish natural docking/camera feel. Neutral Wave 7 death then displayed score 11,800, 510 XP, level 3 and both unlocks from the seeded 100-kill fixture. The owned launch closed normally and production-save hashes remained unchanged. See [VALIDATION.md](VALIDATION.md) and the [package 8 receipt](validation/2026-09-13-windows-exit-package.json) for exact fixture limits and audit provenance. Panorama v1 residency was observed at 2048Ã—1024/12 mips; seams, poles and flight readability remain unaccepted.
 
 **Historical package 7 station smoke:** Package 7 exercised actual prepared-station menus and process restarts. Station 1 Save & Quit/Continue retained 1,070 credits, Hull 145 and Hunter 0/6; departure entered Wave 6. Neutral Wave 7 death awarded 510 XP and both unlocks; a third launch retained 510 XP/highest wave 7/best score 11,800/one run, with Continue disabled. Station 2 Cooling cost exactly 150 credits (1,220 to 1,070), a repeated fitted click could not charge again, and the live summary/Save & Quit/relaunch retained Cooling and the build. The discard option was displayed, not invoked. See the [package 7 receipt](validation/2026-09-13-windows-station-package.json) and [VALIDATION.md](VALIDATION.md) for fixture/assistance limits.
 
 **Earlier package 6 smoke observed:** native Settings/Controls saved mouse 1.2, then replaced the same file with controller 1.2; after a normal process close/relaunch both values displayed 1.2. New Run displayed Wave 1, zero credits, full starting meters and Rapid Laser. Both isolated launches closed normally with no remaining staging files. The [package 6 receipt](validation/2026-09-13-windows-save-package.json) binds the executable, source, content, logs and save hashes. Profile: `Artifacts/PackageSmoke/f6233b51c944457b9f25edfa8cba285b`.
 
-**Earlier package 5 smoke observed:** fresh native menu and New Run/Wave 1 rendered. In Wave 2, the long Salvage Cache offer and E/A prompt remained readable inside the backed/wrapped panel; native E accepted it and changed the label to three remaining objectives. This verifies the label and acceptance transition, not completing its objectives. Evidence directory: `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; `Saved/Logs/PackagedLabels.log`. The separate package 4 profile `57579fdb25bd449ba907598454c4fed4` records startup settings and performance. Earlier package 3 smoke exercised neutral-controls Wave 4 death/results, a fresh-run restart and retained account data after relaunch; that evidence remains tied to its earlier snapshot. Active piloting, natural ten-wave play and offline coverage remain open; package 7 has separate prepared-station Save & Quit/Continue evidence. The finalized package 4 Waves 1–3 capture held approximately 119.96 FPS at 1440p with zero gameplay frames over 16.667 ms; this is limited early-flight evidence. See [PERFORMANCE.md](PERFORMANCE.md).
+**Earlier package 5 smoke observed:** fresh native menu and New Run/Wave 1 rendered. In Wave 2, the long Salvage Cache offer and E/A prompt remained readable inside the backed/wrapped panel; native E accepted it and changed the label to three remaining objectives. This verifies the label and acceptance transition, not completing its objectives. Evidence directory: `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; `Saved/Logs/PackagedLabels.log`. The separate package 4 profile `57579fdb25bd449ba907598454c4fed4` records startup settings and performance. Earlier package 3 smoke exercised neutral-controls Wave 4 death/results, a fresh-run restart and retained account data after relaunch; that evidence remains tied to its earlier snapshot. Active piloting, natural ten-wave play and offline coverage remain open; package 7 has separate prepared-station Save & Quit/Continue evidence. The finalized package 4 Waves 1â€“3 capture held approximately 119.96 FPS at 1440p with zero gameplay frames over 16.667 ms; this is limited early-flight evidence. See [PERFORMANCE.md](PERFORMANCE.md).
 
 GameInstance reapplies settings in OnStart after engine initialization. Package 4's fresh log shows all 11 scalability groups at quality 2 on frame 0, correcting the package 3 mismatch between session quality 2 and effective quality 3.
 
@@ -374,9 +389,9 @@ The following mappings retain the September 22 testing preset and add the Octobe
 | Flight yaw / pitch | Mouse | Left stick left/right yaw; up/down pitch |
 | On-foot look | Mouse | Right stick |
 | Flight sideways / vertical | A/D and R/F | No stick strafe; LB/RB evasive dash |
-| Flight roll | — | LB / RB |
-| Flight free-look | — | Right stick |
-| Throttle, 0–100% | W/S raises/lowers the setting | Right trigger; release to coast |
+| Flight roll | â€” | LB / RB |
+| Flight free-look | â€” | Right stick |
+| Throttle, 0â€“100% | W/S raises/lowers the setting | Right trigger; release to coast |
 | Fire | Left mouse | A |
 | Boost | Shift | B |
 | Brake (wave heat / station stop) | Space | Left trigger |
@@ -390,7 +405,7 @@ The following mappings retain the September 22 testing preset and add the Octobe
 | Dock when the pad says ready | E | X |
 | Shell / back | Escape | Menu; B while a menu is open |
 
-In the controller testing preset, LB/RB tap for a sideways dash/bank with level recovery; hold for fast roll, retaining attitude on release. Mouse-up, flight left-stick-up and walking right-stick-up pitch upward by default; pitch inversion reverses the relevant view/steering axis. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+In the controller testing preset, LB/RB tap for a sideways dash/bank with level recovery; hold for fast roll, retaining attitude on release. Mouse-up, flight left-stick-up and walking right-stick-up pitch upward by default; pitch inversion reverses the relevant view/steering axis. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3â€“2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
 
 The approved arcade baseline multiplies existing authored cruise/acceleration by 2.5: 6000 cm/s (60 m/s) and 8000 cm/s squared. Boost remains separate. RT directly controls normal engine power. Releasing it cuts forward thrust and preserves momentum; turning the hull alone does not redirect that coast. Use LT/Space to brake. W/S changes a persistent keyboard throttle setting from zero to full over two seconds; lower it to zero to coast. Possession changes reset that setting. Boost uses the existing resource limit, and brake suppresses boost. Outside the station zone, braking still obeys its heat limit; inside it, brake can bring the ship to a stop without overheating. There is no automatic minimum cruise in this follow-up.
 
@@ -477,7 +492,7 @@ For a normal-frame scripted benchmark, use `CaptureEndgame.ps1` without visual r
 
 **Historical September 17 capture behavior:** that checkout's then-packaged build predated the pit stop, so `-Editor` (receipt mode `UncookedEditorGame`) was needed to render its new source. Two `-Editor -Scenario Station5 -CaptureVisuals` runs reported success that day: `Artifacts/EndgameSoak/a495a8bb393243dfa7f9349e2d5df40f`, then `Artifacts/EndgameSoak/df3bbc149c764c9995700b5ae0e19182` after the lane/frame lights were dimmed and the gantry legs removed. The September 21 review checkout's Package 3 contains the reset and passed packaged Station5/Wave10 captures without `-Editor`. These are rendered fixture results, not natural play, 60 FPS or owner acceptance.
 
-Current `-CaptureVisuals` requires nine base Station5 images: Flight, Climax, Wormhole, Approach, Docking, StationIdle, StationServices, StationOverview and CombatImpact. Heroes with a supplied climb-out sequence add Exit0–Exit6; `-StationExterior` adds StationPadMouth and StationColonyOverview. The final squirrel/exterior capture therefore has 11 images. Wave10 requires four: Flight, Climax, Compound and Approach. The wrapper checks names, PNG dimensions and request metadata. StationServices, StationOverview and the exterior frames use labeled fixture review cameras without changing possession. CombatImpact must identify a live enemy-explosion effect 0.15–0.65 seconds after an actual weapon kill. Pose requests do not override animation, and requested exit times are not proof of the rendered pose.
+Current `-CaptureVisuals` requires nine base Station5 images: Flight, Climax, Wormhole, Approach, Docking, StationIdle, StationServices, StationOverview and CombatImpact. Heroes with a supplied climb-out sequence add Exit0â€“Exit6; `-StationExterior` adds StationPadMouth and StationColonyOverview. The final squirrel/exterior capture therefore has 11 images. Wave10 requires four: Flight, Climax, Compound and Approach. The wrapper checks names, PNG dimensions and request metadata. StationServices, StationOverview and the exterior frames use labeled fixture review cameras without changing possession. CombatImpact must identify a live enemy-explosion effect 0.15â€“0.65 seconds after an actual weapon kill. Pose requests do not override animation, and requested exit times are not proof of the rendered pose.
 
 Visual runs also request ListTextures and are excluded from performance findings even when a CSV/performance.json is produced. The executable must contain the matching capture implementation; these current-source instructions do not establish which historical package supports the complete image set. Package 12 introduced the earlier visual switch, and its normal-timing Station 5 fixture does not establish a visual readback. See [ENDGAME_CAPTURE.md](ENDGAME_CAPTURE.md) for the underlying fixture and historical receipts, and [PERFORMANCE.md](PERFORMANCE.md) for benchmark limits.
 
