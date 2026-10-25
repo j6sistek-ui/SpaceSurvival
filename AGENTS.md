@@ -155,6 +155,7 @@ Leave the repository with the delivery package required by `IMPLEMENT.md`, inclu
 
 ## Documentation and open work
 
+- Maintain the owner-authorized [ClickUp James and AI lists](docs/production/CLICKUP_TASK_SYNC.md) as work happens: add new follow-ups, synchronize meaningful progress and owner validation, preserve manual edits, and avoid duplicates. `docs/KNOWN_ISSUES.md` remains the canonical engineering/evidence log; ClickUp is its practical owner/AI work view, not a second source of game scope.
 - Every PR, including docs-only work, must complete `.github/pull_request_template.md`. For each review group state **Updated** with files/reason, or **Reviewed unchanged** with a reason. No blank/checklist-only attestation and no needless edits to unaffected documents.
 - `docs/KNOWN_ISSUES.md` is the single active issue, follow-up, priority and owner-acceptance log. Use stable IDs, an owner, next action and closure evidence. Record owner feedback there; retain partial/failed checks and repairs awaiting owner retest. Do not silently drop open items or mark them closed from a merge, code existence or automated pass.
 - `docs/PROJECT_STATE.md` owns the current source/build/release distinction and local-versus-GitHub storage map. Root `PROJECT_STATE.md` is only a redirect. README links the log/state; `PLAYTEST_TOMORROW.md` redirects to the canonical cases. Never create another current status/priority list.
