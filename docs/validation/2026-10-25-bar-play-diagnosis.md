@@ -1,0 +1,22 @@
+# Bar play diagnosis — 2026-10-25
+
+Scope: owner requested diagnosis only, not repairs. No Unreal/Blender launch, live editor access, game tests, source/asset/config changes or process interruption. The other chat's editor was not contacted.
+
+## Owner observations (paraphrased)
+
+D-pad Story gives Joy's stool invitation and teaser but never continues. Joy hunches through the bar; her bottle/glass stay still while her arms/body move during pouring. Astra was stationary, and the station felt sparsely populated. All reported motion failures remain open under RPT-20261015-01; population/preview differences remain RPT-20261020-06. These reports supersede a blanket assumption that the earlier scripted bar checks prove current natural-play quality.
+
+## Evidence and limits
+
+The most recent retained log containing gameplay is `Saved/Logs/SpaceSurvival-backup-2026.10.24-23.09.05.log`, with PIE from approximately October24 19:01–19:08 America/New_York. It redirects authored Wayfarer into Survival (lines2954–3042). The later October25 04:30–04:32 editor log contains no Joy interaction. The owner has not confirmed that this retained session is the exact reported one. Logs stay private; no raw transcript or authentication-bearing startup arguments are published.
+
+- **Story — confirmed source gap.** `Scripts/StationRecipes/JoyBartender/place_joy_bartender.py:65` authors Story with one stool invitation/asteroid-dust teaser and a non-looping talk gesture. D-pad routing in `SSGameMode.cpp:3276` reaches `TriggerNpcAction:3586`, which starts the clip and calls `SpeakCrewLine(Crew, Action.Line)` once. `SSOutpostSandbox.cpp:637` starts a finite animation timer, not a story sequence. No seated-continuation callback is present in this path. The retained log separately records a spoken request to tell the story and a short generated answer after2.7s at23:07:57UTC (lines3342–3343); that is the microphone conversation path, not proof that the D-pad story works.
+- **Sparse population — confirmed in retained natural play.** Lines3045 and3261 report **50 characters hidden**. `SSStationPresentation.cpp:550` defaults `ss.StationCrewTrim` to1 for the earlier owner-requested performance reduction. Hidden characters have actor/mesh ticks disabled. Unattended and automation sessions skip this trim, so an automated review can show more NPCs than ordinary Play. The old October20 count64 remains historical, not the current session's count. Do not automatically turn it off or restore the market.
+- **Joy counter/prop failures — owner-confirmed appearance, cause UNCONFIRMED.** `SSBarCrew.cpp:64` attaches props to configured hands and the bartender Tick changes visibility/grip; the retained log does not record socket validity, component motion, pose samples or counter clearances. A wrong socket, component setup, pose/retarget or placement mismatch must be distinguished in the actual saved actor. No hypothesis is declared the cause.
+- **Astra inactivity — owner-confirmed observation, cause UNCONFIRMED.** Her authored `Crew/Bar waitress` prefix is explicitly retained by the population trim. The service actor runs a separate state machine instead of the generic ambient walker Tick. Ambient breaks default to180–420seconds and can wait on conversation, bartender availability, compatible clips and a valid route (`SSBarCrewSocial.cpp:39`); logs do not establish which condition/state applied. Idle position alone does not establish a frozen pose, failed order or navigation regression.
+
+## Identity and next verification
+
+At inspection, canonical HEAD is `3a32fbb7d16baa82aa00457db0ccec795da4ad27` on the owner's dirty `codex/unified-editor-library` checkout. Current DLL SHA256 is `70234269350d35c2533a0ea14ee1c5d3a6f9452bcce5eaef7e8b658f934d9c57`; saved Wayfarer map is `56c18f661f6975ef35998e6a424c82c97791f172f5a3f3f9d3866cadbde838a7`. Those are present-file identities, not a hash receipt from the owner's earlier process.
+
+After the owner authorizes further work, the lead should inspect Joy's configured sockets and measured prop/hand movement through a full pour, counter clearance from opposing views, and Astra's actual idle/order/service/return states. Compare ordinary Play population with the same map and settings, not an unattended capture. Preserve earlier assets and owner edits; do not infer that these faults are recent regressions without a matching before/after reproduction. Story implementation and all repairs remain held. No immediate owner retest is requested.
