@@ -169,7 +169,48 @@ art and vendor content stays private/excluded from cook; PR86 remains unmerged.
 [Current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
 [v5 history](validation/2026-10-23-cryo-displays-v5.md). Close after owner review.
 
+## Current station follow-up — October14, 2026
 
+[PR73](https://github.com/j6sistek-ui/SpaceSurvival/pull/73) tracks this scope;
+PR69 merged the accumulated source baseline on October14. PR73 targets main.
+This section supersedes older station
+next-action paragraphs below; they remain dated evidence. The owner reports a new
+station and requests these four layout priorities. **All in-game work is held.**
+Resume only after owner authorization, then inspect the latest saved scene first.
+
+| Topic | Remaining work | Closure evidence |
+| --- | --- | --- |
+| STN-20261014-01: T ship market | Fit the six displays, desks, chairs and NPC use positions; keep two rows of three and clear routes/sightlines. | Fresh saved reload, ordinary Play views and walking routes; owner layout review. |
+| STN-20261014-02: R apartment | Move the furnished apartment above R; connect its second floor with stairs at the R back wall. Preserve furnishings and entry behavior. | Walk both directions with correct headroom, railings, floor collision and apartment entry; saved reload and owner review. |
+| STN-20261014-03: Central | Finish quality/enhancements: readable characters and displays, coherent lighting, reception/check-in placement and supported tablets, clear core wave services. | Arrival/reverse/service views and ordinary walking/interactions on the latest scene; owner review. Keep the generated target-v2 unchanged. |
+| STN-20261014-04: Market entry | Clean the walk-in route, fit stalls/props/displays and illuminate people/pathways; connect rooms with purposeful covered circulation. | Walk from dock through market to Central and room entries; readable views, saved reload and owner review. |
+
+Room purposes remain the [October10 owner amendment](GAME_SCOPE.md#owner-amendment--october-10-2026-station-room-purposes):
+Central core wave purchases/repair, R character services, T ship store, L social
+features, market atmospheric arrival. Future purchases/outfits/boosts/social
+mechanics are design context, not this layout implementation.
+
+Preserve current conversations, dancers, removed-NPC decisions and owner changes.
+The private TLayout256 fit was saved before the pause, but was not visually
+accepted or adopted as a source recipe; later owner edits supersede its map bytes.
+Never replay it or restore an old map. GitHub does not back up all licensed native
+content. Use fresh private save guards when native review is authorized; RT stays off.
+
+Other retained station topics stay deferred: Joy moving/body-colliding hair,
+conversation-aware alternating dance/social routines, physical NPC contact and
+reaction animations, seating poses and HUD marker filtering. They remain in the
+dated queue below rather than being silently marked complete. A busy next dancer
+must leave the current performer looping; conversations pause the engaged NPC's
+routine until goodbye. Cyborg/Silver repair is closed for now by owner decision.
+NPC triangle/render optimization is held. No cast repopulation, character repair,
+flight/save work, new mechanics, merge, cook or release is authorized here.
+
+**GitHub issue cleanup, October14:** Closed #1, #2, #7, #28, #29, #31, #33,
+#49, #50, #55 and #56 after checking source/receipts or a withdrawn premise.
+Each original report retains a dated resolution with evidence; 18 unresolved
+issues remain open. Closing design/evaluation references does not close gameplay
+acceptance. PR69 head `5b94a40` passed source/core and documentation CI and was
+merged at `d9b2997` with owner approval. The station remains held.
 
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 
