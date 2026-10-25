@@ -28,7 +28,7 @@ public class SpaceSurvival : ModuleRules
             PrivateDependencyModuleNames.Add("UnrealEd");
             // Opt-in editor renderer observations use only public Renderer APIs.
             PrivateDependencyModuleNames.Add("Renderer");
-            PrivateDependencyModuleNames.AddRange(new[] { "ClothingSystemRuntimeCommon", "ClothingSystemRuntimeInterface", "ChaosCloth" });
+            PrivateDependencyModuleNames.AddRange(new[] { "ClothingSystemRuntimeCommon", "ClothingSystemRuntimeInterface", "ChaosCloth", "Chaos", "ChaosCore" });
         }
     }
 }
