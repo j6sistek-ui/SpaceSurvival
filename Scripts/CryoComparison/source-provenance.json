@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "inventory_date": "2026-10-21",
+  "scope": "Untouched GLB source inventory, before finishing; no runtime or quality ranking.",
+  "source_location": "Owner Downloads/CRYO; raw files stay private.",
+  "assets": [
+    {
+      "id": "A",
+      "filename": "cybernetic cat 3d model.glb",
+      "sha256": "2b3cd6d100b179ff05fe7303c50f9fe1d1c7e22188f95f46a0e7ae1095a08591",
+      "bytes": 20377056,
+      "generator": "Tripo",
+      "source_triangles": 25491,
+      "source_vertices": 18373,
+      "source_materials": 1,
+      "source_animations": 0,
+      "source_skins": 0,
+      "images": [
+        {
+          "name": "cybernetic_cat_3d_model_basecolor.jpg",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 4141803,
+          "sha256": "7abe276b25c260e741ec4c800e0ec457ccdc11715c193e67166694135c689828"
+        },
+        {
+          "name": "cybernetic_cat_3d_model_rm.png",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 14039349,
+          "sha256": "e161dbdeb114b83a407a7ac30715285709342aeb0c5ccb9711e9e2bacba88964"
+        },
+        {
+          "name": "cybernetic_cat_3d_model_normal.jpg",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 1300000,
+          "sha256": "44e63e7884f0d094e782adec57d7458b676fd67a8877f5feb0a4f45ab09a1190"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "filename": "futuristic cat 3d model.glb",
+      "sha256": "e83654d7ddda79e226d97e5260cccd88d8d82da368c5219f407624141f6a4ffa",
+      "bytes": 34360260,
+      "generator": "Tripo",
+      "source_triangles": 49838,
+      "source_vertices": 65641,
+      "source_materials": 1,
+      "source_animations": 0,
+      "source_skins": 0,
+      "images": [
+        {
+          "name": "futuristic_cat_3d_model_basecolor.jpg",
+          "width": 8192,
+          "height": 8192,
+          "bytes": 13199720,
+          "sha256": "3fcb2cf72aa6fbfd02556d2844b28c9bef75383613e9650500ea701addd1911f"
+        },
+        {
+          "name": "futuristic_cat_3d_model_rm.png",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 17324459,
+          "sha256": "c8b8441f202a43023bed002f685ff1faf6f60b3f04cc16ab5029b70205581d2b"
+        },
+        {
+          "name": "futuristic_cat_3d_model_normal.jpg",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 1135422,
+          "sha256": "595d763db981ac9acb1b8b07a193ac94e28fb94e9a01865e62375733d40d3fa6"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "filename": "futuristic fox 3d model_Clone1.glb",
+      "sha256": "1afd42aace7e823e89684e4928c6b61431d04b71c1d5fbd1cfecfa928f81457b",
+      "bytes": 32008112,
+      "generator": "Tripo",
+      "source_triangles": 51101,
+      "source_vertices": 38816,
+      "source_materials": 1,
+      "source_animations": 0,
+      "source_skins": 0,
+      "images": [
+        {
+          "name": "futuristic_fox_3d_model_Clone1_basecolor.jpg",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 4647878,
+          "sha256": "e482e41b82bc027441eaf8b5f39a77082dafee1372714e79064c5b5ebd4e8d5a"
+        },
+        {
+          "name": "futuristic_fox_3d_model_Clone1_rm.png",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 23607159,
+          "sha256": "dcd05906ac1af96a62422aa60048049f99285ed32826a2a4e163256bc151490a"
+        },
+        {
+          "name": "futuristic_fox_3d_model_Clone1_normal.jpg",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 1895312,
+          "sha256": "b67546059f9ed0365be86d20e6e42902ca9874822db15f6deed8cf537976e118"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "filename": "Meshy_AI_Cybernetic_Raccoon_Ch_1021225808_texture.glb",
+      "sha256": "a48764b7c217cf9cd780da3961da241cd1529b0701d0bc9f55505fd49d779fad",
+      "bytes": 83642492,
+      "generator": "Khronos glTF Blender I/O v4.4.55",
+      "source_triangles": 103888,
+      "source_vertices": 80914,
+      "source_materials": 1,
+      "source_animations": 0,
+      "source_skins": 0,
+      "images": [
+        {
+          "name": "normal",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 23561575,
+          "sha256": "6c3361be59f54b7cddfaba84fa19037b98d0746a78a74c36bb2220eca6ad88a1"
+        },
+        {
+          "name": "Image_0",
+          "width": 8192,
+          "height": 8192,
+          "bytes": 48118807,
+          "sha256": "feb65d12b3e9707d0010c8d3778748eeb13e4ceacd1361ad856760c9dff2ae56"
+        },
+        {
+          "name": "Image_1",
+          "width": 4096,
+          "height": 4096,
+          "bytes": 8124485,
+          "sha256": "4cdbb04a06c1263d484a80023d77a4b02d9f009c13707d81b55f64d87a0dd43e"
+        }
+      ]
+    }
+  ]
+}

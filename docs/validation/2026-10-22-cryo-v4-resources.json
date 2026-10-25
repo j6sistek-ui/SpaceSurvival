@@ -1,0 +1,195 @@
+{
+  "utc": "2026-10-22T05:20:01.182013+00:00",
+  "status": "STATIC_METRICS_MATCH_ACCEPTED_V4_4_NATIVE_REVISION",
+  "revision": "v4_4_fitted_enclosures",
+  "private_metrics_sha256": "63ef5d9af26a5c16c85b28c726257ace4e17798242f97190e673d10a247a598d",
+  "fit_manifest_sha256": "d78777132681295f4f819c3712136e3aef774bd8716ac6bcf68aef333fd800c1",
+  "method": {
+    "geometry": "Counts read from all finished component OBJ files; native LOD0 section counts from successful author receipt.",
+    "native_bytes": "Actual uncooked .uasset file lengths, not resident RAM/VRAM, cooked package size or load time.",
+    "texture_estimate": "All mips down to 1x1; each dimension rounded up to 4x4 blocks, minimum one block. BC1 8 bytes/block for opaque color and ORM; BC3 16 bytes/block for color with nonopaque alpha; BC5 16 bytes/block for normal.",
+    "format_authority": "Installed UE5.8 Engine/Source/Runtime/Core/Private/Misc/PixelFormat.cpp:39,41,57.",
+    "excluded_from_gpu_estimate": [
+      "Niagara donor texture formats and residency",
+      "material shader storage",
+      "mesh buffers",
+      "render targets",
+      "translucency overdraw",
+      "volumetric grid",
+      "particle buffers",
+      "driver alignment",
+      "streaming policy"
+    ],
+    "no_runtime_claim": "No engine launch, cook, packaged FPS, GPU timing, draw-call measurement or performance ranking was performed.",
+    "file_size_note": "GLB disk bytes include compressed image media; this does not assert Draco/meshopt compressed geometry.",
+    "shared_accounting": "Shared texture/native effects bytes counted once in common; do not multiply by four. Per-model rows exclude common Niagara references.",
+    "active_recovery_accounting": "Active model meshes follow exact manifest components and saved native receipt references. Known superseded mesh packages and old opaque console resources are recovery. Other namespace packages are stored scene support; no current runtime dependency closure was probed."
+  },
+  "models": [
+    {
+      "id": "A",
+      "triangles": 42699,
+      "added_triangles": 17208,
+      "static_sections": 19,
+      "model_owned_uncooked_MiB": 18.271272,
+      "estimated_body_full_mip_MiB": 42.666718
+    },
+    {
+      "id": "B",
+      "triangles": 67046,
+      "added_triangles": 17208,
+      "static_sections": 19,
+      "model_owned_uncooked_MiB": 30.665905,
+      "estimated_body_full_mip_MiB": 74.666718
+    },
+    {
+      "id": "C",
+      "triangles": 117389,
+      "added_triangles": 66288,
+      "static_sections": 19,
+      "model_owned_uncooked_MiB": 21.996366,
+      "estimated_body_full_mip_MiB": 42.666718
+    },
+    {
+      "id": "D",
+      "triangles": 121150,
+      "added_triangles": 17262,
+      "static_sections": 19,
+      "model_owned_uncooked_MiB": 88.263269,
+      "estimated_body_full_mip_MiB": 74.666718
+    }
+  ],
+  "shared_estimated_full_mip_MiB": 10.666817,
+  "estimated_four_body_plus_shared_MiB": 245.333687,
+  "stored_namespace_uassets": {
+    "count": 200,
+    "bytes": 181965035,
+    "MiB": 173.53538
+  },
+  "stored_recovery_uassets": {
+    "count": 82,
+    "bytes": 3682512,
+    "MiB": 3.511917
+  },
+  "numerical_fit": {
+    "status": "NUMERICAL_FIT_REQUIRES_REVIEW",
+    "receipt_sha256": "17507bc77c8492b77b10236f965761e38f0eca9860d59632123ee6d3f9517e60",
+    "manifest_sha256": "d78777132681295f4f819c3712136e3aef774bd8716ac6bcf68aef333fd800c1",
+    "unresolved_checks": [
+      "A Seat cross-sections exceed2mm intended-frame clearance at strip1225",
+      "A Seat cross-sections exceed2mm intended-frame clearance at strip3981",
+      "A Seat cross-sections exceed2mm intended-frame clearance at strip5511",
+      "B Seat cross-sections exceed2mm intended-frame clearance at strip1225",
+      "B Seat cross-sections exceed2mm intended-frame clearance at strip2451",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip1225",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip2451",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip3981",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip5511",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip6737",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip7963",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip9493",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip12249",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip13475",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip16535",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip17761",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip18987",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip20517",
+      "C Seat cross-sections exceed2mm intended-frame clearance at strip22047",
+      "D Seat cross-sections exceed2mm intended-frame clearance at strip1225",
+      "D Seat cross-sections exceed2mm intended-frame clearance at strip2451",
+      "D Seat cross-sections exceed2mm intended-frame clearance at strip3981",
+      "D Seat cross-sections exceed2mm intended-frame clearance at strip5511"
+    ],
+    "preserved_v4_2_audit": {
+      "receipt_sha256": "324b7ce32f610a1ecbd4d86069ecb2e5c37b8f452af4513dcb58100d8d2655eb",
+      "manifest_sha256": "04d953a8bb33348da224534fd8a29b3ee314fc307274c1f5e15c201c637c0f86",
+      "same_flag_count": 23
+    },
+    "preserved_v4_3_audit": {
+      "receipt_sha256": "c0afaeb7196e30313e79b6cc0d8a0be3008626fce2cbfb5973578380a6b290bb",
+      "manifest_sha256": "306a200da217f42b6d08259f250a3dd89ad553676b0d394cd940ae0bbb1981cf",
+      "same_flag_count": 23
+    }
+  },
+  "provenance_rechecked": {
+    "original_glbs": 4,
+    "generated_source_images": 6
+  },
+  "native_adoption": "PENDING_CURRENT_V4_REVISION",
+  "measured_fps": null,
+  "measured_load_seconds": null,
+  "measured_resident_vram_MiB": null,
+  "tail_clearance": {
+    "receipt_sha256": "5acb30f35582a8d952c1fc9d320caf4bd6c5a03059e74540a16f075bb02be1a5",
+    "manifest_sha256": "306a200da217f42b6d08259f250a3dd89ad553676b0d394cd940ae0bbb1981cf",
+    "status": "C_REAR_TAIL_CLEARANCE_AUTHORED_NATIVE_REVIEW_PENDING",
+    "sampling": "Dense 2.5mm rear-facing tail surface grid plus source vertices; native frozen rear visual recheck remains required.",
+    "before_samples": 28596,
+    "after_samples": 28596,
+    "minimum_euclidean_clearance_mm": 7.376092951744795,
+    "outside_samples": 0,
+    "maximum_added_bulge_mm": 30,
+    "modified_vertex_count_per_surface": 164,
+    "affected_roles": [
+      "C Glass",
+      "C Frost"
+    ],
+    "unchanged_triangles": true
+  },
+  "native_authoring_chain": {
+    "status": "SAVED_AUTHORING_CHAIN_MATCHES_CURRENT_STAGE_RUNTIME_ACCEPTANCE_SEPARATE",
+    "receipt_sha256s": [
+      {
+        "receipt": "CryoFreezeFX.json",
+        "sha256": "26c771809760ae8fd27f377c66c57297c70df8f94f62d0d06cd0653cfe469549"
+      },
+      {
+        "receipt": "CryoFitV4Apply.json",
+        "sha256": "0be68220010cab9b668d076a512dcbfdb10105e6ce08c5e3afdf84ac8816e9b1"
+      },
+      {
+        "receipt": "CryoFit360Lighting.json",
+        "sha256": "219a7cb120f8d22c22dcbff77589e5d9ab3c3b565be29760a628b4ce3f762a99"
+      },
+      {
+        "receipt": "CryoInteractionApply.json",
+        "sha256": "373391dc1e62588789fe3f7d48fe7f62e763628dcaed784bb7493bcde069a87a"
+      },
+      {
+        "receipt": "CryoFreezeMasked.json",
+        "sha256": "b72c8727d434e90d7dc0fcc9ed2a0470627231236d10dc172b12b08895627f15"
+      },
+      {
+        "receipt": "CryoTailFitApply.json",
+        "sha256": "c47f94af36d76d11f55921f49ae37aacc3d2e1f9a1f948b41aef374b307cb426"
+      },
+      {
+        "receipt": "CryoJetContainment.json",
+        "sha256": "a2a6cd1a3a7581745380729b150ab1b98b9cb1c00d304f40d4e2e5b9f49f43d2"
+      },
+      {
+        "receipt": "CryoRearConsoleApply.json",
+        "sha256": "8502efe6ca2e4c49c65582fcfa8128e036e1cdc3f0e404d3987fd936b351a942"
+      }
+    ],
+    "input_hash_count": 334,
+    "native_input_hash_count": 217,
+    "all_inputs_unchanged": true
+  },
+  "rear_console": {
+    "native_receipt_sha256": "8502efe6ca2e4c49c65582fcfa8128e036e1cdc3f0e404d3987fd936b351a942",
+    "manifest_sha256": "d78777132681295f4f819c3712136e3aef774bd8716ac6bcf68aef333fd800c1",
+    "same_display_material_recipe": true,
+    "changed_existing_meshes": [
+      "D Console_1_Backing",
+      "D Console_1_Glass",
+      "D Console_1_HUD",
+      "D Console_1_Frame"
+    ],
+    "new_native_packages": 0,
+    "added_triangles": 54,
+    "component_count_unchanged": 19,
+    "scope": "Additional rear service display merged into four existing display meshes; original body unchanged."
+  },
+  "native_runtime_receipt": "2026-10-22-cryo-runtime.json"
+}

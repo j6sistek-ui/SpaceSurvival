@@ -863,7 +863,9 @@ void ASSHUD::DrawHUD()
                     GlyphBeforeHint = true;
                     // Use the same action lookup as Terminal::Use, including consoles outside the service radius.
                     InteractionHint = StationActionName(It->OutpostPanel(Terminal),
-                                                        FString::Printf(TEXT("Read %s"), *Terminal->DisplayName));
+                                                        Terminal->Action == ESSOutpostAction::CryoChill
+                                                            ? TEXT("Hypercool chamber for 4 seconds")
+                                                            : FString::Printf(TEXT("Read %s"), *Terminal->DisplayName));
                     break;
                 }
             }

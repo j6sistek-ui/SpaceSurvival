@@ -103,6 +103,23 @@ October15 bar follow-up: V16 shorts improve the rejected waistband/front hem; se
 
 **October 15 Astra/Joy and station controls:** the current Editor module/private Wayfarer map include Astra's V16 outfit (seated fit remains open) with native body physics, selected shared-rig eyes, separate voice/personality, service and occasional paired bar breaks, hero seating, side chat and corrected microwave orientation. Proposed source also adds bounded paused photo mode, LB/RB settings tabs and an LB-held D-pad interaction legend. This supersedes older no-adoption statements only for this scope. Native/scripted checks, physical input/audio and owner acceptance remain distinct under RPT-20261015-01/02. No packaged release or itch upload changed. [Guide/storage](production/WAITRESS_BAR_SERVICE.md); [extension evidence](validation/2026-10-15-astra-social-ui.md).
 
+**October 24 cryo v6 — installed and reviewed:** the four lower blue cores sit
+clear of their rims and eight small downward nozzle streams run continuously.
+Four active Body meshes change only around the core/collar; original files,
+topology/UVs, displays/enclosures and the other 80 component exports are preserved.
+
+Lead review covers 48 current views/19 freeze frames. Steady jets remain active
+across 1,224 samples; four native freeze cycles reset in 4.018–4.044 seconds.
+Content-only adoption adds five packages and replaces only the comparison map.
+Fresh owner smoke verifies 277 installed identities/261 cryo packages, steady jets,
+full frost/reset and protected-file/fog restoration. No runtime C++ changed.
+Owner preference, physical input, production placement and packaged performance
+remain open. Source facets, frost grain, C post/outlet occlusion, side-view core
+occlusion and dark-scene contact/reflection limits persist. PR86 remains unmerged;
+non-Unreal work stays on D:. [Current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
+[v5 history](validation/2026-10-23-cryo-displays-v5.md),
+[active review](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
+
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).
 
 **October14 owner closure:** Owner authorizes merging PR72 and closes Cyborg and Silver for now. The saved native checkpoint below stands; outstanding broader quality/voice/performance/package limits are historical limits, not active character work. Scoped disposable-file cleanup preserves current assets, sources and recovery evidence.

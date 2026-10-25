@@ -13,6 +13,10 @@ __pycache__/
 .agent/local/
 Build/Windows/FileOpenOrder/
 
+# Private generated cryo review assets and the locally derived Niagara system.
+# Source recipes/provenance are tracked; this is not a native-content backup.
+/Content/SpaceSurvival/CryoComparison/
+
 # Owner-licensed Fab source and local content (never publish raw assets).
 User downloaded assets/
 /SourceAssets/
@@ -121,7 +125,8 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 
 # Private outpost derivative assets and locally linked authoring plugins.
 /Content/OutpostSandbox/
-/Plugins/
+/Plugins/*
+!/Plugins/SSCryoRuntime/
 /PluginsSharedLink/
 # Additional owner-provided assets, not redistributed in Git.
 /Content/FreeAnimsMixPack/

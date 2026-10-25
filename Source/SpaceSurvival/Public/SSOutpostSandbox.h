@@ -38,7 +38,8 @@ enum class ESSOutpostAction : uint8
     CycleShipPaint,
     CycleWardrobe,
     SurvivalBoarding,
-    FreeFlight
+    FreeFlight,
+    CryoChill
 };
 
 /** Place at a console's use point. All transactions recheck range and sight. */

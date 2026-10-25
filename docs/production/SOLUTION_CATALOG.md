@@ -89,6 +89,24 @@ WBS8.4/10.3: owner supplied17 unique eye variants and selected WhitePurpleRings 
 
 **WAITRESS-20261015 — owned Perfect Female Body, Premium Lace-Up Corset and Lace Up Fancy Shorts (WBS8.4/10.3):** owner confirmed installed assets and authorized bar service on October15. Private V16 clothing (improved waistband, seated fit still open) reuses the original native skeleton, physics and post-process; current Joy, existing table and owned animation/prop assets provide service contacts. No acquisition or new runtime dependency. Whole-project value: reusable skinned-garment/service component and authored table contacts; character-specific weights/grips still require native review. Local integration is partial; next checks are RPT-20261015-01, with selected custom eyes/shared rig saved and broader appearance/input/audio/performance acceptance pending. [Guide](WAITRESS_BAR_SERVICE.md); [evidence](../validation/2026-10-15-waitress-bar-service.md).
 
+### CRYO-20261021 — four owner-supplied chamber candidates
+
+- **Acquisition:** four preserved local GLBs; generated frost/mist and a private
+  derivative of the owned Niagara Examples pack. No purchase or vendor upload.
+- **Evaluation:** v6 moves all four lower cores clear of their rims and adds
+  eight gentle steady nozzle streams, retaining fitted displays/glass and the
+  stronger four-second freeze. Source audit, 48 native views/19 effect frames,
+  guarded adoption and fresh owner smoke pass. D leads hero detail; A has the
+  smallest static budget; C offers four-sided viewing.
+- **Whole-project value:** conditional Acornaut hero/station presentation
+  (WBS7.1,8.3,10.3). No occupant rig, roster or progression change.
+- **Next check:** owner choice, physical input, production placement and packaged
+  performance remain open after the current native/adoption checks. Fine frost
+  grain, A/D rim facets, C posts and dark-scene contact/reflection limits are
+  documented. PR86 remains unmerged.
+  [Current evidence](../validation/2026-10-24-cryo-core-idle-v6.md);
+  [active review](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
+
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
 
 **SILVER-PONYTAIL-20261014 — owned DropBear PonytailGroom (WBS8.4/10.3):** Owner-selected on-disk pack, imported and locally adopted for Silver after current Cyborg verification. Fitted two-group derivative fixes crown/fringe/paired temples while only the tail simulates; pink hair/outfit and magenta irises are saved. Five fresh apartment views and a full dance pass scoped review. No acquisition or new runtime plugin; editor-only strand authoring uses installed HairStrandsCore. Owner appearance approval and broader contact/performance/package checks remain open under RPT-20261013-01. [Source, native hashes and evidence](../validation/2026-10-14-silver-ponytail.md).

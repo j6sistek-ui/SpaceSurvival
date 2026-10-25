@@ -1,0 +1,275 @@
+{
+  "updated_utc": "2026-10-24T02:57:11.977895+00:00",
+  "revision": "v6",
+  "status": "V6_NATIVE_REVIEWED_ADOPTED_OWNER_SMOKE_PASS_WITH_LIMITS",
+  "manifest_sha256": "d0ddf4778159a21c621d94360c32842c004858aa187aa672e73934f10d91d681",
+  "source_audit_sha256": "84073bffe4151f90c74dec5f79505a41ee7f2b773b9618f9bbea34f955bfcc94",
+  "source_manifest_sha256": "6c7894f2c8bf329a742947b5f21c03f9cc44f6a3dc003491be2e596965ebe672",
+  "author_receipt_sha256": "9e129c55b52b01e75013f3c0076ed99358e9fd9e7930aef4a344786e1beff473",
+  "plan_sha256": "1d52010a35f61ae74d055dec32b6d915fe084ad16bc89976428db791c7fc6a39",
+  "protected_inputs_unchanged": true,
+  "protected_file_count": 329,
+  "changed_components": [
+    "A/Body",
+    "B/Body",
+    "C/Body",
+    "D/Body"
+  ],
+  "unchanged_component_count": 80,
+  "source_models": [
+    {
+      "id": "A",
+      "forward_offset_cm": 7.000000000000001,
+      "assembly_triangles": 68407,
+      "components": 21,
+      "topology_uv_materials_exact": true,
+      "unmoved_vertex_lines_exact": 17746,
+      "unmoved_and_rigid_normal_lines_exact": 75251,
+      "minimum_corresponding_forward_clearance_mm": 25.707247427344093,
+      "author_blender_normal_encoding_max_delta": 0.0006201388073286761
+    },
+    {
+      "id": "B",
+      "forward_offset_cm": 5.5,
+      "assembly_triangles": 95143,
+      "components": 21,
+      "topology_uv_materials_exact": true,
+      "unmoved_vertex_lines_exact": 62360,
+      "unmoved_and_rigid_normal_lines_exact": 146278,
+      "minimum_corresponding_forward_clearance_mm": 25.910400827259927,
+      "author_blender_normal_encoding_max_delta": 0.0006887307805650246
+    },
+    {
+      "id": "C",
+      "forward_offset_cm": 4.0,
+      "assembly_triangles": 145724,
+      "components": 21,
+      "topology_uv_materials_exact": true,
+      "unmoved_vertex_lines_exact": 37779,
+      "unmoved_and_rigid_normal_lines_exact": 151139,
+      "minimum_corresponding_forward_clearance_mm": 62.54189904255658,
+      "author_blender_normal_encoding_max_delta": 1.0
+    },
+    {
+      "id": "D",
+      "forward_offset_cm": 9.9,
+      "assembly_triangles": 154211,
+      "components": 21,
+      "topology_uv_materials_exact": true,
+      "unmoved_vertex_lines_exact": 78647,
+      "unmoved_and_rigid_normal_lines_exact": 307664,
+      "minimum_corresponding_forward_clearance_mm": 25.286621505139383,
+      "author_blender_normal_encoding_max_delta": 0.0007468934079423918
+    }
+  ],
+  "normal_encoding_classification": {
+    "receipt_sha256": "34580b924d92e831dd0c4306fde641e99432fa9a7f200276de06626a636ad6ad",
+    "C_preexisting_zero_area_corners_normalized_to_zero": 4,
+    "nondegenerate_max_vector_delta": 0.0013208264692868836,
+    "approximate_max_degrees": 0.076,
+    "native_OBJ_unmoved_and_rigid_normal_lines_exact": true
+  },
+  "limits": [
+    "Local geometry/provenance check only; native all-angle visual review remains required.",
+    "Dense corresponding front rays establish sampled pane/rim clearance, not visibility from arbitrary occluded rear angles.",
+    "Continuous compact deformation keeps existing indexed connections; it does not repair pre-existing source defects.",
+    "Native OBJ untouched/rigid normals are copied exactly. Blender/GLB normal encoding differences are recorded separately."
+  ],
+  "native_review": "LEAD_NATIVE_V6_VISUAL_REVIEW_ACCEPTED_WITH_DOCUMENTED_LIMITS",
+  "owner_adoption": "ADOPTED_V6_CONTENT_ONLY_HASH_VERIFIED",
+  "required_capture_counts": {
+    "current_views": 48,
+    "freeze": 19
+  },
+  "performance_benchmark": false,
+  "cpu_core_preview_review": {
+    "receipt_sha256": "14246abc5fada7222cef53d9efa033871e0b583852e7e1728b5a3b8ca118a44a",
+    "status": "PASS_TARGETED_CPU_CORE_FIT_REVIEW_WITH_LIMITS",
+    "images": 12,
+    "limits": [
+      "Neutral-fill CPU fit previews, not Unreal lighting/material acceptance.",
+      "Existing source faceting/texture distortion remains; neighboring consoles can hide part of a core at an exact side angle.",
+      "No hidden-contact, arbitrary-angle visibility, runtime-performance or owner-acceptance claim."
+    ]
+  },
+  "native_authoring": {
+    "status": "POLISH_V6_SAVED_PENDING_VISUAL_REVIEW",
+    "receipt_sha256": "bf7d189f3814da970c3e130a334a2a511cf03f2779de76aa8e5d4cb523d31a3b",
+    "package_count": 277,
+    "cryo_namespace_count": 261,
+    "stored_bytes_including_recovery": 197146816,
+    "new_packages": 5,
+    "changed_existing_packages": [
+      "Content\\SpaceSurvival\\CryoComparison\\Maps\\L_CryoComparison.umap"
+    ],
+    "original_native_body_packages_preserved": true,
+    "active_body_core_collars_changed": true,
+    "steady_nozzle_actor_count": 8,
+    "errors": []
+  },
+  "static_resources": {
+    "models": [
+      {
+        "id": "A",
+        "triangles": 68407,
+        "components": 21,
+        "body_texture_bytes_estimate": 44739296,
+        "model_native_bytes": 20058527
+      },
+      {
+        "id": "B",
+        "triangles": 95143,
+        "components": 21,
+        "body_texture_bytes_estimate": 78293728,
+        "model_native_bytes": 33070135
+      },
+      {
+        "id": "C",
+        "triangles": 145724,
+        "components": 21,
+        "body_texture_bytes_estimate": 44739296,
+        "model_native_bytes": 24004156
+      },
+      {
+        "id": "D",
+        "triangles": 154211,
+        "components": 21,
+        "body_texture_bytes_estimate": 78293728,
+        "model_native_bytes": 93632907
+      }
+    ],
+    "shared_texture_estimate_bytes_once": 4194368,
+    "idle_jet_recipe": {
+      "spawn_rate_per_second": 10.0,
+      "particle_lifetime_s": 0.95,
+      "sprite_size_cm": [
+        5.0,
+        9.0
+      ],
+      "particle_color_rgba": [
+        0.48,
+        0.82,
+        1.0,
+        0.55
+      ],
+      "velocity_min_cm_s": [
+        -1.0,
+        -32.0,
+        -46.0
+      ],
+      "velocity_max_cm_s": [
+        1.0,
+        -26.0,
+        -38.0
+      ],
+      "loop_behavior": "Infinite",
+      "loop_duration_s": 4.0,
+      "loop_delay_s": 0.0,
+      "local_culling_bounds_cm": {
+        "min": [
+          -25.0,
+          -60.0,
+          -75.0
+        ],
+        "max": [
+          25.0,
+          25.0,
+          25.0
+        ]
+      },
+      "local_space": true,
+      "cpu_simulation": true,
+      "estimated_live_particles_per_nozzle": 10,
+      "maximum_center_downward_travel_cm": 43.7,
+      "maximum_center_inward_travel_cm": 30.4,
+      "behavior_during_freeze": "Continue; the separate existing burst remains stronger."
+    },
+    "note": "Uncooked storage and mathematical particle/texture estimates are not runtime load, resident memory or GPU performance measurements."
+  },
+  "failed_initial_capture": {
+    "receipt_sha256": "43b0a8b92edc0d1a7cfbd1571a8d2963dea4e282816bc70707a374ebae662f77",
+    "status": "FAILED",
+    "images": 48,
+    "samples": 1223,
+    "initial_inactive_samples": 3,
+    "accepted_for_current_native_proof": false,
+    "disposition": "Preserved history. Uncooked Niagara asynchronous startup preceded continuous activity; fresh observers allow bounded natural readiness before continuity/action, never manually activate effects or waive later inactivity."
+  },
+  "verification_startup_scope": "Up to five seconds of natural initial Niagara readiness is recorded separately from continuous native playback; not measured package load time.",
+  "native_proof": {
+    "angles_sha256": "52867cfa0203f8d3efe18d1b387a4e2ca165e720e392e31fbc2f2d7d48affdf5",
+    "interaction_sha256": "709d66b5e9b2885713a37bfc57dd217922fcb1cebef2c3d331921211eee91c59",
+    "visual_review_sha256": "800042adf613148ad3b97ac6bd024771215af5c32b596e39bbb1458887f4d91e",
+    "ordinary_viewport": [
+      960,
+      1200
+    ],
+    "current_views": 48,
+    "freeze_frames": 19,
+    "ambient_samples": 1224,
+    "world_span_s": 260.1660324037075,
+    "natural_light_loops": 43,
+    "eight_idle_jets_active_throughout": true,
+    "interaction_samples": 381,
+    "four_reset_seconds_range": [
+      4.018,
+      4.044
+    ],
+    "original_and_native_hashes_unchanged": true,
+    "observer_errors": [],
+    "engine_exit_codes": [
+      0,
+      0
+    ]
+  },
+  "adoption": {
+    "receipt_sha256": "af6a5e5a5783071b1563a0ea8d7f643d45ffb0e654a9454c52008914770f7c57",
+    "files": 261,
+    "bytes": 197146816,
+    "new_packages": 5,
+    "changed_existing": [
+      "Content/SpaceSurvival/CryoComparison/Maps/L_CryoComparison.umap"
+    ],
+    "owner_source_config_plugin_unchanged": true
+  },
+  "owner_smoke": {
+    "status": "OWNER_NATIVE_COMPATIBILITY_SMOKE_PASS",
+    "stage_proof_sha256": "709d66b5e9b2885713a37bfc57dd217922fcb1cebef2c3d331921211eee91c59",
+    "verified_installed_package_count": 277,
+    "verified_cryo_package_count": 261,
+    "steady_idle_jet_count": 8,
+    "first_observed_reset_s": 4.032642897218466,
+    "protected_files_unchanged": true,
+    "fog_restored": true,
+    "actual_mid_reached_one": true,
+    "native_jets_active_with_nontrivial_bounds": true,
+    "initial_niagara_ready_world_time_s": 2.4182712100446224,
+    "errors": [],
+    "receipt_sha256": "eec00f813d613d430c89e6c0fadf5d2e34427bf2156da87f8f14ae9ea7bec2e1",
+    "samples": 91,
+    "engine_exit_code": 0,
+    "startup_log_limit": "Known EditorToolset initialization errors remain distinct from zero native observer errors."
+  },
+  "visual_observations": [
+    "All four front blue circular faces sit ahead of the glass and lower chamber rim, with their surrounding casing supported. Front and oblique views no longer show the rim crossing the disk.",
+    "Two narrow short white-cyan streams run downward and slightly inward from each chamber roof. Different natural frames show moving puffs without covering the face or escaping the enclosure.",
+    "Eight idle Niagara systems remain active through 1224 samples spanning 260.166 world seconds after recorded startup readiness; the original four ambient systems and 43 natural breathing-light loops continue.",
+    "C retains four-sided glass, edge frost, cyan fog and contained tail. Existing metal rails partially obscure the right idle stream and portions of the subject; frost overlaps the left outlet.",
+    "The stronger interaction jets and complete frost are preserved. Four native cycles restore normal glass and visible gentle streams after 4.018-4.044 seconds; repeat, range, occlusion and other-bay guards pass.",
+    "Existing fitted displays and curved glass HUD remain. Fine frost grain and original generated-surface irregularities persist; dark rear/top images cannot prove every hidden contact.",
+    "Exact side views can naturally hide the front disk behind neighboring consoles or structure. The correction clears the chamber rim; it does not make a front-facing disk visible through solid geometry.",
+    "Native uncooked visual/runtime evidence is separate from owner preference, physical-input feel, packaged load time, GPU frame time and resident VRAM; these remain unmeasured."
+  ],
+  "quality_by_candidate": {
+    "A": "Smallest static mesh budget. Forward blue core is clear; slender idle jets preserve the face silhouette. Original surface detail is softer than D; close-range casing facets remain.",
+    "B": "Forward core clears the rim with fitted displays retained. Small idle streams leave the subject readable; original body detail remains soft despite the higher texture tier.",
+    "C": "Four-sided viewing remains the strongest option here. Core clears the front rim; cold fog and gentle streams are visible, with partial occlusion from the original ribs.",
+    "D": "Strongest hero-detail candidate with clearer suit, fur and hoses. Forward core clears the rim, three fitted consoles remain and small jets preserve the silhouette. Highest static mesh budget."
+  },
+  "unverified": [
+    "Owner visual preference",
+    "Physical E/controller-X input/feel",
+    "Production-map integration",
+    "Packaged load time/GPU frame time/resident VRAM"
+  ]
+}
