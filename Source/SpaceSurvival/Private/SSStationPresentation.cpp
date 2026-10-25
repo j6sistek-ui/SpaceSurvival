@@ -571,7 +571,8 @@ void TrimCrew(const TArray<TObjectPtr<AActor>> &Actors)
         if (const auto *Ambient = Cast<ASSOutpostAmbientActor>(Actor); Ambient && Ambient->bDrone)
             continue;
         const FString Label = Actor->GetActorLabel();
-        bool bKeep = false;
+        // The owner explicitly restored Kraken after the temporary population reduction.
+        bool bKeep = Label == TEXT("Crew/Kraken visitor");
         for (const TCHAR *Prefix : Keep)
             bKeep |= Label.StartsWith(Prefix);
         if (bKeep)
