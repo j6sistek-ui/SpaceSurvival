@@ -1087,3 +1087,122 @@ pose corrective and assess the actual silhouette; do not repeat broad weight
 transfer, global DQ or count successful exports as visual improvement. The
 aa7da985 posterior-volume candidate and accepted shoulder derivatives remain
 unchanged. Full routine/artistic acceptance is still open.
+
+### October26 hip self-contact and motion isolation
+
+The previous pole/distal-arm/body screen does **not** cover hip self-contact.
+`audit_g2_hip_self_contact.py` now checks the exact preserved aa7da985 candidate
+at all1841 frames (3682 side/frame samples). It finds822 flagged samples:
+81left/741right, worst106 nonadjacent hip/thigh triangle pairs at right11.85s.
+The script writes a report successfully even when `summary.screen_passed` is
+false. Never interpret its process exit as an anatomy pass. The regions are
+posterior pelvis/glute-dominant against same-side proximal-thigh-dominant
+triangles; adjacent topology, other regions and between-frame contact are excluded.
+
+Matched-pose controls distinguish geometry/weights from motion: the good left
+7.1s leg pose mirrored onto the right gives0/0 sampled intersections; the bad
+right10.6s pose mirrored onto the left gives47left/41right. Blindly mirroring
+weights is therefore insufficient. This does not prove equal skin quality.
+The original `g2_default.glb` also contains a large posterior swing: approximately
+112.89degrees at source11.0033s in rest-pelvis diagnostic axes, compared with
+124.15degrees in the corresponding candidate probe. The constant-speed mapping
+and coordinate definitions are retained in RawHipDirections.json; these are
+not clinical joint angles or a complete attribution of retargeting error.
+
+An unsaved control changes only each thigh subtree. In pelvis rest axes with
++Y posterior/+Z superior, angle=atan2(direction.y,-direction.z). Up to15degrees
+is unchanged; above that use15+15*tanh((angle-15)/15), preserving lateral direction
+and subtree-local transforms. These15/30degree settings are authored controls,
+not universal anatomical limits. Mute the prior G2 time-driven hip shapes when
+changing motion; their coefficients belong to the original action.
+
+That control reduces flags822→221 (45left/176right), but is **not accepted**.
+Endpoint matrices match; upper-body matrix error is4.06e-6, descendant-local
+error0.000178 and maximum thigh step4.083degrees at60Hz. Pole, garments and
+opposite-leg contact were not revalidated for this altered motion. Earlier
+wording to preserve the pose means preserving the baseline copy, not treating
+the owner's withdrawn still-pose objection as a lock on all routine motion.
+
+The remaining bent/twisted poses reject further simple controls:
+
+- Half glute swing, posterior DQ and their combination leave31/34/33 pairs
+  respectively at right12.0333s, versus41 without them; silhouette remains poor.
+- A rest-height quaternion field creates additional waist/notch distortion.
+- Local nearest-thigh normal projection reduces41→14 pairs at12.0333s and
+  13→0 at13.5s, but retains a sharp crease. Maximum shifts21.881/9.335mm.
+  This heuristic is not an implementation of implicit skinning research.
+- Driver inspection confirms glute helpers have no rest-relative motion in
+  the sampled candidate; hip-head translations/scales are near their rest
+  values. A35mm superior/12mm posterior helper translation reduces41→31 pairs,
+  but still leaves the crease. It is not a saved rig repair.
+- Thirty local/global ARAP steps on a posterior patch at the softer motion
+  preserve rest-edge directions approximately, but distort the buttock and
+  increase the13.5s left intersections13→24. Rejected;0/0 at7.1s did not make
+  its stretched silhouette acceptable. No fitted corrective was saved.
+- Five half-strength neighbor-averaging passes on posterior hip weights,
+  with opposite-leg influences prohibited, still leave39 pairs at12.0333s.
+  A separate minimum-thigh-support gradient (.92–1.10m rest height) produces
+  an excessive buttock stretch and37 pairs with local DQ. Both are rejected.
+
+Private receipts in `AnimationReview_20261025/G2PosteriorHip`: HipSelfContactAudit,
+HipBalancedPoseProbe, RawHipDirections, HipMotionControlAudit,
+BoundedHipVolumeProbe, HipRotationFieldProbe, HipCollisionCorrectiveProbe,
+HipDriverInspection and GluteTranslationProbe. No baseline .blend, production
+asset, accepted shoulder or native proof was overwritten. Continue with a fitted
+local deformation correction and coordinated motion; counts alone are insufficient.
+
+
+### October26 smooth G2 hip-motion candidate — limited screens pass
+
+The combined posterior-only trial reduced822 hip flags to31 but introduced a
+37.025degree right-thigh step at60Hz. Its narrow5–15degree activation band
+released the adduction correction too abruptly near12.4s. This trial is rejected;
+four clean stills were not sufficient evidence. CoupledHipAudit and CoupledMotion
+retain the failure.
+
+`g2_smooth_hip_control.py` replaces that switch with continuous, G2-specific
+motion shaping. Preserve the95-bone rest rig, weights, topology, upper body and
+all thigh-descendant local channels. In rest-pelvis axes (+Y posterior/+Z up):
+
+- Posterior swing <=5degrees is unchanged; above5 use5+5*tanh((angle-5)/5).
+- Same-side lateral angle >=-5degrees is unchanged; beyond that adduction use
+  -5-5*tanh((-angle-5)/5), without a posterior activation switch.
+- Axial twist within15degrees is unchanged; beyond15 use signed
+  15+5*tanh((abs(angle)-15)/5), also without the switch.
+
+These are authored limits for this selected G2 passage, **not universal joint
+limits or a transferable skin-weight repair**. They change the leg choreography.
+Never apply them blindly to Joy/Astra or all animations. The old G2 time-driven
+hip morphs must be muted (`REVIEW_G2_`); their old coefficients do not match the
+changed motion. No global DQ, smoothing modifier or new skin weights are used.
+
+Run `audit_g2_smooth_hip.py` in hidden Blender, then
+`save_g2_smooth_hip_action.py`, then the audit with `-- --reload-action` in a
+fresh process. The writer refuses existing output and requires the exact source
+and passing recipe receipt. The audit writes a report even on failure: inspect
+`summary.screen_passed` and its scope, not process exit alone.
+
+The private action-only `G2_SmoothHip_ActionLibrary.blend` is18,874,095bytes,
+SHA `0c692c04d9882fb90a1d253b17166e542ebb6eb595df487150de72e3221580d2`.
+Use action `A_F3_G2_SmoothHip_Review` with preserved mesh aa7da985 and the morph
+mute above. It copies the prior action and replaces only thigh_l/thigh_r local
+location/rotation/scale curves; it does not duplicate textures or mesh payloads.
+Control SHA34713dc46c774a19586dd7278932d3f5678083eab1e89b8bed54ad705ed42343.
+
+Fresh saved-action audit:0/3682 same-side hip/thigh flags;0/1841 pole and
+distal-arm/body flags; maximum radius2.749731m inside3.48m; exact endpoint
+matrices. Upper-body matrices match the preserved action exactly; target
+reconstruction error8.35e-6 matrix units, descendant-local error0.000140.
+Right/left thigh maxima7.333/3.904degrees per60Hz frame remain pacing evidence,
+not a fluidity pass. Garments/body, opposite-leg, other joint and between-frame
+contacts are outside these screens.
+
+Fresh saved-action review renders921 frames per opposing camera at30Hz,
+plus eight body-only rear/quarter stills. The combined video decodes921 frames,
+30.7seconds, with no dropped/duplicated frames. The known folded-under hip poses
+are improved in inspected views, but flexed-thigh/glute contour, pacing, knees,
+wrists/ankles and full routine quality remain open. This is not a gold-standard
+rig. `SourceAssets/DanceRefinement_20261025/G2HipMotionReview.html` retains the
+review, and SmoothHipAction/ReloadAudit/Motion/SavedViews retain private evidence.
+No native import, production adoption, package or owner acceptance of this
+candidate. Earlier mesh/shoulder/native proofs remain unchanged.

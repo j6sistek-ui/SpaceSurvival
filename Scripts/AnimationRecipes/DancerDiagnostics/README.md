@@ -171,3 +171,22 @@ posterior hip bake, actual-mesh validator, then proof export/import and fresh
 native capture/parity comparison. See DEFORMATION_RECIPE.md for exact order,
 input hashes, paired curves, failed broad targets and remaining defects. These
 recipes refuse prior-output overwrite; they do not adopt production assets.
+
+`audit_g2_hip_self_contact.py` adds the previously missing same-side hip/thigh
+screen. Run it with the installed hidden Blender against the exact preserved
+candidate. `SS_ANIMATION_PROJECT` selects the local project; the report goes to
+the ignored G2PosteriorHip directory. Check `summary.screen_passed`, not just
+process success: the current candidate fails822 of3682 side/frame samples.
+This is a limited surface screen, not a complete collision or anatomy validator.
+
+
+
+## G2 smooth hip-motion review (separate from skin repair)
+
+`g2_smooth_hip_control.py`, `audit_g2_smooth_hip.py` and
+`save_g2_smooth_hip_action.py` preserve the previous source and write only a
+private action library. Run audit, save, then audit with `-- --reload-action`.
+Read the latest recipe section for exact source/morph pairing and limitations.
+The action clears the defined sampled hip/pole/distal-arm screens; it changes
+the G2 leg motion and does not establish reusable weights, native parity or
+artistic acceptance. Old REVIEW_G2_ hip curves must be muted on this action.

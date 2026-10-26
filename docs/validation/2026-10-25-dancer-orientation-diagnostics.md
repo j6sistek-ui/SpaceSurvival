@@ -1061,3 +1061,39 @@ visible folds; broad DQ also degrades distal contours. All remain unsaved and
 unadopted. The earlier aa7da985 source is unchanged. Exact settings, rejected
 setup failures and source references are in the
 [deformation recipe](../../Scripts/AnimationRecipes/DancerDiagnostics/DEFORMATION_RECIPE.md#october26-inner-hip-controls--not-adopted).
+
+### October26 expanded hip coverage — failure retained
+
+The exact aa7da985 source now fails the added hip self-contact screen:
+822/3682 side/frame samples, worst106 triangle pairs. This supersedes any
+interpretation of earlier pole/distal-arm clearance as whole-body clearance.
+The checked-in `audit_g2_hip_self_contact.py` ran to completion and records
+`screen_passed=false`; successful report generation is not a passing result.
+
+Matched-pose controls reproduce the defect on either side. A separate unsaved
+thigh-motion control reduces flags to221 while preserving the upper body and
+loop endpoints within numerical tolerance. Local volume/projection/helper
+controls still leave a visible fold and are rejected. Exact assumptions,
+source mapping, parameters and private receipts are in the
+[hip isolation recipe](../../Scripts/AnimationRecipes/DancerDiagnostics/DEFORMATION_RECIPE.md#october26-hip-self-contact-and-motion-isolation).
+No altered-motion native export, production replacement or new game build.
+
+
+
+### October26 saved smooth-hip action (source review only)
+
+Private action0c692c04 changes only the two thigh local channels on preserved
+aa7da985, with prior REVIEW_G2_ curves muted. The posterior-only switch trial
+failed with31 hip flags and a37.025degree/frame snap. The smooth combined
+envelope clears0/3682 hip and0/1841 pole/distal-arm samples after fresh reload;
+upper-body matrices remain exact, target error8.35e-6, local-descendant error
+0.000140, exact endpoint matrices and2.749731m maximum radius. Source mesh,
+weights, rest rig and previous proofs are unchanged.
+
+Two30Hz cameras render921 frames each; combined video decodes921 frames over
+30.7s with no dropped/duplicate frames. Eight body-only rear/quarter stills
+include former flagged transitions. Motion shaping improves the inspected fold
+but is not a skin-weight cure;7.333degree/frame right-thigh motion, flexed-glute
+contour, full joint/garment/contact coverage and artistic quality remain open.
+This new action has no native reproduction or production adoption. No C++ build
+applies. See the recipe for inputs, commands, rejected controls and hashes.
