@@ -1097,3 +1097,28 @@ but is not a skin-weight cure;7.333degree/frame right-thigh motion, flexed-glute
 contour, full joint/garment/contact coverage and artistic quality remain open.
 This new action has no native reproduction or production adoption. No C++ build
 applies. See the recipe for inputs, commands, rejected controls and hashes.
+
+### October26 paced G2 source review
+
+Action0b55fa68 is a shared-time-map derivative of0c692c04 on preserved aa7da985.
+Fresh2595-frame replay clears0/5190 defined hip and0/2595 pole/distal-arm checks,
+retains the exact loop, and matches inverse-time sampled surfaces within0.0023mm
+across225 object/time checks. It runs43.233s; the local-joint speed peak falls
+from439.948 to90.021degrees/s, with pelvis peak0.449853m/s. Two fixed-zoom
+opposing30Hz views combine into a1298-frame video; full decode succeeds.
+These are bounded source checks. Flexed-glute contour, complete joint/garment
+quality, artistic acceptance and native reproduction remain open. A separate
+glute-follow probe is not part of this saved action. No game build or package.
+
+### October26 saved glute-follow control
+
+Separate f7f76b2e pairs30percent glute swing with a116-vertex near-waist weight
+transfer to pelvis;48 waist points stay anchored. The completed2595-frame
+control has0/5190 hip and0/2595 pole/distal-arm flags, waist drift<0.001mm and
+unaffected surface error<0.0035mm. Fresh saved replay checks5189 integer/half
+times,95 bones, max4.25e-5 matrix error and exact loop. Two1298-frame opposing
+videos fully decode. Raw PNG sequences were compacted to26 selected frames per
+loop after decode (2.412GiB reclaimed), retaining videos and closeups.
+Unanchored waist pull and a mixed-fractional-key export were rejected; see recipe.
+Garment/contour/native/owner acceptance remains open. Source originals and the
+approved shoulder response remain preserved; no production mesh/game changes.

@@ -1206,3 +1206,104 @@ rig. `SourceAssets/DanceRefinement_20261025/G2HipMotionReview.html` retains the
 review, and SmoothHipAction/ReloadAudit/Motion/SavedViews retain private evidence.
 No native import, production adoption, package or owner acceptance of this
 candidate. Earlier mesh/shoulder/native proofs remain unchanged.
+
+### October26 G2 pacing derivative — preserve pose path while slowing bursts
+
+Use preserved aa7da985 plus action0c692c04. In hidden Blender, run
+`retime_g2_smooth_hip.py`, `save_g2_paced_action.py`, and finally
+`audit_g2_smooth_hip.py -- --paced-action` in a fresh process. The writer refuses
+existing output. `SS_ANIMATION_PROJECT` selects the project. No mesh, rest rig,
+weights or earlier action is rewritten. Output is an action-only private file:
+`SourceAssets/DanceRefinement_20261025/G2_PacedHip_ActionLibrary.blend`, action
+`A_F3_G2_PacedHip_Review`, SHA
+`0b55fa684da59ec67bd5f7c6e0665e986b13850ff251cac7e5bd628073f5d48a`.
+
+At60Hz, measure the largest local quaternion change across all95 bones and
+pelvis translation. The authored targets are90degrees/s and0.45m/s, not joint
+limits. Required slowdown is max(1,angular/90,translation/0.45). Expand with a
+30-frame-radius maximum; smooth with a positive Gaussian (sigma8, radius24).
+Assert the result is never below the required slowdown. Integrate one monotone
+time map and stretch slightly to an integer60Hz endpoint. Apply that same map
+to every LINEAR curve key; reject curve modifiers or out-of-range keys.
+
+This source's only animated shape curves are REVIEW_G2_ curves, explicitly
+muted because they belong to the old motion. The audit rejects unaccounted
+shape actions/drivers/NLA. Other sources need synchronized corrective timing;
+never assume skeleton-only retiming is safe for another clip or character.
+
+Fresh replay lasts43.233333s instead of30.666667s. Across2595 frames it has
+0/5190 same-side hip/thigh flags and0/2595 pole/distal-arm flags. Maximum local
+rotation is90.020511degrees/s (float-evaluation tolerance0.5degrees/s), versus
+439.948degrees/s before; pelvis peak0.449853m/s. Loop matrices match exactly;
+maximum world radius2.749731m. Inverse-time source pose error3.13e-6 matrix
+units;225 object/time surface comparisons differ by at most0.00229mm. The
+pose path is retained within measured precision, not merely similar key poses.
+
+Two opposing fixed-zoom cameras render1298 frames each at30Hz. The combined
+video decodes1298 frames,43.2667s including the endpoint frame. Review remains
+`SourceAssets/DanceRefinement_20261025/G2HipMotionReview.html`; previous video
+is retained. Receipts: SmoothHipPacing, PacedHipAction, PacedHipAudit and
+PacedHipMotion under the ignored G2PosteriorHip directory. There is no native
+import or production adoption. Timing metrics do not establish artistic feel,
+good skinning, complete contact coverage or owner acceptance.
+
+### October26 local glute follow — waist-anchored review candidate
+
+The contact-safe leg path still left a rounded, low glute contour in flexed
+poses. A0/15/30percent helper-swing control, seven source poses and opposing
+views, isolates the response of the existing glute_l/r bones. The30percent
+control lifts the inspected contour but pulls at the separate waist boundary.
+Do not adopt the unanchored control: it exposes a new seam despite zero hip
+intersection flags. No extra body/shoulder/neck volume is added.
+
+`g2_glute_follow_control.py` anchors the48 upper boundary vertices of the
+continuous lower-body mesh. Using nearest-boundary rest-space distance, apply
+smoothstep(distance/0.08m) to glute weights and transfer the removed weight to
+pelvis. Exactly116 vertices change, sums are retained, and all other groups
+and vertices stay unchanged. This is tied to aa7da985 topology and its existing
+pelvis-parented glute helpers. It is not a generic auto-weight algorithm.
+
+For each side, derive thigh swing relative to the pelvis-rest frame, remove
+axial twist, and apply30percent of that swing about the thigh-head pivot to the
+existing glute bone. Assert the source helper is otherwise at its pelvis-relative
+rest transform. Leave all other bone world targets unchanged. The first
+waist-anchored controls have zero border displacement across seven source poses;
+opposing body-only views remove the new waist-gap regression.
+
+Run `audit_g2_smooth_hip.py -- --paced-action --glute-follow` in hidden Blender.
+It compares fixed original mesh regions, applies the patch only in memory and
+records the full patch plus hashes. Across2595 frames:0/5190 same-side hip/thigh
+flags,0/2595 pole/distal-arm flags; exact loop; waist drift below0.001mm;
+unaffected sampled surfaces below0.0035mm. Local displacement reaches51.608mm.
+The surface-error field in this mode excludes vertices with glute influence;
+it is not a claim that the intended deformation is unchanged. Garment/body,
+opposite-leg and other joint contact remain outside the screen.
+
+`save_g2_glute_follow.py` requires that receipt, preserves the source, writes
+only an action library plus `G2_GluteFollow_Manifest.json`, and refuses overwrite.
+Initial candidate983f5c07 was rejected by code inspection before use: copying
+the paced action retained fractional helper keys between newly inserted integer
+keys. Clear only the two replaced glute channels before baking. Do not remove
+unchanged channels or rely on integer-frame verification to catch this defect.
+The corrected writer is checked in a fresh process with `-- --verify-only`,
+including every integer and half-frame time.
+
+Corrected private action `A_F3_G2_GluteFollow_Review` lives in
+`SourceAssets/DanceRefinement_20261025/G2_GluteFollow_ActionLibrary.blend`,
+16,158,819bytes, SHA
+`f7f76b2e3e638903ae218ca0540245576f87de64ab703c0db26a02d721f83549`.
+It requires the matching manifest's116-vertex patch on aa7da985 and muted
+REVIEW_G2_ curves; the action alone is not the candidate. Fresh5189-sample
+95-bone comparison has max4.25e-5 matrix error and exact loop. The original mesh,
+accepted shoulders and earlier proofs remain byte-identical. This is a saved
+review derivative, not a production mesh swap or native/owner acceptance.
+
+The controlled full-loop render has1298 frames per opposing30Hz camera and a
+fully decoded combined video. After encoding/decoding, only13 frames per view,
+the full videos, all body-only comparisons and receipts are retained for these
+two new loops;2.412GiB of expendable PNG frames reclaimed. No full mesh/texture
+Blender copy was created. The first dense audit was interrupted to correct its
+receipt scope; the completed fresh report is GluteFollowDenseAudit, followed
+by GluteFollowReload. Remaining work is garment/contour review, export/native
+comparison, other joints and full choreography; do not call this a gold-standard
+rig or transfer by vertex index to Joy/Astra.

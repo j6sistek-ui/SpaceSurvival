@@ -190,3 +190,16 @@ Read the latest recipe section for exact source/morph pairing and limitations.
 The action clears the defined sampled hip/pole/distal-arm screens; it changes
 the G2 leg motion and does not establish reusable weights, native parity or
 artistic acceptance. Old REVIEW_G2_ hip curves must be muted on this action.
+
+For the pacing derivative, run `retime_g2_smooth_hip.py`, then
+`save_g2_paced_action.py`, then `audit_g2_smooth_hip.py -- --paced-action`
+in separate hidden Blender processes. The authoring scripts preserve the mesh
+and earlier action. The fresh audit compares the inverse-time pose path,
+sampled skin surfaces and dense contacts; its timing targets are choreography
+choices, not anatomical limits. See the recipe before reusing this on any rig.
+
+For the local glute-follow candidate, add `--glute-follow` to the paced audit,
+then run `save_g2_glute_follow.py` and a fresh `-- --verify-only` invocation.
+The candidate requires its matching116-vertex weight manifest; the animation
+alone is incomplete. Only two helper channels are rebaked; fractional old keys
+must be cleared first. Full garment/native/artistic acceptance remains open.
