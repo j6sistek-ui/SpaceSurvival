@@ -15,13 +15,17 @@ import unreal as u
 
 
 variant = os.environ.get('SS_G2_VARIANT', '')
-assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar'), 'Unknown proof variant'
+assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar', 'g1_shoulder', 'g1_shoulder_cap'), 'Unknown proof variant'
+g1_shoulder = variant in ('g1_shoulder', 'g1_shoulder_cap')
 palmar = variant == 'palmar'
-glute_follow = variant in ('glute_follow', 'glute_follow_240', 'palmar')
+glute_follow = g1_shoulder or variant in ('glute_follow', 'glute_follow_240', 'palmar')
 refined_rate = variant == 'glute_follow_240'
-O = R / ('G2PalmarNative240' if palmar else 'G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
+O = R / ('G1ShoulderNative240' if g1_shoulder else 'G2PalmarNative240' if palmar else 'G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
+stem = 'G1Shoulder240' if g1_shoulder else 'G2Palmar240' if palmar else 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
+prefix = 'review_g1_leftaxilla_' if g1_shoulder else 'review_g2_'
+if variant == 'g1_shoulder_cap':
+    O, stem = R / 'G1ShoulderCapNative240', 'G1ShoulderCap240'
 contract = json.loads((O / 'Export.json').read_text())
-stem = 'G2Palmar240' if palmar else 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
 BASE = '/Game/SpaceSurvival/Licensed/Vexa' + stem + 'Proof_20261026'
 OLD = '/Game/SpaceSurvival/Licensed/VexaContinuousDistalProof_20261025'
 assert 'WorkbenchNative/CharacterWorkbench' in u.Paths.get_project_file_path().replace('\\', '/')
@@ -67,7 +71,7 @@ try:
         editor.set_lod_build_settings(mesh, 0, settings)
         assert lib.save_loaded_asset(mesh, False)
     expected = {n.casefold() for n in contract['expected_morphs']}
-    actual = {m.get_name().casefold() for m in mesh.get_editor_property('morph_targets') if m.get_name().casefold().startswith('review_g2_')}
+    actual = {m.get_name().casefold() for m in mesh.get_editor_property('morph_targets') if m.get_name().casefold().startswith(prefix)}
     assert actual == expected, (expected - actual, actual - expected)
     task = u.AssetImportTask()
     task.filename = contract['animation']; task.destination_path = BASE; task.destination_name = 'A_' + stem
@@ -83,7 +87,7 @@ try:
     u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
     clip = u.load_asset(BASE + '/' + task.destination_name)
     assert clip and clip.get_editor_property('skeleton') == skeleton
-    curves = {str(n).casefold() for n in u.AnimationLibrary.get_animation_curve_names(clip, u.RawCurveTrackTypes.RCT_FLOAT) if str(n).casefold().startswith('review_g2_')}
+    curves = {str(n).casefold() for n in u.AnimationLibrary.get_animation_curve_names(clip, u.RawCurveTrackTypes.RCT_FLOAT) if str(n).casefold().startswith(prefix)}
     assert curves == expected and abs(clip.sequence_length - contract['duration']) < .0001
     assert lib.save_loaded_asset(clip, False)
     if not palmar:

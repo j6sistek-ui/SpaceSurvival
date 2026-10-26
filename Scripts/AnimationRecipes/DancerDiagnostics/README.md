@@ -273,3 +273,53 @@ Current fresh native receipts pass eight poses within0.116mm bones/0.195mm
 surfaces;38 stills and1229 fully decoded loop frames remain private. Review
 `SourceAssets/DanceRefinement_20261025/G2PalmarReview.html`. This is scripted
 sampling, not natural gameplay or complete artistic/rig acceptance.
+
+## G1 signed grip and folded-arm shoulder
+
+`g1_palmar_motion_control.py -- --rigid --free-profile --continuous-release --pin-orientation --dense`
+uses the signed G2 calibration while preserving the supporting arm's local
+motion. `fit_g1_free_elbow.py` isolates the free arm's inherited chest contact;
+the saved `FreeArmProfile.json` is guarded separately. Read the recipe before
+recreating a profile. `check_g1_palmar_timing.py` records the shared slow timing.
+`save_g2_palmar_action.py -- --g1` saves a separate G1 action; rerun with
+`--verify-only`, then `--verify-only --surface-only` for fresh replay/contact
+checks. Run `check_g1_palmar_timing.py` with `--continuous-release --pin-orientation`
+to select this same control. It is a nonlooping passage, not an interchangeable
+zero-G loop.
+
+`review_g1_shoulder_regression.py` compares preserved torso weights and bare
+body geometry at the actual bad pose. `review_g1_forward_shoulder.py` offers
+separate `--smooth-control` and `--cap-control` comparisons. The latter checks
+the axilla-only mask against one extending over the shoulder cap, with the
+neck excluded. Neither control saves a character or changes weights.
+
+`bake_g1_shoulder_corrective.py -- --cap` bakes that localized target for G1's
+actual poses; it refuses to overwrite a saved candidate. The 120Hz target
+sampling and held-out checks must pass before a file is written. Old Spiral
+corrective curves cannot simply be replayed over G1. The new shape action and
+G1 bone action must remain paired; this is a clip-specific correction, not a
+general range-of-motion solver.
+
+`review_saved_g1_shoulder.py -- --cap` makes matched source comparisons; add
+`--video` for opposing full-passage views. `export_g1_shoulder_proof.py -- --cap`
+checks fresh saved surfaces against the target and exports a new mesh plus
+240Hz animation. Set `SS_G2_VARIANT=g1_shoulder_cap` for the existing
+`import_g2_posterior_proof.py`, `capture_g2_posterior_proof.py` and
+`compare_g2_glute_native.py` entrypoints. They create a new private workbench
+proof, never replace the game character. Read their receipts before claiming
+native success. Use hidden Blender with `--factory-startup` so unrelated user
+addons do not run or race over their own startup files.
+
+For the separately identified cap-normal artifact, run
+`export_g1_shoulder_normals.py` and `import_g1_shoulder_normals.py` after the
+cap proof import. These create a separate green-mask rest mesh, retaining the
+original. With `SS_G2_VARIANT=g1_shoulder_cap`, capture first with
+`SS_G1_NORMAL_CONTROL=local` (three poses, opposing A/B views), then unset that
+variable and use `SS_G1_RECOMPUTE=local` for the complete passage. Global
+recomputation is a retained control that affects unrelated seams; it is not
+the selected treatment. Read receipts and inspect both geometry and shading.
+
+Add `SS_G1_SHOULDER_MOTION=1` for the separate front close-up capture. After
+both capture receipts and native parity pass, `build_g1_shoulder_review.py`
+encodes/decodes both videos and creates the private `G1ShoulderReview.html`.
+This is a nonlooping G1 review; no game build or broad rig acceptance follows.

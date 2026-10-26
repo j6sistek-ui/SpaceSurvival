@@ -1209,3 +1209,71 @@ thumb fit, all-joint/garment quality, full choreography or natural-play gates.
 No import warnings/errors. Capture has no errors but retains template warnings
 (12 Xandra Blueprint/input,126 texture,3 material skeletal-usage flags).
 They remain documented, not dismissed as a warning-free production pass.
+
+### October26 folded-arm shoulder and G1 signed-grip follow-up
+
+Owner reports a visible shoulder fold in an ordinary forward reach, despite
+earlier raised-arm improvement. Same-pose comparison finds3106/3106 torso rest
+vertices and weights unchanged from preserved844aae5f; the bare preserved
+mesh folds too. This is an uncovered pose/deformation problem, not evidence
+that the approved weights were lost. Clavicle protraction and global volume
+controls are retained but rejected for pose shifts or bulk.
+
+The G1 signed-grip control retains supporting-arm local motion and uses a
+guarded free-arm clearance profile. A discontinuous25cm release was rejected.
+Saved actioncc652d79 preserves4394 regular/fractional samples over27.45s;
+6589 fresh95-bone replay samples differ by at most0.103028mm.3295 saved
+right-hand/pole samples clear, minimum radius25.036162mm for a25mm pole.
+The endpoints differ; this passage is not a loop. Its speed targets are artistic
+settings, not universal human anatomical limits.
+
+Local shoulder-cap candidate51c25e24 evaluates2201 actual target poses and
+stores96 clip-specific corrective curves.275 unfitted quarter-frame holdouts
+stay within0.037396mm. Earlier30Hz interpolation failed0.635mm and was rejected.
+The549-vertex mask leaves the neck, opposite shoulder, bones and weights
+unchanged. It restores a badly collapsed region by up to59.949mm; do not
+describe that as a tiny displacement or unrestricted all-pose correction.
+The shape action must stay paired with the G1 bone action.
+
+Fresh saved geometry reproduces eight smoothing targets within0.032033mm,
+but skin-transformed normals retain a cap dent. Shadow/clothing controls
+do not remove it; recomputing normals on the deformed geometry does.
+Native18-view A/B confirms the distinction. Global recomputation also changes
+unrelated seams and is rejected. Separate rest export243a8f3e supplies a local
+green mask:549 nonzero source vertices,522 above1e-5 after native colour
+conversion, range0..1. All other parts are black. New native meshe434f671
+retains96 morphs/12 influences and saved green-channel recomputation.
+A second18-view A/B keeps the correction local.
+
+Native animationa0532a54 derives from savedcc652d79 and candidate51c25e24.
+Eight95-bone and complete visible-surface comparisons have maximum errors
+0.152663mm and0.161416mm respectively.48 stills include24 shoulder close-ups.
+Whole-body and continuous front-shoulder videos each decode660 frames at24Hz.
+Selected opposing, beginning, folded-reach and release views show the reduced
+fold; this is not frame-by-frame artistic acceptance or natural gameplay.
+
+Import logs retain413 original FBX and52 masked-rest FBX warnings (inactive
+vendor shape-curve/bind-pose messages); expected96 morphs/curves and actual
+surface transfer pass. The first masked-import attempt stopped before writing
+on a relative-path guard error; resolving the absolute path fixed that guard.
+Capture logs retain12 Xandra Blueprint/input,126 texture and3 material-usage
+warnings. Both encodes retain the existing PNG metadata warning and decode
+all660 frames. No warning-free production claim is made.
+
+Review: private SourceAssets/DanceRefinement_20261025/G1ShoulderReview.html;
+native map /Game/SpaceSurvival/Licensed/VexaG1ShoulderCap240Proof_20261026/L_G1ShoulderCap240_Review
+in CharacterWorkbench. Receipts are under G1ShoulderCapCorrective and
+G1ShoulderCapNative240; exact masks, hashes, commands and rejected controls
+are in DEFORMATION_RECIPE.md. The Blender candidate's raw-normal preview
+still differs from the selected native local-normal path.
+
+Full hand fit, other joints/garments, G/B joins and choreography, reusable
+rig behavior across other animations, multi-character and natural-play
+acceptance remain AI-owned. Preserve Vexa before Joy/Astra. No production
+character, map, DLL, saves, package, ClickUp or merge changed.
+
+Publication checks: 50 structural checks, Python compilation, source-content
+validation and documentation gate pass. No C++ changed; module rebuild/format
+are not applicable. After both videos fully decoded and their hashes were
+rechecked, 1296 disposable motion PNGs were removed (535928500 bytes); all48
+stills, 24 selected motion PNGs, A/B images, videos and receipts remain.

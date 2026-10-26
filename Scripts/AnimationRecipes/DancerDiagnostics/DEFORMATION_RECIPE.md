@@ -1533,3 +1533,122 @@ These scripts are offline repair/reproducibility tools, not per-frame game
 scripts. Preserve the working authored rig and bake verified motion; use
 native IK/physics where actual runtime adaptation is required. Do not replace
 this specific repair with an unconfigured physics or solver toggle.
+
+## G1 signed grip and folded-arm shoulder coverage — October26
+
+The owner reports a visibly defective ordinary folded-arm shoulder. The earlier
+approval applied to the shown raised-arm poses; it never established all-pose
+quality. Keep this failure in RPT-20261021-01. Do not describe its correction as
+a universal rig or infer that the other dancers are already repaired.
+
+**G1 contact before skin correction.** `g1_palmar_motion_control.py` transfers
+the signed calibration3deea08d using a rigid whole-body hand-frame transform.
+This retains the supporting right arm's local motion. An arm-only alternative
+introduced unnecessary wrist/root changes and was rejected. The inherited
+free left arm intersected the chest: elbow-only controls left19 failures,
+while the saved smooth two-dimensional reach/elbow profile b8a1ab7d resolves
+the defined sampled contact. The profile affects the free arm only.
+
+The first release contained a25cm positional jump; slowing it into a59s clip
+would conceal rather than repair that discontinuity. Continuous release keeps
+the original hand residual, and `--pin-orientation` holds the grip orientation
+until the fingers clear. The final control97afb916 clears1101 limited pole,
+arm/body and cross-digit samples. Both-arm checks cover2202 side/frame samples
+without a defined rear-reach/hinge flag. These are bounded screens, not proof
+of all anatomical or surface quality.
+
+`G1_PalmarGrip_Knots_ActionLibrary.blend` is action-only, SHA256
+`cc652d7905589a1534fe91fa2d27999c43a7aa809a350fa14aa6fcbfdf3711a1`.
+It preserves4394 regular/fractional source samples over27.45s. Fresh240Hz
+replay checks6589 samples/95 bones: maximum position difference0.103028mm,
+matrix difference0.000087902; actual local peak90.590degrees/s and pelvis
+0.450615m/s. Saved120Hz right-hand/pole checks clear3295 samples at minimum
+radius25.036162mm for the25mm pole. Endpoints differ: this passage is not a
+standalone loop. The slow timing targets remain artistic settings, not human
+joint limits.
+
+**Identify the shoulder cause before repainting.** At source3s (G1 frame816),
+`review_g1_shoulder_regression.py` matches3106/3106 torso rest vertices against
+preserved844aae5f with maximum weight difference0. The crease reproduces on
+the bare body and the preserved mesh at the same pose, before the free-arm
+contact relief. This rules out lost shoulder weights and clothing-only causes;
+it does not establish adequate weights/deformation for this forward reach.
+
+Independent controls:10/20-degree clavicle protraction shifts the free arm
+22.534/44.896mm, and global Preserve Volume adds unwanted shoulder/chest bulk.
+Neither is adopted. Local Corrective Smooth factor0.5, eight iterations,
+ORCO rest and boundary pinning removes the deep axilla fold without changing
+bones, weights or the held hand. A first mask limited to z<1.49m left a cap
+crease at source7.254899s, discovered in the full passage rather than the
+two initial still poses. That first3c519d6a candidate and native import remain
+comparison evidence, not the preferred repair.
+
+**Preferred shoulder-cap mask.** Reuse `shoulder_support.shoulder_mask` around
+the left upper-arm rest origin (radius0.22m,0.14m falloff, three-ring modular
+boundary protection). Multiply by smoothstep x0.09–0.14m and z1.15–1.24m;
+omit the earlier upper-z cutoff so the cap participates. This covers549
+vertices and excludes the neck/other shoulder. The target changes no rest
+coordinates, bone poses or skin weights. The largest posed target displacement
+is59.949mm in the severely collapsed region; do not report it as a tiny global
+adjustment. Check volume/silhouette throughout movement.
+
+`bake_g1_shoulder_corrective.py -- --cap` evaluates2201 actual G1 target poses
+at120Hz, inverts only nonsingular local skin matrices and compresses the local
+deltas into96 shape curves. Earlier30Hz interpolation failed0.635mm between
+samples, even after fitting error passed; it was rejected without loosening
+the0.3mm holdout gate. The current cap version fits within0.033435mm and275
+unfitted quarter-source-frame times stay within0.037396mm. Ten saved-curve
+checks leave every vertex outside the mask unchanged; no additional bones.
+
+Current private source: `Vexa_G1_ShoulderCap_Candidate.blend`, SHA256
+`51c25e242a481e7a98aee5281f11aa09094ecfbf0510272401f7868e87a8128e`.
+Pair `A_F3_G1_PalmarGrip_Knots_Review` with
+`A_F3_G1_LeftAxilla_Correctives`. These time-indexed coefficients belong to G1,
+not another clip. Transfer the method and mask only after checking another
+mesh's scale/topology; regenerate and verify its targets. Never copy the G1
+curve timing onto Joy/Astra or the other dancers.
+
+Fresh source/native receipts belong under `G1ShoulderCapCorrective` and
+`G1ShoulderCapNative240`. Use `export_g1_shoulder_proof.py -- --cap`, then
+`SS_G2_VARIANT=g1_shoulder_cap` with the existing private native tools. They
+must carry both the rest morphs and the paired animation. Import success is
+not rendered/native parity. Complete joint, garment, choreography, loop joins,
+multi-character and natural-play acceptance remain separate.
+
+**Normals are a separate gate.** The saved cap morphs reproduce the eight
+posed smoothing targets within0.032033mm, yet the skinned-normal source view
+retains a cap dent. Removing shadows or clothing does not remove it; a frozen
+copy with normals recalculated from the actual deformed surface does. This
+control does not justify another weight repaint or prove every surface good.
+Native same-pose A/B confirms recomputation removes this shading crease.
+Global recomputation also exposes unwanted modular/garment normal seams, so
+it is not the selected treatment. `export_g1_shoulder_normals.py` makes a
+separate rest FBX with green recompute weight on the549 shoulder vertices
+only; all other mesh parts are black. The mask is clamp(4*capMask,0,1).
+`import_g1_shoulder_normals.py` retains the same96 morphs/12 influences and
+saved green-channel section settings in a new mesh, preserving the original.
+Use `SS_G1_NORMAL_CONTROL=local` for the bounded A/B, then
+`SS_G1_RECOMPUTE=local` for full native capture. Skin cache must participate;
+the capture records its actual CVars. A successful import is not evidence
+that this local blend rendered correctly. The saved Blender file keeps its
+original normal treatment; its raw Workbench shading is not a substitute for
+the selected native normal path. No production renderer settings are changed.
+
+The localized native mesh has SHA256
+`e434f6713f6fe5b172eb518d8608deea362ed9920657d3e547ce8dca73fa93c7`;
+rest export243a8f3e preserves the same96 morphs and12 bone influences.
+The converted native mask has522 vertices above1e-5 and range0..1 (very small
+source weights quantize away). Both18-view A/B controls and old-proof hashes
+pass. Eight fresh native95-bone/surface comparisons differ by at most0.153mm
+and0.162mm;48 stills and two660-frame24Hz videos are retained. Source and
+native visual review show the reduced forward-reach fold; other joints and
+garments remain open. Do not extend this claim to all poses or other clips.
+
+Run the full capture once with `SS_G1_RECOMPUTE=local`, then again with
+`SS_G1_SHOULDER_MOTION=1` for the separate continuous front close-up. Compare
+with `compare_g2_glute_native.py`, then run `build_g1_shoulder_review.py` to
+encode, fully decode and build the private `G1ShoulderReview.html`. Raw PNG
+metadata warnings remain in encode logs. FBX inactive vendor-curve/bind-pose
+and template capture warnings remain documented; no expected G1 corrective
+curve is missing. The first masked import's relative-path guard failed before
+writing; the corrected guard resolves the absolute path before hashing.

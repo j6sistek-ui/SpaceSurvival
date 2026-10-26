@@ -18,20 +18,28 @@ CODE=Path(__file__).resolve().parent
 sys.path.insert(0,str(CODE))
 from g2_palmar_motion_control import PalmarControl
 
-model=PalmarControl(arm_ik=True,staged_release=True,free_wrist=True,index_lead=2.3)
+g1='--g1' in sys.argv
+if g1:
+    from g1_palmar_motion_control import G1PalmarControl
+    model=G1PalmarControl(False,True,True,True)
+else:
+    model=PalmarControl(arm_ik=True,staged_release=True,free_wrist=True,index_lead=2.3)
 audit_file=model.output/'DenseAudit.json';timing_file=model.output/'Timing.json'
 audit=json.loads(audit_file.read_text());timing=json.loads(timing_file.read_text())
-control_hash=hashlib.sha256((CODE/'g2_palmar_motion_control.py').read_bytes()).hexdigest()
+control_hash=hashlib.sha256((CODE/('g1_palmar_motion_control.py' if g1 else 'g2_palmar_motion_control.py')).read_bytes()).hexdigest()
 assert audit['sources']==timing['sources']==model.guards
 assert audit['control_sha256']==timing['control_sha256']==control_hash
 assert audit['dense'] and audit['samples']==model.manifest['frame_end']
 assert not any(audit[n] for n in ('pole_flags','arm_body_flags','digit_flags'))
 assert not any(r['rear_flag'] or r['hinge_alignment']<=0 or r['reach_error_m']>.0001 for r in audit['rows'])
+if g1:
+    assert timing['rear_flags']==timing['hinge_flags']==0
+    assert timing['support_arm_local_matrix_error']<.001
 source_times=np.array(timing['source_seconds_map']);destination_times=np.array(timing['destination_seconds_map'])
 fps=120;count=math.ceil(destination_times[-1]*fps)+1
 destination_times*=((count-1)/fps)/destination_times[-1]
-knots='--source-knots' in sys.argv
-variant='G2_PalmarGrip_Knots' if knots else 'G2_PalmarGrip'
+knots='--source-knots' in sys.argv or g1
+variant='G1_PalmarGrip_Knots' if g1 else 'G2_PalmarGrip_Knots' if knots else 'G2_PalmarGrip'
 destination=model.source/(variant+'_ActionLibrary.blend')
 record=model.source/(variant+'_Manifest.json')
 bake_times=np.arange(count,dtype=float)/fps
@@ -136,15 +144,18 @@ for sample in range(sample_count):
     if sample%1200==0:print('PALMAR_BAKE',verify,sample,max_position,flush=True)
 if verify:
     loop=max(float(np.abs(np.array(actual_start[n])-np.array(actual_end[n])).max()) for n in model.names)
-    report={'passed':max_position<.00015 and max_matrix<.001 and loop<.0001 and maximum_rate<95 and maximum_root<.46,
+    report={'passed':max_position<.00015 and max_matrix<.001 and (g1 or loop<.0001) and maximum_rate<95 and maximum_root<.46,
             'samples':sample_count,'maximum_bone_position_error_mm':max_position*1000,'maximum_matrix_error':max_matrix,'loop_matrix_error':loop,
             'maximum_local_dps':maximum_rate,'maximum_pelvis_mps':maximum_root,'action_sha256':manifest['sha256'],
             'control_sha256':control_hash,'sources':model.guards,'worst_pose':worst_pose,'scope':'Fresh saved120Hz action versus control at240Hz,95 bones. Limited numerical replay; surface/visual/native acceptance separate.'}
+    if g1:
+        report['endpoint_difference_not_loop_error']=report.pop('loop_matrix_error')
+        report['scope']+=' G1 is a nonlooping passage; no loop closure is claimed.'
     (model.output/('SavedReplayKnots.json' if knots else 'SavedReplay.json')).write_text(json.dumps(report,indent=2))
     print('PALMAR_REPLAY',{k:v for k,v in report.items() if k!='sources'},flush=True)
     assert report['passed']
 else:
-    candidate=bpy.data.actions.new('A_F3_G2_PalmarGrip_Knots_Review' if knots else 'A_F3_G2_PalmarGrip_Review');candidate.use_fake_user=True
+    candidate=bpy.data.actions.new('A_F3_G1_PalmarGrip_Knots_Review' if g1 else 'A_F3_G2_PalmarGrip_Knots_Review' if knots else 'A_F3_G2_PalmarGrip_Review');candidate.use_fake_user=True
     model.rig.animation_data.action=candidate
     for bone in model.ordered:
         bone.rotation_mode='QUATERNION'
@@ -172,7 +183,8 @@ else:
               'timing_sha256':hashlib.sha256(timing_file.read_bytes()).hexdigest(),'file':destination.name,'action':candidate.name,
               'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frame_end':count,'seconds':(count-1)/fps,
               'source_knots_preserved':knots,'bake_sample_count':len(bake_times),
-              'source_seconds_map':source_times.tolist(),'destination_seconds_map':destination_times.tolist(),'weight_patch':model.manifest['weight_patch'],
+              'source_seconds_map':source_times.tolist(),'destination_seconds_map':destination_times.tolist(),
+              'weight_patch':json.loads((model.source/'G2_GluteFollow_Manifest.json').read_text())['weight_patch'] if g1 else model.manifest['weight_patch'],
               'morph_mute_prefix':'REVIEW_G2_','key_count':keys,'scope':candidate['quality_state']}
     record.write_text(json.dumps(manifest,indent=2))
     print('PALMAR_SAVED',manifest['sha256'],manifest['seconds'],destination.stat().st_size,flush=True)
