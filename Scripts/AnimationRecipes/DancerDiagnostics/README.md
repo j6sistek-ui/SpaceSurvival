@@ -113,3 +113,12 @@ restrict their edits to inspected intervals. They deliberately change hand
 paths; they are not a contact solver or a universal anatomical limiter. Read
 the recipe before reproducing them. Matching full native videos and fresh
 reloads remain separate from complete routine and owner acceptance.
+
+## Shared zero-G correction
+
+The five-segment proof uses one shared basis and explicitly paired rig/shape
+actions. Read the working recipe before export; old Spiral coefficients do
+not transfer by time alone. Normal-mask and failed interpolation controls are
+retained so renderer faults are not mistaken for geometry failures. Native
+normal bands remain unresolved. Videos are review evidence, not full rig/contact
+or owner acceptance.

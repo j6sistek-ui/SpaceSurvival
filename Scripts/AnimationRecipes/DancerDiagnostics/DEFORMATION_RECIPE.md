@@ -454,3 +454,151 @@ SelectedVideos,SelectedReload}.json`, `GBArmEventViews/Report.json`,
 draft/unmerged; hand-repair head1cae454f source409 and documentation597/598 passed.
 No C++ changes or module rebuild were needed. Whole-routine and other-character
 acceptance remain in RPT-20261021-01.
+
+## October26 one mesh, five paired zero-G segments
+
+Preserve `Vexa_HandIsolation_Proof.blend` (`a9dbcbde`) and the original
+`Refined_ActionLibrary.blend` (`cfebfc7e`). The new private joint library is
+`ZeroG_Coordinated_ActionLibrary.blend`, SHA256
+`fc2df16b48e1ef4c6ec6775c4744abc90da26f0fdca4d35b04283d21a339f357`.
+It contains Drift16s, Spiral16s, Butterfly14s, Inversion16s and LateralArc14s.
+The12 changed local bones are both clavicles, upper arms, neck joints and
+thigh/calf/foot chains. All unrelated keys are exact,95 bones retained and
+all sampled hip/knee/ankle centres remain unchanged. Parent-relative
+`matrix_basis` reconstruction is required: sequential world-matrix assignment
+in a live hierarchy produced an exploded rejected preview. The correct bake
+checks all4565 frames; maximum matrix error is2.265e-6.
+
+All25 ordered endpoint pairs have positional mismatch below0.061mm,
+orientation agreement within the quaternion comparison's precision and
+maximum velocity mismatch0.003765m/s. This checks joins, not artistic quality.
+Two higher thigh-roll passages were inspected separately. Do not smooth an
+intentional leg-crossing simply because its angular velocity is larger.
+
+### Rebuild correction curves after the joint changes
+
+1. Clear old time-indexed REVIEW coefficients on the private copy. The retained
+   old Spiral curves cannot be retimed onto five different joint trajectories.
+2. Evaluate linear skinning and the localized preserve-volume target at the
+   actual pose. The hip mask uses distance to the nearest rest thigh joint:
+   `smoothstep(clamp((0.42-distance)/0.22,0,1))`, metres. This is the tested F3
+   target, not an anatomy rule. Inverse skin only where the active determinant
+   remains above0.01; reject singular transforms instead of inflating deltas.
+3. Build one shared PCA basis across the five clips, not five incompatible
+   meshes. The private source has168 new bases:48 Bottom,16 joined torso/hands,
+   96 joined legs/feet and8 Top. Part names describe combined objects; do not
+   mistake the joined hand object for hands alone.
+4. Test interpolation in the final posed surface. Four-frame coefficient
+   sampling initially missed1.803mm between keys. Its10.62mm rest-space error
+   was amplified by inverse skinning and was not a10.62mm visible defect.
+   Keep the rejected draft and measure in the space the player sees.
+5. Refine only intervals whose midpoint posed error exceeds0.2mm (four levels
+   maximum), then check independent quarter-interval samples. Drift uses344
+   coefficient samples, Spiral278, Butterfly229, Inversion241, LateralArc211.
+   All2596 held-out samples stay within0.164mm. Basis vectors do not change.
+6. Pin all five joint actions with fake users and store the explicit
+   `zero_g_curve_pairs` scene mapping. A fresh reload previously dropped unused
+   actions. Assign BOTH the rig action/slot and every corresponding shape-key
+   action/slot when switching clips. A rig-only action switch is invalid.
+
+The saved shared source is `Vexa_ZeroG_SharedHip_Proof.blend`, SHA256
+`455c499224fb39bbd6de41ee3c98bf5fac69916a1b3cceb710e17888acd326b8`.
+Export only visible derived surfaces, object root `root.001`, all95 original
+bones and120fps sampled curves. Eight negligible Top bases are pruned only in
+the export with a combined displacement bound below0.01mm. Import160 morphs
+and160 matching curves into each native clip. Duplicate the proof skeleton
+into the new namespace first so its added curve names cannot mutate the older
+proof skeleton. `AnimSequence.get_editor_property('skeleton')` is required;
+the initial direct-property error and guarded exact-namespace resume remain
+recorded. The old-proof hash guard covers the resume and later finalization;
+the interrupted first import did not persist its guard receipt.
+
+### Native normal-band diagnosis remains open
+
+The new assets live only in the private CharacterWorkbench under
+`/Game/SpaceSurvival/Licensed/VexaZeroGSharedHipProof_20261026`:
+`SK_VexaZeroGShared`, `SKEL_VexaZeroGProof`, and `A_ZG_01_Drift` through
+`A_ZG_05_LateralArc`. Five complete posed-surface comparisons contain28261
+vertices each, maximum bidirectional position difference0.276mm;27 sampled
+bone poses differ by at most0.192mm using one fixed coordinate conversion.
+This establishes bounded transfer, not topology equivalence or full motion.
+
+The native normal ramp initially showed harsh bands around the hips and knee.
+Enabling global recompute, explicitly opting the component into skin cache,
+enabling the section, and changing VertexNormalWS to PixelNormalWS did not
+remove them. A derivative-of-world-position control removed the bands while
+showing the underlying triangles: the immediate fault was shading. The
+installed cache summary confirmed the mesh participating; Nanite was false.
+Do not reshape good geometry to hide this rendering artifact.
+
+The first green-mask control looked better, but this did NOT establish a fix.
+Both component and source-asset colour copies returned black green, and a
+rendered VertexColor.G control independently confirmed black. The installed
+shader blends toward the recomputed tangent with that channel: black selects
+the original tangent. Preserve both aborted0-frame capture receipts; do not
+call these colour-copy failures or claim that the source colours are white.
+Normalizing the diagnostic shader alone also did not remove the bands.
+
+A separate mesh-only import, `SK_VexaZeroGWhiteMask`, explicitly overrides
+vertex colours to white (green range0.99999988..1) and retains the same source,
+160 morphs, skeleton and12 influences. It has SHA256
+`5c5bdbbb625837b30382c98ee65792a4e7ae953a5f75d3e56b066cfc1bc36528`.
+Its saved section0 enables recomputation with green mask1. Identical views
+still show bands, including when the console settings are enabled before
+component registration. This is an UNRESOLVED normal-path comparison, not an
+engine fix. The older black-mask experiment `b83de5a2` is retained separately.
+Fresh full-motion capture uses the explicit-white control and
+`r.SkinCache.RecomputeTangents=2`, checking saved flags, colours,160 curves and
+12 influences. Its footage is useful for movement but is not accepted shading.
+Production settings and older proof assets are unchanged.
+
+Epic's [render-path documentation](https://dev.epicgames.com/documentation/en-us/unreal-engine/skeletal-mesh-rendering-paths-in-unreal-engine)
+describes masked recomputation. [UE-305999](https://issues.unrealengine.com/issue/UE-305999)
+documents a no-mask regression, resolved August29,2025 with target5.7. Both
+were consulted October26,2026. This installed5.8 comparison does not prove the
+same upstream bug regressed, and the tested mask is not a verified fix. The
+documented old memory-limit CVar is absent here; do not interpret its failed
+lookup as zero memory. Installed headers/shaders and live readback govern.
+
+### Reproduction and remaining review
+
+Run joint review/bake, shared hip bake, adaptive refinement, fresh source
+controls, export and isolated native import in that order. The normal controls
+and saved black-mask settings are retained experiments, not a recommended fix.
+Run `import_zero_g_white_mask.py` before the current full-motion control.
+Then `capture_zero_g_full_motion.py` fresh-loads the
+proof and renders all five clips from front, back and a fixed stage camera.
+The5472 frames produce15 videos whose decoded frame counts agree. This checks
+capture integrity and provides continuous evidence; it is not owner visual
+approval, playable input, packaged performance or an anatomical guarantee.
+Inspect partially open knees, wrists/ankles, rear shoulder motion and garments
+through the complete paths. Pole grip must be solved after final body motion;
+the previously rejected V8 constraint and old contact paths remain invalid.
+The separate60fps visible-surface scan covers all4565 samples. With unchanged
+duet offsets of +/-1.70m and base height10.80m, the3.48m-radius chamber has
+at least0.5987m glass clearance,0.5276m central-pole clearance and1.1605m
+separation between conservative X slabs across any sampled clip ordering.
+The lowest floor/ceiling margins are2.6235m/2.9483m. These bounds cover the
+five visible proof objects, not future hair, physics, other meshes, unsampled
+interpolation or production placement. The chamber itself was not modified.
+
+The distal scan nominates Butterfly left foot frame474 (91.283degrees from
+the imported rest basis); ten opposing source closeups inspect that passage.
+Quaternion magnitude alone is not an anatomical verdict. The five clips have
+neutral local wrists, so they cannot serve as a wrist-range acceptance suite.
+The previous bilateral distal stress cases and real G/B contacts remain
+required. Keep Vexa first; do not infer Joy/Astra compatibility from F3 results.
+
+Private receipts are `ZeroGJointBake/Report.json` and `ZeroGSharedHip/`:
+`Report`, `PosedHoldouts`, `AdaptiveCurves`, `Export`, `NativeImport`,
+`NativeParity`, `NativeControls`, `NativeRecomputedControls`,
+`NativeExplicitSkin`, `NativePixelNormals`, `NativeGeometricNormals`,
+`NativeMaskedTangents`, `SavedTangents`, `NativeNormalized`, `NativeVertexGreen`,
+`WhiteMaskImport`, `NativeWhiteMask`, `NativeCacheStartup`, `FullMotion`, `Videos`,
+`FullSurfaceEnvelope` and `AnklePeak/Report`
+JSON files. The first white-mask wrapper had a nested-string syntax error;
+its log remains, and the corrected retry captures six frames successfully.
+Original native sources, approved proof blends, production map/DLL/saves and
+Joy/Astra remain unchanged. Full Vexa/contact/artistic approval remains open
+before any repair is transferred. PR96 stays draft/unmerged; b9cdff07 source410
+and documentation599/600 passed. No C++ changed or module rebuild was needed.

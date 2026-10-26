@@ -7,6 +7,7 @@ R.mkdir(parents=True,exist_ok=True)
 
 import unreal as u,json,time,traceback,math,os
 from pathlib import Path
+
 LEG_PLANE=os.environ.get('SS_REVIEW_LEG_PLANE')=='1'
 SHOULDER=True
 RECOMPUTE=os.environ.get('SS_REVIEW_RECOMPUTE')=='1'
@@ -65,6 +66,10 @@ if LEG_PLANE or SHOULDER:
   normal=u.MaterialEditingLibrary.create_material_expression(mat,u.MaterialExpressionNormalize)
   for a,p,b,q in ((position,'',dx,''),(position,'',dy,''),(dx,'',cross,'A'),(dy,'',cross,'B'),(cross,'',normal,'')):
    assert u.MaterialEditingLibrary.connect_material_expressions(a,p,b,q)
+ if os.environ.get('SS_REVIEW_NORMALIZE')=='1':
+  normalized=u.MaterialEditingLibrary.create_material_expression(mat,u.MaterialExpressionNormalize)
+  assert u.MaterialEditingLibrary.connect_material_expressions(normal,'',normalized,'')
+  normal=normalized
  direction=u.MaterialEditingLibrary.create_material_expression(mat,u.MaterialExpressionConstant3Vector);direction.set_editor_property('constant',u.LinearColor(.3,-.5,.8,1))
  dot=u.MaterialEditingLibrary.create_material_expression(mat,u.MaterialExpressionDotProduct)
  absolute=u.MaterialEditingLibrary.create_material_expression(mat,u.MaterialExpressionAbs)
