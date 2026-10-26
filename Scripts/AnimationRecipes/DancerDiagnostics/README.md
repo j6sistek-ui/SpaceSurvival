@@ -163,3 +163,11 @@ exact source hashes before returning its fitted matrices. Reproduction no
 longer depends on a private optimizer receipt or rerunning the fit. This
 preset is specific to Vexa a9dbcbde and action library0a38e12a; do not apply
 it to Joy, Astra or another pole size without separate calibration.
+
+## G2 posterior hip candidate
+
+Run the consolidated contact validator/exporter, guarded four-vertex weight save,
+posterior hip bake, actual-mesh validator, then proof export/import and fresh
+native capture/parity comparison. See DEFORMATION_RECIPE.md for exact order,
+input hashes, paired curves, failed broad targets and remaining defects. These
+recipes refuse prior-output overwrite; they do not adopt production assets.

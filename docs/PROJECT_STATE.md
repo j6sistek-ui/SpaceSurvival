@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October26 posterior hip review:** Private G2 candidateaa7da985 carries56 exportable correction curves after a four-vertex weight repair. Native/source surfaces match within0.105mm at eight poses, with24 stills and737 loop frames. Skin/garment/knee contour and complete anatomy remain RPT-20261021-01; production maps, DLL and package unchanged.
+
 **October26 private loop review:** Two editable76s Vexa sequence orders naturally loop after fresh load; sampled native joints/curves match the referenced clips at boundaries. Existing proof/production assets are preserved. Stage ring occlusion and complete anatomy/contact/artistic acceptance remain open under RPT-20261021-01. This is a private review map, not a new game build or release.
 
 **October26 pole release:** Private action49f87654 gives a deliberate18.333s G1 support/release, with dense pole clearance and bounded native transfer/reload checks. Full routine/loop and anatomical acceptance remain open under RPT-20261021-01. Production unchanged.

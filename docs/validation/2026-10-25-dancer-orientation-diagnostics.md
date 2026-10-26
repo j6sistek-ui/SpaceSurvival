@@ -1018,3 +1018,36 @@ before reanchoring the hand. It preserves elbow/wrist local transforms but
 still requires its own dense contact/anatomical result; do not infer success.
 
 **Direction-aware result:** The actual-direction20-degree control removes all1841-frame rear-reach/reversal flags, but still has30 head/pole collision samples and9/461 body-contact samples. It is also rejected for adoption. The next repair must change contact timing/reach only where needed; a blanket fixed grip plus uniform arm offset is insufficient. No new corrected loop was baked from either failed reach control.
+
+## October26 posterior hip follow-up
+
+Owner reports rear volume collapsing inward; the still-pose objection was
+withdrawn separately. A four-vertex opposite-leg weight repair is isolated in
+8cd382f7; all other weights, rest geometry and poses are retained. Broad DQ
+targets fail, including after that repair. The posterior-only candidateaa7da985
+passes1008 between-key target holdouts (max0.314113mm),1841 actual-surface
+pole/distal-arm/body samples, exact loop closure and2.749815m stage radius.
+
+Private native `VexaG2PosteriorHipProof_20261026` fresh-loads56 morphs/curves.
+Eight source/native comparisons give max0.097mm bone and0.105mm surface error;
+24 stills and737 loop frames are retained. The30.6667s video decodes completely.
+FFmpeg reports the existing PNG metadata warning; it is not hidden as a clean
+encode. Old proofs and production remain unchanged. The comparison shows
+fuller posterior volume, but the raised-leg clothing crease and knee contour
+remain visible. Hip/ankle direction diagnostics nominate frames; they do not
+establish anatomical or owner acceptance.
+
+Private receipts: `AnimationReview_20261025/G2HipVolume/LegIsolation.json`,
+`TargetContinuity.json`, `IsolatedTargetContinuity.json`, `G2IsolatedHip/BakeReport.json`,
+and `G2PosteriorHip/{BakeReport,GeometryAudit,NativeImport,NativeCapture,NativeParity}.json`.
+Exact reproduction and hashes are in `DEFORMATION_RECIPE.md`. The consolidated
+G2 contact recipe now supersedes the failed uniform-reach trials for the
+specified screens only. Complete G/B, garments, all-joint quality, natural-play
+and multi-character acceptance remain lead-owned before Joy/Astra.
+
+**Posterior controls:** Hiding the separate top/bottom leaves the inner raised-hip
+crease visible. A colored body-part view locates it within the lower-body mesh,
+not at the upper/lower waist seam. This is not a garment-only defect. The first
+static loop camera clips feet near25.08s; its take is rejected for framing.
+The corrected737-frame camera follows the bone bounds; twelve sampled views
+include the whole body. Neither framing nor surface parity closes anatomy.

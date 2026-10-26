@@ -956,3 +956,91 @@ before reanchoring the hand. It preserves elbow/wrist local transforms but
 still requires its own dense contact/anatomical result; do not infer success.
 
 **Direction-aware result:** The actual-direction20-degree control removes all1841-frame rear-reach/reversal flags, but still has30 head/pole collision samples and9/461 body-contact samples. It is also rejected for adoption. The next repair must change contact timing/reach only where needed; a blanket fixed grip plus uniform arm offset is insufficient. No new corrected loop was baked from either failed reach control.
+
+## October26 G2 contact and posterior hip repair
+
+This supersedes the failed fixed-axis/uniform reach controls above for sampled
+contact only. `g2_contact_recipe.py` consolidates the selected570-770 passage,
+quintic approach/release/return, direction-aware arm swings and exact retained
+grip calibration. It matches217 prototype poses exactly. The action source is
+`G2_ClearContact_ActionLibrary.blend`, SHA
+`e80efde6391f1627f5739c9c9a1b5371589ca6f0e6201549ddbdd674816779e7`.
+All1841 samples clear the defined pole/arm and distal-arm/body screens; endpoint
+matrices match exactly. It is still only a selected G2 passage, not full G/B.
+The validator explicitly excludes adjacent shoulder, within-hand, garment and
+between-sample contacts. Its grip matrix error is below0.000001; never substitute
+that metric for skin contact or anatomical review.
+
+The owner withdrew a still-pose objection, then identified posterior hip volume
+sinking inward. That feedback does not approve the whole routine or leg range.
+`audit_g2_lower_limb.py` records pelvis-relative directions, knee hinge signs and
+ankle rest-direction departures. No knee reversal is flagged, but large hip
+rotations remain review nominations, not a universal range-of-motion pass.
+
+### Separate stray weights from the volume correction
+
+Four right inner-thigh vertices1528/1534/1566/1574 in `Vexa_Continuous_Feet`
+carry1.05-1.49percent left-thigh-twist weight. `isolate_distal_leg_weights.py`
+removes only these isolated opposite-leg influences, redistributing them to the
+existing own-leg groups. Pelvis weights remain exact;52233 other vertex weight
+records are unchanged. The guarded save checks the exact four identities,
+normalization and original source hash before writing
+`Vexa_LegIsolation_Proof.blend`, SHA
+`8cd382f7f12e3ea75b5e4a325915b31b48eaedf442177dae402ad4bab91f3e3b`.
+These rest-space coordinates/vertex identities are Vexa-specific, not presets
+to apply blindly to Joy, Astra or another topology.
+
+The broad localized DQ target fails at crossed-leg rotations: a1/16-frame probe
+finds a9.798mm target jump at vertex1528. The four-weight repair removes that
+specific sampled jump, but a second broad-target bake still fails elsewhere.
+Retain both failed receipts. Do not globally enable Preserve Volume or smooth
+across the discontinuity and call it fixed. Blender's Armature modifier manual
+documents DQ's180-degree discontinuity; that is supporting context, while the
+local target samples establish this failure (official manual checked2026-10-26:
+https://docs.blender.org/manual/en/5.1/modeling/modifiers/deform/armature.html).
+
+### Restrict and bake the posterior target
+
+`hip_posterior_mask.py` limits correction to the posterior lateral hip, fading
+away from the midline, anterior thigh and waist. `bake_g2_posterior_hip.py`
+computes masked DQ-minus-linear deltas, maps them through the inverse weighted
+linear skinning matrix, and fits exportable shape bases. It preserves95 rest
+bones, bone motion, topology and the repaired weights. It does not depend on
+Blender-only modifier evaluation in Unreal. Three meshes use24/8/24 bases;
+505 adaptive key times pass1008 independent posed holdouts, maximum0.314113mm.
+These numbers measure target reproduction, not anatomy or desired appearance.
+
+Result: `Vexa_G2_PosteriorHip_Candidate.blend`, SHA
+`aa7da9855d2a5af57806674988c2d1017411ccb04201d4d0570a7138c0c3bdae`.
+Always pair the rig action with the mesh shape actions in scene property
+`g2_hip_curve_pairs`. Corrections are G2-specific; do not replay these time curves
+on zero-G or another action. Preserve earlier accepted shoulder derivatives.
+
+Fresh saved-mesh evaluation checks1841 frames with no pole/distal-arm-body
+intersection flags, exact start/end surfaces and2.749815m maximum radius within
+the3.48m stage footprint. It does not check garment/body collisions or certify
+hip/knee/wrist/ankle range. Matching off/on images at four times and three angles
+show fuller posterior volume; the raised-leg skin/garment crease remains visible.
+
+### Native reproduction
+
+The exporter refuses to run without the exact successful geometry receipt.
+Rest/animated FBXs go to private `G2PosteriorHipProof`; native import uses a new
+private skeleton and namespace `VexaG2PosteriorHipProof_20261026`,56 morphs and
+56 matching curves at120Hz,12 allowed bone influences. Previous proofs are
+hash-preserved. A separate process fresh-loads mesh/clip/skeleton and captures
+24 three-angle stills plus737 frames of the30.6667s loop. Eight independent
+native/source surfaces agree within0.105mm and95-bone samples within0.097mm.
+The video decodes737 frames; PNG metadata emits the existing FFmpeg warning.
+
+The review copy has no production adoption, new game DLL or packaged release.
+Native/source agreement does not repair a bad source silhouette. The skin/garment
+crease, knee contours, extreme hip directions, full original G/B coverage and
+multi-character/artistic acceptance remain open under RPT-20261021-01.
+
+**Posterior controls:** Hiding the separate top/bottom leaves the inner raised-hip
+crease visible. A colored body-part view locates it within the lower-body mesh,
+not at the upper/lower waist seam. This is not a garment-only defect. The first
+static loop camera clips feet near25.08s; its take is rejected for framing.
+The corrected737-frame camera follows the bone bounds; twelve sampled views
+include the whole body. Neither framing nor surface parity closes anatomy.
