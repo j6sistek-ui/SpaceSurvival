@@ -101,3 +101,7 @@ The hand-contamination and continuous-distal recipes create separate guarded cop
 ## Carrying the approved shoulder response into other clips
 
 Start with the practical procedure at the top of DEFORMATION_RECIPE.md. The `review_gb_shoulder_response` and `bake_gb_shoulder_response` recipes isolate and bake the approved G1 response without replacing the Spiral proof. Export/capture/encode/reload scripts verify four native derivatives and opposing G1 views. No pole-contact or full-motion acceptance is implied. Recipe wrappers reuse the existing tracked harness; keep those dependencies together.
+
+## One-vertex hand isolation
+
+The finger control/audit/repair recipes isolate opposite-hand weight contamination without replacing hand animation. Export/capture/fresh-reload and whole-surface comparisons preserve the earlier proof. Use the SkeletalMeshEditorSubsystem LOD accessor for the actual influence setting; failed reflection controls remain documented. Raw GLB rotation auditing distinguishes source motion defects from skinning. See the recipe for exact hashes and evidence limits.

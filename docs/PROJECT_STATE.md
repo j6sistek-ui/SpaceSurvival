@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October26 hand follow-up:** Private Vexa a9dbcbde removes one demonstrated opposite-hand weight causing a finger spike; sixteen native controls, whole-surface preservation and fresh dependency/LOD-setting reload pass. Other hand contact and choreography defects remain RPT-20261021-01. Earlier mesh/actions and production state are preserved.
+
 **October26 shoulder follow-up:** Private G/B action library4d72c70e carries the approved G1 shoulder response into native review. Four clips reload;822 shoulder-oriented captures/two decoded videos retained. Six local bone channels change; other keys and mesh/production state remain intact. Full motion/contact and other characters remain open under RPT-20261021-01.
 
 **October26 private joint repair:** Vexa d70f17f7 fixes sampled thumb contamination and wrist/ankle shading joins, retaining the approved shoulder baseline. A separate G/B wrist library a865e0d9 removes near80-degree track jumps; native before/after and complete G1 captures are retained. These candidates remain private/unadopted; other rapid joint motion, full-range anatomy, grips, garments and per-character motion remain open under RPT-20261021-01. Game binary, maps, saves and package are unchanged.
