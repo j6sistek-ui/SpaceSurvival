@@ -157,12 +157,14 @@ existing five clips. `validate_zero_g_duet.py` observes ordinary loop playback;
 `verify_zero_g_sequence_joins.py` compares native curves/joints at boundaries.
 See DEFORMATION_RECIPE.md for exact provenance and remaining limitations.
 
-The retained right-hand50mm-pole calibration is versioned in
+The historical right-hand50mm-pole calibration is versioned in
 `calibration/vexa_right_pole_50mm.json`. `load_supported_grip.py` checks both
 exact source hashes before returning its fitted matrices. Reproduction no
 longer depends on a private optimizer receipt or rerunning the fit. This
 preset is specific to Vexa a9dbcbde and action library0a38e12a; do not apply
 it to Joy, Astra or another pole size without separate calibration.
+**October26 supersession:** its signed finger curl is dorsal and rejected.
+Retain it only to reproduce historical controls, not as an accepted grip.
 
 ## G2 posterior hip candidate
 
@@ -215,9 +217,59 @@ Author/import scripts refuse to replace previous proof payloads.
 `review_g2_grip_motion.py` audits the exact saved candidate without modifying
 it. Its `-- --labels` mode identifies thumb/little finger; `-- --isolate`
 renders unobstructed forearm motion. Cyan is thumb, violet is little finger.
-The sampled native/contact checks pass; whole-rig/garment/artistic quality
-remains open. Read the recipe for source hashes, rejected controls and limits.
+The sampled native/contact checks did not catch dorsal finger flexion; the
+old grip is rejected. Read the recipe for source hashes, controls and limits.
 
 `-- --palm-proof` captures anatomically named palm/back views plus an
 open-finger control with the same wrist. Earlier front/back filenames name
 cameras, not hand anatomy. The control changes no saved asset.
+
+## Signed palmar grip controls
+
+`probe_g2_palmar_grip.py` fits an unsaved grip with the correct signed curl.
+The thumb-opposition control uses `-- --thumb-axis --surface --cmc --opposition --fit`;
+the separate `--reuse` invocation records a private, guarded calibration only.
+It refuses to overwrite that calibration. Earlier controls are rejected.
+
+`g2_palmar_motion_control.py` compares whole-body translations with an arm-only
+two-bone solve (`--arm-ik`) and staged thumb release (`--staged-release`).
+`--dense` samples every60Hz frame; `review_g2_palmar_motion.py` uses the same
+options for opposing views. `probe_palmar_release.py` isolates finger-opening
+collisions. `plan_palmar_release_path.py` records a rejected discontinuous path:
+clear individual points do not establish a collision-free continuous release.
+All results remain private controls pending complete motion, speed, anatomy,
+native and visual review; no saved game asset is changed by these scripts.
+
+The current palmar motion candidate uses
+`-- --arm-ik --staged-release --free-wrist --index-lead 2.3`.
+Run `g2_palmar_motion_control.py` with those arguments and `--dense`, then
+`check_palmar_timing.py` with the same arguments. Their exact source/control
+hashes gate `save_g2_palmar_action.py -- --source-knots`. The saved action-only
+library requires the existing116-vertex waist patch; it does not duplicate the
+character mesh or textures. Existing outputs are never overwritten.
+
+Fresh `save_g2_palmar_action.py -- --source-knots --verify-only` compares all95
+bones at half-frame times and measures actual playback speed. Add
+`--surface-only` for the saved right-hand/pole triangle screen. Uniform120Hz
+baking is retained as a failed comparison (1.198mm bone error), even though its
+6141 saved hand/pole samples clear. Preserve source fractional key breakpoints
+when baking; increasing nominal frame rate alone does not preserve corners.
+
+`review_g2_palmar_motion.py` adds `--saved --source-knots` for the current saved
+candidate and `--movie` for opposing12Hz inspection frames. Camera names front/back identify
+viewpoints, not anatomical palm/back orientation. No review script certifies
+complete anatomy, artistry or native/game adoption.
+
+The current409a79ad action passes12281 fresh source replay samples (maximum
+0.0808mm bone error) and6141 saved hand/pole surface samples. Two615-frame
+opposing videos fully decode. `export_g2_palmar_proof.py` exports only this
+action at240Hz and reuses the existing unchanged glute-follow rest FBX.
+Set `SS_G2_VARIANT=palmar` for `import_g2_posterior_proof.py`,
+`capture_g2_posterior_proof.py` and `compare_g2_glute_native.py`. These target
+the private CharacterWorkbench only. Import reuses the previous mesh/skeleton
+without saving them; old proof hashes must remain unchanged. Fresh native
+results are separate from source evidence and must be read before adoption.
+Current fresh native receipts pass eight poses within0.116mm bones/0.195mm
+surfaces;38 stills and1229 fully decoded loop frames remain private. Review
+`SourceAssets/DanceRefinement_20261025/G2PalmarReview.html`. This is scripted
+sampling, not natural gameplay or complete artistic/rig acceptance.

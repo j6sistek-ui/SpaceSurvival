@@ -6,7 +6,9 @@ import numpy as np
 from mathutils.kdtree import KDTree
 
 P = Path(os.environ.get('SS_ANIMATION_PROJECT', str(Path.home() / 'SpaceSurvival'))).resolve()
-O = P / '.agent/local/AnimationReview_20261025' / ('G2GluteFollowNative240' if os.environ.get('SS_G2_VARIANT') == 'glute_follow_240' else 'G2GluteFollowNative')
+variant = os.environ.get('SS_G2_VARIANT', '')
+assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar')
+O = P / '.agent/local/AnimationReview_20261025' / ('G2PalmarNative240' if variant == 'palmar' else 'G2GluteFollowNative240' if variant == 'glute_follow_240' else 'G2GluteFollowNative')
 source = json.loads((O / 'SourceControls.json').read_text())
 native = json.loads((O / 'NativeCapture.json').read_text())
 assert native['ok'] and source['source_sha256'] == native['source_sha256']

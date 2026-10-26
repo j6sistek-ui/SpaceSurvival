@@ -11,11 +11,12 @@ import unreal as u
 import json, time, traceback, hashlib, math
 from pathlib import Path
 variant=os.environ.get('SS_G2_VARIANT','')
-assert variant in ('', 'glute_follow', 'glute_follow_240'), 'Unknown proof variant'
-glute_follow=variant in ('glute_follow','glute_follow_240')
+assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar'), 'Unknown proof variant'
+palmar=variant=='palmar'
+glute_follow=variant in ('glute_follow','glute_follow_240','palmar')
 refined_rate=variant=='glute_follow_240'
-stem='G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
-O=R/('G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip'); OUT=O/'NativeViews'; OUT.mkdir(exist_ok=True)
+stem='G2Palmar240' if palmar else 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
+O=R/('G2PalmarNative240' if palmar else 'G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip'); OUT=O/'NativeViews'; OUT.mkdir(exist_ok=True)
 BASE='/Game/SpaceSurvival/Licensed/Vexa'+stem+'Proof_20261026'
 assert 'WorkbenchNative/CharacterWorkbench' in u.Paths.get_project_file_path().replace('\\','/')
 receipt=json.loads((O/'NativeImport.json').read_text()); assert receipt['ok']
@@ -24,6 +25,9 @@ if glute_follow:assert controls['action_sha256']==receipt['action_sha256']
 sk=u.load_asset(receipt['mesh']); clip=u.load_asset(receipt['clip'])
 assert sk and clip and sk.skeleton==clip.get_editor_property('skeleton')
 protected={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(u.Paths.project_content_dir())/BASE.replace('/Game/','')).glob('*.uasset')}
+if palmar:
+    reused=Path(u.Paths.project_content_dir())/'SpaceSurvival/Licensed/VexaG2GluteFollow240Proof_20261026'
+    protected.update({str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in reused.glob('*.uasset')})
 es=u.get_editor_subsystem(u.EditorActorSubsystem); ls=u.get_editor_subsystem(u.LevelEditorSubsystem); ed=u.get_editor_subsystem(u.UnrealEditorSubsystem)
 assert u.EditorLoadingAndSavingUtils.new_map_from_template('/Game/SpaceSurvival/Licensed/ZeroGSourceBaseline_20261025/L_SourceBaseline_Review',False)
 for a in es.get_all_level_actors():
@@ -42,6 +46,8 @@ cap=es.spawn_actor_from_class(u.SceneCapture2D,u.Vector()); cap.set_actor_label(
 assert u.EditorLoadingAndSavingUtils.save_map(ed.get_editor_world(),BASE+'/L_'+stem+'_Review')
 fps=24;count=round(clip.sequence_length*fps)+1
 events=[{'kind':'still','row':row,'view':view,'seconds':row['seconds'],'filename':row['label']+'_'+view+'.png'} for row in controls['rows'] for view in ('front','back','side')]
+if palmar:
+    events += [{'kind':'hand','row':row,'view':view,'seconds':row['seconds'],'filename':row['label']+'_hand_'+view+'.png'} for row in controls['rows'][1:] for view in ('front','back')]
 events += [{'kind':'motion','view':'back','seconds':min(i/fps,clip.sequence_length),'filename':f'loop_{i:04d}.png'} for i in range(count)]
 report={'source_sha256':receipt['source_sha256'],'action_sha256':receipt.get('action_sha256'),'asset':receipt['clip'],'map':BASE+'/L_'+stem+'_Review','fps':fps,'frames':count,'captures':[],'errors':[], 'scope':'Private single-character source/native parity and visual review; not full anatomy, garments or production acceptance.'}
 state={'start':time.monotonic(),'stage':'wait','event':0,'busy':False}
@@ -80,7 +86,7 @@ def tick(dt):
         if state['stage']=='settle':
             state['ticks']+=1
             if state['ticks']<2:return
-            if event['kind']=='still':
+            if event['kind'] in ('still','hand'):
                 side=unit(c.get_socket_location('upperarm_l')-c.get_socket_location('upperarm_r'))
                 up=unit(c.get_socket_location('neck_01')-c.get_socket_location('spine_03'))
                 front=unit(u.Vector(up.y*side.z-up.z*side.y,up.z*side.x-up.x*side.z,up.x*side.y-up.y*side.x))
@@ -88,7 +94,10 @@ def tick(dt):
                 direction=front if event['view']=='front' else front*-1 if event['view']=='back' else side
                 loc=center+direction*185+up*15
                 row=event['row'];state['bones']={n:c.get_socket_location(n).to_tuple() for n in row['bones_m']}
-                if event['view']=='front':
+                if event['kind']=='hand':
+                    center=c.get_socket_location('hand_r')
+                    loc=center+unit(u.Vector(3,-5,2) if event['view']=='front' else u.Vector(-3,5,2))*55
+                if event['view']=='front' and event['kind']=='still':
                     dynamic=u.DynamicMesh(); result=u.GeometryScript_SceneUtils.copy_mesh_from_component(c,dynamic,u.GeometryScriptCopyMeshFromComponentOptions(),True)
                     query=u.GeometryScript_MeshQueries.get_all_vertex_positions(dynamic,False); vectors=u.GeometryScript_List.convert_vector_list_to_array(query[1])
                     (OUT/(row['label']+'_Surface.json')).write_text(json.dumps({'outcome':str(result[-1]),'vertices_world_cm':[v.to_tuple() for v in vectors]}))

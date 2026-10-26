@@ -15,12 +15,13 @@ import unreal as u
 
 
 variant = os.environ.get('SS_G2_VARIANT', '')
-assert variant in ('', 'glute_follow', 'glute_follow_240'), 'Unknown proof variant'
-glute_follow = variant in ('glute_follow', 'glute_follow_240')
+assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar'), 'Unknown proof variant'
+palmar = variant == 'palmar'
+glute_follow = variant in ('glute_follow', 'glute_follow_240', 'palmar')
 refined_rate = variant == 'glute_follow_240'
-O = R / ('G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
+O = R / ('G2PalmarNative240' if palmar else 'G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
 contract = json.loads((O / 'Export.json').read_text())
-stem = 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
+stem = 'G2Palmar240' if palmar else 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
 BASE = '/Game/SpaceSurvival/Licensed/Vexa' + stem + 'Proof_20261026'
 OLD = '/Game/SpaceSurvival/Licensed/VexaContinuousDistalProof_20261025'
 assert 'WorkbenchNative/CharacterWorkbench' in u.Paths.get_project_file_path().replace('\\', '/')
@@ -28,7 +29,7 @@ for key in (('source', 'action', 'animation', 'rest') if glute_follow else ('sou
     assert hashlib.sha256(Path(contract[key]).read_bytes()).hexdigest() == contract[key + '_sha256']
 root = Path(u.Paths.project_content_dir()) / 'SpaceSurvival/Licensed'
 protected = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
-             for sub in ('VexaContinuousDistalProof_20261025', 'VexaHandIsolationProof_20261026', 'VexaZeroGSharedHipProof_20261026', *(['VexaG2PosteriorHipProof_20261026'] if glute_follow else []), *(['VexaG2GluteFollowProof_20261026'] if refined_rate else []))
+             for sub in ('VexaContinuousDistalProof_20261025', 'VexaHandIsolationProof_20261026', 'VexaZeroGSharedHipProof_20261026', *(['VexaG2PosteriorHipProof_20261026'] if glute_follow else []), *(['VexaG2GluteFollowProof_20261026'] if refined_rate or palmar else []), *(['VexaG2GluteFollow240Proof_20261026'] if palmar else []))
              for p in (root / sub).rglob('*') if p.is_file()}
 report = {'base': BASE, 'source_sha256': contract['source_sha256'], 'errors': []}
 if glute_follow:
@@ -36,27 +37,35 @@ if glute_follow:
 try:
     lib = u.EditorAssetLibrary
     assert not lib.does_directory_exist(BASE), 'Preserve previous proof'
-    skeleton = lib.duplicate_asset(OLD + '/SK_VexaContinuousDistalProof_Skeleton', BASE + '/SKEL_' + stem)
-    assert skeleton and lib.save_loaded_asset(skeleton, False)
     u.SystemLibrary.execute_console_command(None, 'Interchange.FeatureFlags.Import.FBX 0')
-    task = u.AssetImportTask()
-    task.filename = contract['rest']; task.destination_path = BASE; task.destination_name = 'SK_' + stem
-    task.automated = True; task.save = True; task.replace_existing = False
-    opt = u.FbxImportUI(); opt.automated_import_should_detect_type = False
-    opt.import_mesh = True; opt.import_as_skeletal = True; opt.import_animations = False
-    opt.import_materials = False; opt.import_textures = False; opt.create_physics_asset = False
-    opt.skeleton = skeleton; opt.mesh_type_to_import = u.FBXImportType.FBXIT_SKELETAL_MESH
-    opt.skeletal_mesh_import_data.set_editor_property('import_morph_targets', True)
-    opt.skeletal_mesh_import_data.set_editor_property('morph_threshold_position', .00001)
-    task.options = opt
-    u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
-    mesh = u.load_asset(BASE + '/' + task.destination_name)
-    assert mesh and mesh.skeleton == skeleton
-    editor = u.get_editor_subsystem(u.SkeletalMeshEditorSubsystem)
-    settings = editor.get_lod_build_settings(mesh, 0)
-    settings.set_editor_property('bone_influence_limit', 12)
-    editor.set_lod_build_settings(mesh, 0, settings)
-    assert lib.save_loaded_asset(mesh, False)
+    if palmar:
+        old_export = json.loads((R / 'G2GluteFollowNative240/Export.json').read_text())
+        old_import = json.loads((R / 'G2GluteFollowNative240/NativeImport.json').read_text())
+        assert old_import['ok'] and old_export['rest_sha256'] == contract['rest_sha256']
+        mesh = u.load_asset(old_import['mesh'])
+        assert mesh
+        skeleton = mesh.skeleton
+    else:
+        skeleton = lib.duplicate_asset(OLD + '/SK_VexaContinuousDistalProof_Skeleton', BASE + '/SKEL_' + stem)
+        assert skeleton and lib.save_loaded_asset(skeleton, False)
+        task = u.AssetImportTask()
+        task.filename = contract['rest']; task.destination_path = BASE; task.destination_name = 'SK_' + stem
+        task.automated = True; task.save = True; task.replace_existing = False
+        opt = u.FbxImportUI(); opt.automated_import_should_detect_type = False
+        opt.import_mesh = True; opt.import_as_skeletal = True; opt.import_animations = False
+        opt.import_materials = False; opt.import_textures = False; opt.create_physics_asset = False
+        opt.skeleton = skeleton; opt.mesh_type_to_import = u.FBXImportType.FBXIT_SKELETAL_MESH
+        opt.skeletal_mesh_import_data.set_editor_property('import_morph_targets', True)
+        opt.skeletal_mesh_import_data.set_editor_property('morph_threshold_position', .00001)
+        task.options = opt
+        u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        mesh = u.load_asset(BASE + '/' + task.destination_name)
+        assert mesh and mesh.skeleton == skeleton
+        editor = u.get_editor_subsystem(u.SkeletalMeshEditorSubsystem)
+        settings = editor.get_lod_build_settings(mesh, 0)
+        settings.set_editor_property('bone_influence_limit', 12)
+        editor.set_lod_build_settings(mesh, 0, settings)
+        assert lib.save_loaded_asset(mesh, False)
     expected = {n.casefold() for n in contract['expected_morphs']}
     actual = {m.get_name().casefold() for m in mesh.get_editor_property('morph_targets') if m.get_name().casefold().startswith('review_g2_')}
     assert actual == expected, (expected - actual, actual - expected)
@@ -76,7 +85,9 @@ try:
     assert clip and clip.get_editor_property('skeleton') == skeleton
     curves = {str(n).casefold() for n in u.AnimationLibrary.get_animation_curve_names(clip, u.RawCurveTrackTypes.RCT_FLOAT) if str(n).casefold().startswith('review_g2_')}
     assert curves == expected and abs(clip.sequence_length - contract['duration']) < .0001
-    assert lib.save_loaded_asset(clip, False) and lib.save_loaded_asset(skeleton, False)
+    assert lib.save_loaded_asset(clip, False)
+    if not palmar:
+        assert lib.save_loaded_asset(skeleton, False)
     report.update(mesh=mesh.get_path_name(), clip=clip.get_path_name(), curves=len(curves), morphs=len(actual), duration=clip.sequence_length)
     report['old_proofs_unchanged'] = all(Path(p).is_file() and hashlib.sha256(Path(p).read_bytes()).hexdigest() == h for p, h in protected.items())
     assert report['old_proofs_unchanged']

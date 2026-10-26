@@ -1391,3 +1391,145 @@ so that comparison was rejected. Freeze the pose by detaching the action
 and restoring local bone transforms before opening fingers. No saved grip
 or motion changed. This resolves view identity only, not whole-arm twist,
 finger fit or artistic acceptance.
+
+### Signed finger curl supersedes radial-only grip confidence (October26)
+
+The right palm identification and thumb-up statement remain correct. The grip
+itself is **rejected**: the saved four-finger calibration uses `-width` as its
+positive curl axis, driving fingers toward the dorsal surface. With along =
+middle-base minus wrist and width = index-base minus little-base, right palmar
+normal is `-along.cross(width)`. At source12.4s this is world-Y negative;
+saved index/middle/ring proximal segments point13.99/18.41/12.75mm away from it.
+A pole outside the mesh and no cross-digit intersections do not detect this.
+Do not use the old calibration for G1, G2 or another dancer as an accepted grip.
+
+`probe_g2_palmar_grip.py` preserves aa7da985/f7f76b2e and makes unsaved controls.
+It keeps the hand rotation and all arm local transforms; positive finger flexion
+now uses `width`, with the pole moved to the palmar side by whole-pose translation.
+This requires fresh full-body contact review before any motion adoption.
+The first coupled fit fails21mm little-finger penetration. `--coarse --fit`
+fits digits independently and reduces penetration, but leaves a25.42mm thumb
+gap. `--thumb-axis --fit` transports a thumb-specific rest hinge across the
+palm; it reduces the gap but fails57 thumb/index triangle pairs and0.463mm pole
+penetration. All three are rejected controls, not saved animation candidates.
+
+The `--thumb-axis --surface --fit` control uses a thumb-specific palmar pad,
+actual pole/triangle clearance and thumb/index intersection penalty, but leaves
+a14.54mm thumb gap. Adding `--cmc` closes that gap to0.346mm with no triangle
+overlap, yet creates a visibly stretched upward thumb hook: **rejected**.
+Adding `--opposition` rotates the thumb around its own proximal axis as well.
+This static control has0cross-digit pairs,0.0489mm minimum pole/triangle gap,
+0.00254mm CPU/Blender parity, and mean-nearest pad gaps0.178/0.630/0.213/2.269mm
+for the four fingers and3.314mm for the thumb. Three opposing/top views show
+palmar curl and a folded thumb. This is a better static candidate, not approval.
+`--reuse` records private calibration3deea08d without saving a Blender asset.
+
+Whole-pose translation by(-16,+105,0)mm puts the pole on the correct hand side,
+but the first motion screen fails22/131 samples against body/feet/hand. Radial
+retreat plus10degrees shoulder swing reduces this to11; still rejected.
+The arm-only two-bone solve retains the source elbow plane and uses the smallest
+smooth root adjustment needed to avoid a straight-arm singularity (10degree
+minimum bend,5mm blend band). The first full-retreat target was unreachable and
+is rejected. Rejoining the original free-flight wrist path limits root change
+to43.982mm and removes held body collisions, but simultaneous opening/withdrawal
+still has4/131 pole flags. Keep wrist changes and all motion limits under review.
+
+Fixed-wrist opening is not safe:200/202 original-finger transition samples and
+100/101 rest-finger transition samples hit the pole, primarily thumb/little
+finger. The2D wrist-path optimizer finds202 individually clear points but jumps
+14.9mm between neighboring openings; that discontinuous path is **rejected**.
+The staged control unhooks the thumb first (25degree base rotation about the
+transported hand width), then opens the fingers and withdraws around the pole.
+The initial131-sample screen has2sub-millimeter hand contacts and no screened
+arm/body or cross-digit intersections. This remains an unsaved control; dense
+contact, arm directions, timing and opposing visual review must pass before
+saving or transferring it. No old grip acceptance carries into this new control.
+
+The installed Blender5.2 Rigify `rigs/limbs/super_finger.py` explicitly supports
+signed primary rotation axes. The [Blender rigging manual](https://docs.blender.org/manual/en/2.81/addons/rigging/rigify.html)
+also distinguishes thumb and finger axis alignment (accessed October26; historical
+2.81 advice is not a mandate to replace this rig). This control checks those axes
+against this mesh; no Rigify generation, plugin installation or bone rest edits.
+
+### Release orientation and reusable authoring boundary
+
+The initial staged control fails34/2595 dense pole samples and bends the wrist
+direction to96.071degrees. It is rejected. Letting the hand follow the changed
+forearm after clearance reduces that direction peak to48.666degrees; this is a
+geometric measurement, not a medical/anatomical certificate. That version has
+six approach-only index/pole contacts, deepest0.06755mm. Preserve both receipts.
+Index opening lead is explicit (`1-(1-u)^lead`);2.0 is the rejected control and
+2.3 is the next separately named candidate. No collision tolerance was relaxed.
+
+The wrist is fixed during the hold, with a staged thumb unhook and finger
+opening. Once clear, the original local wrist relationship follows the new
+forearm. The body pose and earlier hip/shoulder work remain the source;
+right-arm IK and the minimum smooth root adjustment resolve reach. This still
+requires full saved surface, motion and native checks before adoption.
+
+`check_palmar_timing.py` measures95 local rotations and pelvis translation.
+The unpaced correction peaks337.916degrees/s at the wrist, so still-image
+quality alone is insufficient. A shared monotone map proposes51.166seconds
+instead of43.233, targeting90degrees/s and0.45m/s for this artistic routine.
+`save_g2_palmar_action.py` refuses failed/stale dense evidence, protects all
+source hashes and writes an action-only derivative with its required weight
+patch. Its `--verify-only` mode checks a fresh reload at half-frame times.
+Those artistic speed choices are not universal human limits.
+
+Index lead2.3 clears the2595-frame control:0pole,0arm/body,0cross-digit
+intersection samples; no rear-reach/hinge-reversal flag. Maximum root shift
+remains43.982mm and visible radius2.749731m. This supersedes the failed lead2.0
+approach only; the static thumb gap and complete artistic/native review remain.
+Saved uniform120Hz actiona4874816 runs51.166667seconds and clears6141 saved
+right-hand/pole samples (minimum radius25.04502mm for a25mm-radius pole).
+However, its12281 half-frame95-bone replay fails1.198484mm positional parity.
+Do not treat that contact pass or successful file save as source fidelity.
+
+The separate `--source-knots` variant409a79ad also inserts every original
+fractional action-key breakpoint after the shared time mapping. It retains
+the120Hz regular samples for nonlinear IK between those breakpoints. This
+avoids straddling existing corners without replacing the source or mesh.
+Fresh SavedReplayKnots passes12281 samples: maximum95-bone positional error
+0.080783mm, maximum matrix error0.00005865, loop error0.00000548. Actual local
+rotation peak94.400degrees/s and pelvis peak0.452054m/s meet the stated95/.46
+verification ceilings; do not confuse these ceilings with universal anatomy.
+SavedHandSurfaceKnots passes6141 right-hand/pole triangle samples, minimum
+radius25.045020mm for a25mm pole. This screen excludes other body regions and
+between-frame contacts. Two615-frame opposing12Hz videos fully decode; four
+held/approach/release stills were inspected, with the corrected palmar curl
+and earlier body shape retained. Full choreography/garment/native acceptance
+remains open. The first slow verifier alternated large action bindings every
+sample and was stopped; batched expected/replay passes retain the same sample
+times and reduce repeated animation-cache rebuilds.
+
+The current source is `G2_PalmarGrip_Knots_ActionLibrary.blend`, SHA256
+`409a79adfcfd8e9b365310f1d58955f91e6662eac47e613a6fb7314455ecd90d`.
+It holds10573 regular-plus-breakpoint samples over51.166667seconds, paired
+with its manifest and116-vertex waist patch. It is an action-only derivative;
+the approved source meshes are not rewritten. Reproducible native export is
+`export_g2_palmar_proof.py`; `SS_G2_VARIANT=palmar` selects its isolated
+import/capture/comparison. It reuses the unchanged glute-follow rest mesh and
+skeleton, imports only a new animation, and protects old native proof hashes.
+Source replay does not establish native transfer; read the separate receipt.
+
+Fresh palmar native import/capture now passes eight95-bone comparisons within
+0.115274mm and eight visible-surface comparisons within0.194188mm. It imports
+only animation60445f36 into `VexaG2Palmar240Proof_20261026`; old proof bytes
+remain unchanged.38 stills include14 opposing hand closeups. The1229-frame
+24Hz scripted native loop fully decodes; selected hold/release hand and body
+views were inspected. This is sampled animation evaluation, not natural Play,
+complete anatomical/artistic approval or a multi-character pass. Import has
+no logged warnings/errors; capture retains existing template warnings for
+12 Xandra Blueprint/input entries,126 texture entries and3 material skeletal
+usage flags. Those vendor/template warnings are not repaired by this pass.
+The current local review is `SourceAssets/DanceRefinement_20261025/G2PalmarReview.html`.
+
+Unreal already supplies [Full Body IK with bone limits and preferred angles](https://dev.epicgames.com/documentation/unreal-engine/ik-rig-solvers-in-unreal-engine)
+and [configured physical animation](https://dev.epicgames.com/documentation/unreal-engine/physics-driven-animation-in-unreal-engine)
+(Epic5.8 documentation accessed2026-10-26). They are suitable runtime tools
+when configured for the rig/contact behavior. They do not establish that this
+imported animation has correct flexion axes, skin weights or artistic poses.
+These scripts are offline repair/reproducibility tools, not per-frame game
+scripts. Preserve the working authored rig and bake verified motion; use
+native IK/physics where actual runtime adaptation is required. Do not replace
+this specific repair with an unconfigured physics or solver toggle.

@@ -1151,3 +1151,61 @@ The previously shown closeup is the palm; the reverse exposes fingernails.
 Cyan thumb remains above fingers. Hand matrix difference<7.1e-8 and index
 movement68.264mm distinguish a real open control from the rejected live-action
 reset. Hash guards pass, no asset saved. This does not certify motion or grip fit.
+
+### October26 signed-curl correction
+
+The shown right palm/upper thumb identification is correct, but the old fitted
+finger flexion is dorsal. A radial pole clearance check did not detect that
+direction error. **The old G1/G2 grip calibration is rejected for adoption.**
+The static palmar/opposition control records calibration3deea08d; three views,
+0cross-digit pairs and0.00254mm evaluated-surface parity support further testing,
+not full motion acceptance. Thumb pad gap remains3.314mm.
+
+Whole-body translation/swing controls introduce new pole collisions and are
+rejected. An arm-only solve preserves the original bend plane and original body
+local transforms, with up to43.982mm of smooth root correction at the longest
+reaches. The first rejoining-path control still fails4/131 hand/pole samples.
+Fixed-wrist opening fails; the pointwise-clear2D path jumps14.9mm and is rejected.
+A separate staged thumb-first release reduces the coarse screen to2small hand
+contacts. Dense contacts, all-joint directions, pacing, continuous opposing
+views, saved reload and native transfer remain AI-owned. Details and reproducible
+commands are in DEFORMATION_RECIPE.md; all controls preserve source hashes.
+No production/native asset, map, DLL, save, ClickUp or owner acceptance changed.
+
+### October26 saved palmar grip and release
+
+Dense staged release fails34/2595 hand/pole samples and reaches96.071degrees
+of wrist-direction deviation. Following the free wrist after clearance reduces
+the peak to48.666degrees but leaves six tiny index contacts. Index-opening
+lead2.3 clears2595 defined pole/arm-body/cross-digit samples, with no screened
+hinge reversal or rear reach. No tolerance was relaxed. A shared timing map
+extends43.233s to51.166667s after detecting337.916degrees/s wrist motion.
+
+Uniform120Hz actiona4874816 clears6141 hand/pole samples but fails fresh
+source parity1.198484mm. Separate action409a79ad preserves original fractional
+key breakpoints as well as regular120Hz samples. Fresh reload passes12281
+95-bone samples at240Hz:0.080783mm maximum position error,0.00005865 matrix
+error,0.00000548 loop error,94.400degrees/s local peak and0.452054m/s pelvis
+peak. The artistic speed ceilings are95degrees/s and0.46m/s, not human limits.
+Its6141 saved hand/pole samples also pass (minimum radius25.045020mm).
+Two615-frame opposing source videos fully decode; held/release/approach
+stills retain earlier body work and show palmar curl. Static thumb pad gap
+3.314mm remains open, as do full motion/artistic and native acceptance.
+
+Saved action409a79ad, calibration3deea08d and controlfa231886 are linked in
+the private manifest. Native export reuses the unchanged glute-follow rest
+mesh/skeleton; only a new animation is imported into the isolated workbench.
+Source checks do not establish that transfer. No production adoption,
+package/build change, ClickUp write or whole-routine owner acceptance.
+
+Fresh palmar native result: import reuses the unchanged glute-follow mesh and
+skeleton, adding only `/Game/SpaceSurvival/Licensed/VexaG2Palmar240Proof_20261026/A_G2Palmar240`.
+Animation FBX60445f36 derives from saved409a79ad. Eight95-bone comparisons
+are within0.115274mm and eight visible-surface comparisons within0.194188mm;
+all protected old proof bytes remain unchanged.38 stills include14 opposing
+hand closeups;1229 scripted24Hz loop frames fully decode. Inspected hold,
+release and opposing body views show the corrected curl. This does not close
+thumb fit, all-joint/garment quality, full choreography or natural-play gates.
+No import warnings/errors. Capture has no errors but retains template warnings
+(12 Xandra Blueprint/input,126 texture,3 material skeletal-usage flags).
+They remain documented, not dismissed as a warning-free production pass.

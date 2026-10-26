@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import bpy
 import numpy as np
-from mathutils import Matrix, Vector
+from mathutils import Matrix, Quaternion, Vector
 from mathutils.bvhtree import BVHTree
 
 CODE = Path(__file__).resolve().parent
@@ -74,7 +74,42 @@ def pose_at(seconds):
     return {n: rig.matrix_world @ rig.pose.bones[n].matrix for n in names}
 
 
-if not any(flag in sys.argv for flag in ('--render', '--labels', '--isolate', '--palm-proof')):
+if '--arms' in sys.argv:
+    rows = []
+    for frame in range(manifest['frame_end']):
+        seconds = frame / 60
+        pose = pose_at(seconds)
+        for side in ('l', 'r'):
+            row = {'seconds': seconds, 'source_seconds': source_time(seconds), 'side': side}
+            for parent, name, child in (('clavicle_', 'upperarm_', 'lowerarm_'), ('upperarm_', 'lowerarm_', 'hand_'), ('lowerarm_', 'hand_', 'middle_01_')):
+                parent, name, child = parent + side, name + side, child + side
+                rest_local = rest[parent].inverted() @ rest[name]
+                local = pose[parent].inverted() @ pose[name]
+                q = (rest_local.inverted() @ local).to_quaternion().normalized()
+                if q.w < 0:
+                    q.negate()
+                axis = (rest[name].inverted().to_3x3() @ (rest[child].translation - rest[name].translation)).normalized()
+                projection = axis * Vector((q.x, q.y, q.z)).dot(axis)
+                twist = Quaternion((q.w, *projection)).normalized()
+                row[name + '_twist_deg'] = math.degrees(2 * math.atan2(Vector((twist.x, twist.y, twist.z)).dot(axis), twist.w))
+                row[name + '_swing_deg'] = math.degrees((q @ twist.inverted()).angle)
+            a, b, c = [pose[n + side] for n in ('upperarm_', 'lowerarm_', 'hand_')]
+            upper = (b.translation - a.translation).normalized()
+            lower = (c.translation - b.translation).normalized()
+            hand = ((pose['index_01_' + side].translation + pose['pinky_01_' + side].translation) * .5 - c.translation).normalized()
+            row['elbow_bend_deg'] = math.degrees(upper.angle(lower))
+            row['wrist_direction_deg'] = math.degrees(lower.angle(hand))
+            rows.append(row)
+    extremes = {}
+    for side in ('l', 'r'):
+        selected = [r for r in rows if r['side'] == side]
+        extremes[side] = {key: {'min': min(selected, key=lambda r: r[key]), 'max': max(selected, key=lambda r: r[key])}
+                          for key in selected[0] if key.endswith('_deg')}
+    result = {'sources': guard, 'samples_per_side': manifest['frame_end'], 'extremes': extremes, 'rows': rows,
+              'scope': 'Rest-relative local swing/twist and geometric elbow/wrist direction only. Not human joint limits or artistic acceptance; identifies poses for visual review.'}
+    (O / 'ArmDirections.json').write_text(json.dumps(result, indent=2))
+    print('ARM_DIRECTIONS', {side: {key: [round(v['min'][key], 3), round(v['max'][key], 3), round(v['min']['seconds'], 3), round(v['max']['seconds'], 3)] for key, v in data.items()} for side, data in extremes.items()}, flush=True)
+elif not any(flag in sys.argv for flag in ('--render', '--labels', '--isolate', '--palm-proof')):
     rows = []
     held_reference = None
     held_drift = cpu_error = 0.
