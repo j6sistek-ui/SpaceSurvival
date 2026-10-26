@@ -356,3 +356,12 @@ It preserves every original pose frame at a 60 Hz presentation rate, with
 repeated frames, and does not edit an action or evaluate new poses. Smooth
 speed ramps shorten four held sections from 82.75 to 75.05 seconds. This is
 an editorial comparison, not a replacement animation or contact check.
+
+`review_g2_floating_life.py -- --source-phrase` tests a coordinated G1 source
+phrase in the existing G2 released return, preserving the saved first-leg pass
+outside that window. The current control fails arm/body and posterior-hip
+intersection checks and must remain diagnostic. Add `--render --framed
+--diagnostic` only to inspect that failure; encode with
+`build_g2_floating_review.py --source-phrase --framed --diagnostic`.
+The resulting private `G2SourcePhraseCurrentReview.html` is an unsaved preview,
+not an adopted action or a new conceptual block.

@@ -10,9 +10,11 @@ from PIL import Image, ImageDraw
 
 project = Path(os.environ.get('SS_ANIMATION_PROJECT', str(Path.home() / 'SpaceSurvival'))).resolve()
 source_legs = '--source-legs' in sys.argv
+source_phrase = '--source-phrase' in sys.argv
+assert not (source_legs and source_phrase)
 diagnostic = '--diagnostic' in sys.argv
-assert not diagnostic or source_legs
-root = project / '.agent/local/AnimationReview_20261025/G2FloatingLife' / ('SourceLegControl' if source_legs else 'PhraseControl')
+assert not diagnostic or source_legs or source_phrase
+root = project / '.agent/local/AnimationReview_20261025/G2FloatingLife' / ('SourcePhraseCurrentLeg' if source_phrase else 'SourceLegControl' if source_legs else 'PhraseControl')
 audit_root = root
 framed = '--framed' in sys.argv
 if framed:
@@ -20,7 +22,7 @@ if framed:
 source = project / 'SourceAssets/DanceRefinement_20261025'
 ffmpeg = Path('C:/Program Files/Lian-Li/L-Connect 3/x64/ffmpeg.exe')
 if '--native' in sys.argv:
-    assert not source_legs and not diagnostic, 'No native proof for this source-only experiment'
+    assert not source_legs and not source_phrase and not diagnostic, 'No native proof for this source-only experiment'
     native = project / '.agent/local/AnimationReview_20261025/G2FloatingPhraseNative240'
     capture = json.loads((native / 'NativeCapture.json').read_text())
     parity = json.loads((native / 'NativeParity.json').read_text())
@@ -62,7 +64,7 @@ motion = json.loads((root / 'Motion.json').read_text())
 audit = json.loads((audit_root / 'Audit.json').read_text())
 assert (audit['passed'] or diagnostic) and audit['control_sha256'] == motion['control_sha256']
 assert not diagnostic or motion['diagnostic_only'], 'Do not relabel a failed render as a normal review'
-prefix = 'G2_SourceLegs_Diagnostic' if source_legs else 'G2_LegPhrase'
+prefix = 'G2_SourcePhrase_CurrentLeg_Diagnostic' if source_phrase else 'G2_SourceLegs_Diagnostic' if source_legs else 'G2_LegPhrase'
 rows = []
 for view in motion['views']:
     for label, start, end in motion['clips']:
@@ -95,7 +97,12 @@ if source_legs:
     html = html.replace('Alternating knee draw and extension on previously held passages.',
         f'Original G1 leg phrases transferred into the held passages. DIAGNOSTIC ONLY: contact checks fail in {len(audit["flags"])} sampled frames. These moves are retained for repair, not accepted for production.')
     html = html.replace('<title>G2 leg phrasing</title>', '<title>G1 source legs on G2 — contact repair pending</title>')
-(source / ('G2SourceLegReview.html' if source_legs else 'G2LegPhraseReview.html')).write_text(html, encoding='utf-8')
+if source_phrase:
+    html = html.replace('G2 leg phrasing', 'G2 whole-body source phrase')
+    html = html.replace('Alternating knee draw and extension on previously held passages. Original grip, shoulders and clip endpoints retained.',
+        f'Coordinated G1 7–9.5s source-derived body phrase in the released return. Original world route and endpoints retained; body rotations change. Diagnostic only: {len(audit["flags"])} flagged sample times. No action saved or production adoption.')
+page = 'G2SourcePhraseCurrentReview.html' if source_phrase else 'G2SourceLegReview.html' if source_legs else 'G2LegPhraseReview.html'
+(source / page).write_text(html, encoding='utf-8')
 (root / 'Delivery.json').write_text(json.dumps({'control_sha256': motion['control_sha256'], 'fps': motion['fps'], 'videos': rows,
     'audit_passed':audit['passed'],'diagnostic_only':diagnostic,
     'scope': 'Every encoded frame decoded; selected opposing samples inspected separately. No owner acceptance.'}, indent=2))

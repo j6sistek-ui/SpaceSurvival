@@ -1393,3 +1393,36 @@ This changes only a review video. Missing whole-body source phrases, continuous
 camera playback, rig/contact checks at revised animation timing and owner
 judgment remain open. No action, rig, production asset or new concept sequence
 was changed. Concept boards were shown before any new-block implementation.
+
+## Current G2 return: coordinated source phrase, still diagnostic
+
+The ten new conceptual blocks remain unrigged/unanimated. This control repairs
+the existing G2 return at47–51.167s using G1 source7–9.5s (retained target frames
+421–571): gather, side extension/counter-turn, fold/knee recovery, upright.
+It transfers pelvis orientation, chest, head, arms and legs together while
+retaining the current floating world route. Both hands are released in this
+interval. The donor0a38e12a is repaired source-derived, not untouched raw motion.
+The original9.4167s wrist/arm rate spike remains an inspection point.
+
+Controlaf9b48e6 explicitly loads current saved leg action173a6223 at120Hz.
+It preserves outside-window poses exactly, rather than silently reverting to
+409a79ad. The initial control81832c44 lost the imported0.01 world scale and is
+invalid; its apparent deformation cannot be used to judge the saved rig. A
+scale-preserved intermediate still used the older baseline and is superseded.
+The current control applies rotation deltas to existing matrices, retaining
+scale and pelvis translation with per-pose assertions. No rig or action is saved.
+
+Current audit:769 samples at15Hz,28 flagged times (9 arm/body,22 hip,3 overlapping;
+no pole flags). Outside-window/protected matrix error0.0. The gate correctly
+rejects adoption. Opposing diagnostic videos each decode113 frames; these are
+unsaved source previews, not native transfer or whole-routine acceptance.
+Private G2SourcePhraseCurrentReview.html retains the failure label and prior
+versions remain available. Next repair is the specific entry-arm and folded-hip
+response, retaining the recovered phrase rather than dropping its poses.
+
+Reproduce with hidden Blender review_g2_floating_life.py -- --source-phrase.
+For explicit failed-preview inspection only, add --render --framed --diagnostic;
+encode with build_g2_floating_review.py --source-phrase --framed --diagnostic.
+The saved first-leg verifier accepts both historical 'phrase' and newer
+'PhraseControl' receipt names while still enforcing passed status and exact
+control/source hashes. These names do not relax any geometry gate.

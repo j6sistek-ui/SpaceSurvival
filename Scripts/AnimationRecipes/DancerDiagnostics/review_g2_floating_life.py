@@ -17,7 +17,14 @@ from validate_g2_contact_recipe import geometry, skin, triangle_radii
 
 phrase = '--phrase' in sys.argv
 source_legs = '--source-legs' in sys.argv
-if source_legs:
+source_phrase = '--source-phrase' in sys.argv
+assert not (source_legs and source_phrase)
+if source_phrase:
+    from g2_source_phrase_control import SourcePhraseControl
+    model = SourcePhraseControl()
+    variant = 'SourcePhraseCurrentLeg'
+    control_file = 'g2_source_phrase_control.py'
+elif source_legs:
     from g2_source_leg_control import SourceLegControl
     model = SourceLegControl()
     variant = 'SourceLegControl'
@@ -34,7 +41,7 @@ assert not diagnostic or render, 'Diagnostic mode only renders retained failures
 audit_root = out
 framed = '--framed' in sys.argv
 if framed:
-    assert render and (phrase or source_legs)
+    assert render and (phrase or source_legs or source_phrase)
     out = out / ('DiagnosticFramed' if diagnostic else 'Framed')
     out.mkdir(exist_ok=True)
 receipt = out / ('Motion.json' if render else 'Audit.json')
@@ -62,6 +69,8 @@ if not render:
     rows = []; flags = []; preserved_error = 0.; endpoint_error = 0.
     times = np.unique(np.r_[np.arange(0, model.duration, 1/15), model.duration])
     moving = set(sum([model.descendants[n] for n in ('thigh_l', 'thigh_r', 'lowerarm_l')], [])) | {'glute_l', 'glute_r'}
+    if source_phrase:
+        moving = model.moving
     for index, seconds in enumerate(times):
         pose, base, offsets = model.pose(float(seconds))
         preserved_error = max(preserved_error, max(float(np.abs(np.array(pose[n])-np.array(base[n])).max()) for n in model.names if n not in moving))
@@ -102,7 +111,8 @@ if not render:
               'outside_window_matrix_error': endpoint_error, 'flags': flags, 'movement_windows': windows,
               'both_knees_below15_fraction': sum(max(r['knees'].values())<15 for r in rows)/len(rows),
               'recipe_variant': variant,
-              'scope': '15Hz pole, distal arm/body and bounded posterior hip contact screens. Original grip, shoulders, spine and outside-window poses exact. Not complete anatomy, native or artistic acceptance.'}
+              'scope': ('15Hz pole, distal arm/body and bounded posterior hip screens. Existing released return only; original root/outside-window poses exact. Pelvis route preserved, body rotations changed. No complete anatomy, native or artistic acceptance.' if source_phrase else
+                        '15Hz pole, distal arm/body and bounded posterior hip contact screens. Original grip, shoulders, spine and outside-window poses exact. Not complete anatomy, native or artistic acceptance.')}
     receipt.write_text(json.dumps(report, indent=2), encoding='utf-8')
     print('FLOATING_RESULT', {k:v for k,v in report.items() if k not in ('sources','movement_windows','flags')}, 'flags', len(flags), flush=True)
     model.assert_guards()
@@ -126,6 +136,8 @@ else:
     clips = [('opening',0.,6.8),('swing',34.,42.5)]
     if source_legs:
         clips.append(('return',47.,model.duration))
+    if source_phrase:
+        clips = [('return',46.5,model.duration)]
     for view, direction in [('front',Vector((4,-6,2))),('back',Vector((-4,6,2)))]:
         camera.location = center+direction; camera.rotation_euler = (center-camera.location).to_track_quat('-Z','Y').to_euler()
         for label, start, end in clips:

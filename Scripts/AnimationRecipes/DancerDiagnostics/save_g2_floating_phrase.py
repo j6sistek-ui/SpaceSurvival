@@ -19,7 +19,7 @@ model = FloatingLifeControl(phrase=True)
 out = model.project / '.agent/local/AnimationReview_20261025/G2FloatingLife/PhraseControl'
 audit = json.loads((out / 'Audit.json').read_text())
 control_hash = hashlib.sha256(Path(__file__).with_name('g2_floating_life_control.py').read_bytes()).hexdigest()
-assert audit['passed'] and audit['control_sha256'] == control_hash and audit['recipe_variant'] == 'phrase'
+assert audit['passed'] and audit['control_sha256'] == control_hash and audit['recipe_variant'] in ('phrase', 'PhraseControl')
 target = model.source / 'G2_FloatingLegPhrase_ActionLibrary.blend'
 record = model.source / 'G2_FloatingLegPhrase_Manifest.json'
 changed = {'thigh_l', 'thigh_r', 'calf_l', 'calf_r', 'foot_l', 'foot_r',
