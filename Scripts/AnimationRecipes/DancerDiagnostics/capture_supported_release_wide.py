@@ -1,0 +1,79 @@
+import os, sys
+from pathlib import Path
+_recipe_dir=Path(__file__).resolve().parent
+sys.path.insert(0,str(_recipe_dir))
+R=Path(os.environ.get('SS_ANIMATION_PROJECT',str(Path.home()/'SpaceSurvival'))).resolve()/'.agent/local/AnimationReview_20261025'
+assert (R.parents[2]/'SpaceSurvival.uproject').is_file(), 'Set SS_ANIMATION_PROJECT to the canonical project'
+R.mkdir(parents=True,exist_ok=True)
+
+"""Private native G1 support/release; never open or modify the game map."""
+import unreal as u,json,time,traceback,hashlib,math
+from pathlib import Path
+assert 'WorkbenchNative/CharacterWorkbench' in u.Paths.get_project_file_path().replace('\\','/')
+OLD='/Game/SpaceSurvival/Licensed/VexaHandIsolationProof_20261026'
+BASE='/Game/SpaceSurvival/Licensed/VexaPoleReleaseProof_20261026'
+OUT=R/'NativeSupportedReleaseWide';OUT.mkdir(exist_ok=True)
+export=json.loads((R/'GBSupportedRelease/Export.json').read_text())
+assert hashlib.sha256(Path(export['file']).read_bytes()).hexdigest()==export['sha256']
+guard=Path(u.Paths.project_content_dir())/'SpaceSurvival/Licensed/VexaHandIsolationProof_20261026'
+hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in guard.rglob('*') if p.is_file()}
+sk=u.load_asset(OLD+'/SK_VexaHandIsolationProof');assert sk and sk.skeleton
+name='A_G1_SupportedRelease'
+clip=u.load_asset(BASE+'/'+name);assert clip
+es=u.get_editor_subsystem(u.EditorActorSubsystem);ls=u.get_editor_subsystem(u.LevelEditorSubsystem);ed=u.get_editor_subsystem(u.UnrealEditorSubsystem)
+assert ls.load_level(BASE+'/L_G1SupportedRelease_Review')
+state={'start':time.monotonic(),'stage':'wait','frame':0,'view':0,'busy':False};views=['front','back'];fps=24;count=round(clip.sequence_length*fps)+1
+report={'source_sha256':export['sha256'],'asset':BASE+'/'+name,'map':BASE+'/L_G1SupportedRelease_Review','duration':clip.sequence_length,'fps':fps,'frames_per_view':count,'captured':[],'bone_samples':{},'errors':[],'camera_revision':'Distance x1.4 after feet clipped in initial capture; no asset changes','limitations':'Private action and unchanged mesh; no complete G1/G2, loop, chamber or production acceptance.'}
+for view in views:(OUT/view).mkdir(exist_ok=True)
+expected_frames={round((int(f)-1)/60*fps):f for f in export['expected_bones']}
+def finish():
+ report['old_proof_unchanged']=all(Path(p).is_file() and hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in hashes.items())
+ report['ok']=not report['errors'] and report['old_proof_unchanged'] and len(report['captured'])==count*2
+ (OUT/'Capture.json').write_text(json.dumps(report,indent=2));print('SUPPORTED_RELEASE_NATIVE',report['ok'],len(report['captured']),report['errors'],flush=True)
+ u.unregister_slate_post_tick_callback(state['handle']);ls.editor_request_end_play();u.EditorPythonScripting.set_keep_python_script_alive(False);u.SystemLibrary.quit_editor()
+def tick(dt):
+ if state['busy']:return
+ state['busy']=True
+ try:
+  now=time.monotonic()
+  if now-state['start']>360:raise RuntimeError('Bounded native release review timed out')
+  if state['stage']=='wait':
+   if now-state['start']<5:return
+   ls.editor_request_begin_play();state['stage']='starting';return
+  if state['stage']=='starting':
+   world=ed.get_game_world()
+   if not world:return
+   actors={a.get_actor_label():a for a in u.GameplayStatics.get_all_actors_of_class(world,u.Actor)}
+   if 'ReleaseCapture' not in actors:return
+   c=actors['ReleaseProof'].skeletal_mesh_component;ca=actors['ReleaseCapture'];cc=ca.get_editor_property('capture_component2d')
+   target=u.RenderingLibrary.create_render_target2d(world,800,800,u.TextureRenderTargetFormat.RTF_RGBA8,u.LinearColor(0,0,0,1),False,False)
+   cc.set_editor_property('texture_target',target);cc.set_editor_property('capture_source',u.SceneCaptureSource.SCS_FINAL_COLOR_LDR);cc.set_editor_property('capture_every_frame',False);cc.set_editor_property('capture_on_movement',False);cc.set_editor_property('fov_angle',45.)
+   c.play_animation(clip,False);c.set_play_rate(0)
+   pawn=u.GameplayStatics.get_player_pawn(world,0)
+   if pawn:pawn.set_actor_hidden_in_game(True)
+   for cmd in ['t.MaxFPS 60','r.EyeAdaptationQuality 0']:u.SystemLibrary.execute_console_command(world,cmd)
+   state.update(world=world,mesh=c,cap=ca,component=cc,target=target,stage='pose');return
+  c=state['mesh'];frame=state['frame'];view=views[state['view']];seconds=frame/fps
+  if state['stage']=='pose':
+   c.set_position(seconds,False);state['ticks']=0;state['stage']='settle';return
+  if state['stage']=='settle':
+   state['ticks']+=1
+   if state['ticks']<2:return
+   center=u.Vector(25,0,1380);offset=u.Vector(336,-504,63) if view=='front' else u.Vector(-336,504,63)
+   state['cap'].set_actor_location(center+offset,False,True);state['cap'].set_actor_rotation(u.MathLibrary.find_look_at_rotation(center+offset,center),False)
+   if view=='front' and frame in expected_frames:
+    key=expected_frames[frame];data={}
+    for bone in export['expected_bones'][key]:
+     v=c.get_socket_location(bone);data[bone]=[v.x,v.y,v.z-1080]
+    report['bone_samples'][key]=data
+   state['component'].capture_scene();state['stage']='export';return
+  filename=f'{frame:04d}.png';u.RenderingLibrary.export_render_target(state['world'],state['target'],str(OUT/view),filename)
+  p=OUT/view/filename;assert p.is_file() and p.stat().st_size>5000
+  assert abs(c.get_position()-seconds)<1e-4
+  report['captured'].append({'view':view,'frame':frame,'seconds':seconds,'actual_position':c.get_position(),'path':str(p)})
+  state['frame']+=1;state['stage']='pose'
+  if state['frame']==count:state['frame']=0;state['view']+=1
+  if state['view']==2:finish()
+ except Exception:report['errors'].append(traceback.format_exc());finish()
+ finally:state['busy']=False
+u.EditorPythonScripting.set_keep_python_script_alive(True);state['handle']=u.register_slate_post_tick_callback(tick)

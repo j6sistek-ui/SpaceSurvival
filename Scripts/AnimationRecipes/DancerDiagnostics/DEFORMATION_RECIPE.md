@@ -689,3 +689,108 @@ GBSupportedPassage beneath .agent/local/AnimationReview_20261025. Inputs remain
 hash-identical. Joy/Astra and the other dancers remain after Vexa, not silently
 marked complete. No game/map/DLL/save changes or Unreal invocation occurred
 in this follow-up; the prior native proof remains available and unchanged.
+
+## October26 explicit pole release and labelled knee controls
+
+### Retained working candidate, not a complete routine
+
+The action-only `GB_SupportedRelease_ActionLibrary.blend` (SHA256
+49f8765479a611da20536ca2576879ab845cc9ba16558d5912866e3a8dd72cc2)
+uses the unchanged a9dbcbde hand mesh and 0a38e12a selected-passage library.
+It covers G1 source780–1000 at20percent playback:1101 frames,60fps,18.333s.
+The static50mm-pole finger/thumb fit is retained while the body follows one
+rigid support frame. At source920–940, quintic easing opens the fingers,
+translates the body40cm away and releases the moving hand-frame constraint
+into its fixed source920 frame. Later movement resumes the original local
+arm poses. No arm IK is forced to hold a hand through the obstructed crossing.
+
+Interpolate local rotations and rebuild hierarchical FK. Independently
+interpolating world joint matrices can shorten the limb between source keys.
+Bake quaternion keys with continuous signs and LINEAR interpolation, then
+fresh-reload the saved action rather than evaluating only the authoring scene.
+The candidate contains one action, not another duplicate body/texture file.
+
+`review_supported_release.py` performs1101 triangle-radius pole checks:
+zero intersection samples at0.01mm tolerance, minimum gap about0.015mm.
+That tiny static contact margin is not a robust production collision allowance.
+`render_supported_release.py` exposes the release fingers from opposite sides.
+`bake_supported_release_candidate.py` requires the recorded source hashes and
+zero collision samples; it refuses to overwrite the action candidate.
+`verify_supported_release_reload.py` fresh-reloads95 bones at nine poses,
+with maximum matrix-element discrepancy0.00000453.
+
+Private native prefix: `/Game/SpaceSurvival/Licensed/VexaPoleReleaseProof_20261026`.
+`capture_supported_release_native.py` imports only animation against the
+preserved skeleton and creates `L_G1SupportedRelease_Review`; it does not open
+or save the production station. Native95-bone comparisons over nine poses
+agree within0.103mm using one fixed basis, explicit actor-origin subtraction
+and no per-frame fit. A fresh NullRHI reload verifies map, mesh, skeleton and
+18.333s clip dependencies. Grey materials isolate motion; existing XANDRA
+UDIM/virtual-texturing warnings mean this is not a skin-material validation.
+
+The first882-frame native capture clipped feet in some views. Retain it as
+failed framing, not full-body visual proof. `capture_supported_release_wide.py`
+loads the saved review without saving assets and increases camera distance
+40percent at800px. The corrected882-frame capture completes with no errors,
+old-proof hashes unchanged and sampled filmstrips fully framed. Both opposing
+441-frame videos decode successfully. The first recapture attempt failed on a
+missing report variable before playback; that failed log is retained.
+Initial PNG/MP4 inspection found all882 PNG inputs valid and both441-frame
+videos decodable despite an encoder PNG warning; that does not cure framing.
+
+This is a supported turn and deliberate release, not loop closure, a full
+G1/G2 repair, chamber integration or complete anatomical/artistic acceptance.
+The five free-floating segments remain separate. Vexa stays first; only after
+her reusable repair is ready do Joy/Astra and other dancers receive adaptation.
+
+### Rejected routes: collision clearance alone is insufficient
+
+A Cartesian free-arm detour clears the pole but creates120.46degrees of
+off-axis elbow rotation in this rig's diagnostic coordinates, versus31.20
+in the source. Its coupled roll/hinge retry still reaches108.21degrees.
+Both are rejected; do not copy these solvers as successful repairs.
+A local-keypose blend preserves the source elbow range, but its return path
+has nine pole collision samples with up to25mm penetration. Also rejected.
+The earlier sinusoidal waypoint bump has three collisions and was superseded
+by the explicitly rejected Cartesian trial, not accepted. Joint continuity,
+orientation, body clearance and visible deformation must be reviewed together.
+The explicit release avoids this failure without changing local arm motion.
+
+### Knee camera/topology controls, no mesh change adopted
+
+The earlier bend-plane camera called front actually faced the inside/back
+of the knee. `review_knee_anatomical_views.py` derives the anterior direction
+from the rest foot-to-ball vector transported with the thigh; all six tested
+poses give inside-dot-anterior near-0.9997. Its24 labelled bilateral views
+separate the patella silhouette from the posterior flexion crease. Do not
+mistake a view label or natural posterior fold for an anterior knee defect.
+
+`audit_knee_topology.py` finds no0.01mm coincident vertex pairs, boundary or
+nonmanifold edges among731 near-knee vertices/1564 triangles. The knee is not
+a disconnected seam. Deep Spiral and Butterfly poses each compress12
+triangles below10percent rest area; source contour still deserves review.
+Longitudinal thigh/calf redistribution and posterior-only DQ controls show
+little useful improvement and remain unadopted. The latter moves at most
+7.8mm while leaving the anterior mask untouched; displacement is not quality.
+
+Private receipts: GBSupportedRelease, NativeSupportedRelease,
+NativeSupportedReleaseWide, GBSupportedPassageRouted2, GBSupportedPassageHinge,
+GBSupportedPassageKeypose, and ZeroGSharedHip/{KneeTopology,
+KneeAnatomicalViews,PosteriorKneeVolume}. Originals and accepted derivatives
+remain hash-identical. No production mesh/map/DLL/save or package adoption.
+
+### Continuous arm screen and heel control
+
+The saved support/release yields2202 bilateral arm samples with no reversed
+elbows or owner chest-relative rear-reach flags; maximum rear reach9.785degrees
+is within its overhead allowance. The five shared zero-G segments yield9130
+bilateral samples without those two flags. These screens do not certify palm
+orientation, self-contact, wrists, ankles or artistic quality.
+
+The heel has52/58 lower posterior vertices already weighted rigidly to the
+respective foot. A212-vertex posterior influence transition changes the
+Achilles contour without fixing the pointed heel appearance; preserve-volume
+control also does not repair it. Both remain unadopted. Source shape and camera
+orientation must be distinguished from weight collapse before further edits.
+Receipts: GBSupportedRelease/ArmScreen.json, ZeroGSharedHip/ArmRangeScreen.json,
+AnkleWeights.json and VexaDistalRepair/HeelWeightControl. No saved mesh change.

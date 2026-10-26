@@ -133,3 +133,14 @@ The source-control scripts inspect materials, albedo and unoccluded distal
 patches without adopting changes. Nested recipes resolve their code beside
 these files and private data through SS_ANIMATION_PROJECT. Do not copy licensed
 .blend/FBX/texture data into Git.
+
+## Explicit supported-release candidate
+
+Read the latest DEFORMATION_RECIPE section before the contact experiments.
+Run review_supported_release, render_supported_release, bake_supported_release_candidate,
+then verify_supported_release_reload with the existing hidden Blender. The
+native capture/import script is restricted to CharacterWorkbench; its wide
+recapture fixes first-pass framing and never saves assets. Fresh-reload and
+fixed-basis bone comparison are separate from visual acceptance. The Cartesian,
+hinge and keypose detours are rejected controls, not recommended solvers.
+No complete routine or production adoption is claimed.
