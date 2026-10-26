@@ -105,3 +105,11 @@ Start with the practical procedure at the top of DEFORMATION_RECIPE.md. The `rev
 ## One-vertex hand isolation
 
 The finger control/audit/repair recipes isolate opposite-hand weight contamination without replacing hand animation. Export/capture/fresh-reload and whole-surface comparisons preserve the earlier proof. Use the SkeletalMeshEditorSubsystem LOD accessor for the actual influence setting; failed reflection controls remain documented. Raw GLB rotation auditing distinguishes source motion defects from skinning. See the recipe for exact hashes and evidence limits.
+
+## Bounded motion edits
+
+The three selected arm-passage repairs preserve earlier action libraries and
+restrict their edits to inspected intervals. They deliberately change hand
+paths; they are not a contact solver or a universal anatomical limiter. Read
+the recipe before reproducing them. Matching full native videos and fresh
+reloads remain separate from complete routine and owner acceptance.

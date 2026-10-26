@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October26 motion follow-up:** Private G1/G2 library0a38e12a repairs three inspected arm loops while preserving the accepted shoulder pose. Four complete native views and fresh dependency reload pass; pole contact and complete routine quality remain RPT-20261021-01. Production state unchanged.
+
 **October26 hand follow-up:** Private Vexa a9dbcbde removes one demonstrated opposite-hand weight causing a finger spike; sixteen native controls, whole-surface preservation and fresh dependency/LOD-setting reload pass. Other hand contact and choreography defects remain RPT-20261021-01. Earlier mesh/actions and production state are preserved.
 
 **October26 shoulder follow-up:** Private G/B action library4d72c70e carries the approved G1 shoulder response into native review. Four clips reload;822 shoulder-oriented captures/two decoded videos retained. Six local bone channels change; other keys and mesh/production state remain intact. Full motion/contact and other characters remain open under RPT-20261021-01.

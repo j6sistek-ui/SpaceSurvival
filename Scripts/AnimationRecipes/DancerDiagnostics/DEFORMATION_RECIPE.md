@@ -395,3 +395,62 @@ The first reload gate inspected initialization data instead of effective LOD bui
 `audit_raw_gb_rotations.py` reads original GLB quaternion keys before retargeting. It finds rapid arm rotations in the supplied files as well: G1 right forearm about2352degrees/s at2.433s and G2 right arm about2259degrees/s at1.4s. This identifies source motion requiring visual repair; it does not judge the separate generation video or excuse native defects. Keep motion repair separate from mesh weights.
 
 Receipts: `GBFingerShape/Repair.json`, `After/EdgeAudit.json`, `NativeReload.json`, `InfluenceSetting.json`, `NativeSkinDelta.json`, `RawRotationAudit.json`, `NativeVexaHandIsolation.json`, `NativeVexaHandIsolationSkin.json`. Initial rejected reload/reflection receipts remain alongside them. All are private under the established animation-review directory. No C++ changes, new game build/package, production-map edit, merge or owner acceptance.
+
+## October26 bounded arm passage repair
+
+The skinning repair cannot remove a bad joint trajectory. Original GLB rotation
+audits plus identical-rest-pose controls show the rapid rotations predate the
+latest retarget. A threshold above10 degrees per60fps frame only nominates views;
+it does not authorize flattening every fast gesture. Nineteen intervals were
+screened; opposing start/peak/end views identify specific local loops to change.
+
+| Change | Preserved input | Output hash prefix | Frames | Worst upper-arm step after | Max hand-path change |
+|---|---|---|---|---|---|
+| G2 right downward loop | 4d72c70e | ac64f038 | 59-109 | 5.658 deg/frame | 54.274 cm |
+| G2 left downward loop | ac64f038 | fa3967d2 | 787-830 | 7.863 deg/frame | 55.848 cm |
+| G1 left behind-torso loop | fa3967d2 | 0a38e12a | 192-270 | 1.970 deg/frame | 54.440 cm |
+
+Each trial copies the action and replaces only interior arm-chain rotations
+with a smooth endpoint quaternion path and an eight-frame smoothstep taper.
+The existing chest-relative clavicle coordination is recalculated; the neck
+pass is not applied twice. Untouched curves retain all key metadata exactly.
+Exterior coordinates/interpolation on touched LINEAR curves remain exact;
+Blender may recompute unused Bezier handles by floating-point roundoff. The
+initial over-strict handle assertion is retained, not hidden. Maximum sampled
+matrix reconstruction error is2.862e-6. Finger/wrist local keys are unchanged;
+the earlier wrist continuity stays below5 degrees/frame. These numbers do not
+prove anatomy, contact, source-video fidelity or artistic quality.
+
+The final local library is `GB_SelectedPassages_ActionLibrary.blend`, SHA256
+`0a38e12a774436fd08a44508f32820573cdc0dab4a56658737ecc1b7d4060b8e`.
+It retains the earlier actions; selected exports use `A_F3_SelectedPassages_g1`
+and `A_F3_TwoPassages_g2`. Do not apply the retained Spiral-only morph curves to
+these clips. Matching source/native views show the edited limbs in front of the
+torso and the approved raised-arm pose retained. Remaining quick movements,
+wrists/ankles, garments and reach/contact require continuous scrutiny.
+
+Private native assets are `A_SelectedPassages_g1_selected` and
+`A_SelectedPassages_g2_selected` under
+`/Game/SpaceSurvival/Licensed/VexaHandIsolationProof_20261026`. Four complete
+24fps captures contain405/405 G1 and338/338 G2 frames. All four videos decode to
+the expected count; maximum pose-seek error is0.000000636s. Initial PNG chunk
+warnings are retained; decoded video verification succeeds. A fresh NullRHI
+process loads the same skeleton and durations16.85/14.05s. Earlier proof files
+are hash-identical. Native captures use diagnostic shading and a body-following
+camera; this is not final skin, fixed-camera choreography, gameplay or package
+acceptance. No production assets/map/DLL/save were replaced.
+
+Reproduction: `repair_g2_arm_excursion.py`, `repair_g2_late_excursion.py`, then
+`repair_g1_left_excursion.py` require the exact previous hashes and refuse an
+existing destination. Review with the matching passage scripts before export.
+Then `export_gb_selected_passages.py`, `capture_gb_selected_passages.py`,
+`encode_gb_selected_passages.py` and `reload_gb_selected_passages.py` provide the
+separate native checks. Never move an old pinned hand onto these new paths.
+Use feasible body travel or a deliberate release/regrip when contact is added.
+
+Private receipts: `GBFastPassage/{Repair,LateRepair,G1Repair,SelectedExport,
+SelectedVideos,SelectedReload}.json`, `GBArmEventViews/Report.json`,
+`NativeGBSelectedPassages.json`. Earlier trials remain separate. PR96 remains
+draft/unmerged; hand-repair head1cae454f source409 and documentation597/598 passed.
+No C++ changes or module rebuild were needed. Whole-routine and other-character
+acceptance remain in RPT-20261021-01.
