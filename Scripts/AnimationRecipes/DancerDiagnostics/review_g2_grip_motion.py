@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import bpy
 import numpy as np
-from mathutils import Vector
+from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
 CODE = Path(__file__).resolve().parent
@@ -74,7 +74,7 @@ def pose_at(seconds):
     return {n: rig.matrix_world @ rig.pose.bones[n].matrix for n in names}
 
 
-if not any(flag in sys.argv for flag in ('--render', '--labels', '--isolate')):
+if not any(flag in sys.argv for flag in ('--render', '--labels', '--isolate', '--palm-proof')):
     rows = []
     held_reference = None
     held_drift = cpu_error = 0.
@@ -137,7 +137,8 @@ else:
     s.camera = camera
     camera.data.type = 'ORTHO'
     camera.data.ortho_scale = .65
-    labels = '--labels' in sys.argv
+    palm_proof = '--palm-proof' in sys.argv
+    labels = '--labels' in sys.argv or palm_proof
     isolated = '--isolate' in sys.argv
     if labels or isolated:
         for ob in s.objects:
@@ -168,6 +169,52 @@ else:
     for i in range(frames):
         time = float((np.interp(1 + 12.4 * 60, pace['source_frames'], pace['destination_frames']) - 1) / 60) if labels else min(i / 12, manifest['seconds'])
         pose = pose_at(time)
+        if palm_proof:
+            # Right-hand chirality: distal cross (index minus little) is dorsal.
+            # Derive from rest landmarks, then carry with the current hand so
+            # curled fingers cannot change the meaning of the palm normal.
+            along = (rest['middle_01_r'].translation - rest['hand_r'].translation).normalized()
+            width = (rest['index_01_r'].translation - rest['pinky_01_r'].translation).normalized()
+            transport = (pose['hand_r'] @ rest['hand_r'].inverted()).to_3x3()
+            assert transport.determinant() > 0, 'Mirrored hand transform'
+            palmar = (transport @ -along.cross(width).normalized()).normalized()
+            distal = (transport @ along).normalized()
+            center = pose['hand_r'].translation + distal * .035
+            folder = O / 'PalmProof'
+            folder.mkdir(exist_ok=True)
+            hand_matrix = pose['hand_r'].copy()
+            basis = {bone.name: bone.matrix_basis.copy() for bone in rig.pose.bones}
+            rig.animation_data.action = None
+            for bone in rig.pose.bones:
+                bone.matrix_basis = basis[bone.name]
+            bpy.context.view_layer.update()
+            index_closed = (rig.matrix_world @ rig.pose.bones['index_03_r'].matrix).translation.copy()
+            for state in ('closed', 'open_reference'):
+                if state == 'open_reference':
+                    for bone in rig.pose.bones:
+                        if bone.name.endswith('_r') and bone.name.startswith(tuple(f + '_' for f in digits)):
+                            bone.matrix_basis = Matrix.Identity(4)
+                    bpy.context.view_layer.update()
+                    pole.hide_render = True
+                for view, direction in (('palm', palmar), ('back_of_hand', -palmar)):
+                    camera.location = center + direction * 3
+                    camera.rotation_euler = (center - camera.location).to_track_quat('-Z', 'Y').to_euler()
+                    s.render.filepath = str(folder / f'{state}_{view}.png')
+                    bpy.ops.render.render(write_still=True)
+            current_hand = rig.matrix_world @ rig.pose.bones['hand_r'].matrix
+            error = max(abs(current_hand[a][b] - hand_matrix[a][b]) for a in range(4) for b in range(4))
+            assert error < 1e-6, error
+            index_open = (rig.matrix_world @ rig.pose.bones['index_03_r'].matrix).translation
+            finger_open_delta = (index_open - index_closed).length
+            assert finger_open_delta > .02, finger_open_delta
+            (folder / 'Orientation.json').write_text(json.dumps({
+                'sources': guard, 'source_seconds': 12.4, 'paced_seconds': time,
+                'palmar_world': list(palmar), 'distal_world': list(distal),
+                'colors': {'thumb': 'cyan', 'pinky': 'violet'},
+                'hand_matrix_change_open_reference': error,
+                'index_distal_movement_open_reference_m': finger_open_delta,
+                'scope': 'Right hand. Open reference changes only digit locals, hides pole, and keeps wrist orientation. No asset saved. Camera front/back names in earlier captures were not anatomical labels.'}, indent=2))
+            continue
         center = pose['hand_r'].translation.lerp(pose['lowerarm_r'].translation, .25)
         if labels:
             center = Vector((0, 0, 3))
@@ -181,8 +228,8 @@ else:
             camera.rotation_euler = (center - camera.location).to_track_quat('-Z', 'Y').to_euler()
             s.render.filepath = str(folder / (f'grip_{view}.png' if labels else f'grip_{i:04d}.png'))
             bpy.ops.render.render(write_still=True)
-    if labels:
+    if labels and not palm_proof:
         (O / 'Labelled/Orientation.json').write_text(json.dumps({'sources': guard, 'source_seconds': 12.4, 'paced_seconds': time, 'colors': {'thumb': 'cyan', 'pinky': 'violet'}, 'world_m': {n: list(pose[n].translation) for n in ('hand_r', 'thumb_01_r', 'thumb_03_r', 'index_01_r', 'pinky_01_r')}, 'index_minus_pinky_height_mm': (pose['index_01_r'].translation.z - pose['pinky_01_r'].translation.z) * 1000}, indent=2))
-    else:
+    elif not palm_proof:
         (O / ('Isolated/Render.json' if isolated else 'Render.json')).write_text(json.dumps({'sources': guard, 'frames_per_view': frames, 'fps': 12, 'views': ['front', 'back'], 'duration': manifest['seconds'], 'isolated_forearm_only': isolated}, indent=2))
 assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest() == h for p, h in guard.items())

@@ -217,3 +217,7 @@ it. Its `-- --labels` mode identifies thumb/little finger; `-- --isolate`
 renders unobstructed forearm motion. Cyan is thumb, violet is little finger.
 The sampled native/contact checks pass; whole-rig/garment/artistic quality
 remains open. Read the recipe for source hashes, rejected controls and limits.
+
+`-- --palm-proof` captures anatomically named palm/back views plus an
+open-finger control with the same wrist. Earlier front/back filenames name
+cameras, not hand anatomy. The control changes no saved asset.

@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-26T17:34Z [USER] Questions right-hand thumb side versus palm/back view. [TOOL] Same-wrist open-finger control confirms prior closeup is the right palm, thumb cyan/top; opposing view shows nails. Initial unfrozen reference was re-evaluated by the active action and rejected; detached-action control moves index68.264mm with hand matrix delta<7.1e-8. No asset saved/hand flip. [PLANS] Continue arm/wrist/release review; palm orientation alone is not motion acceptance.
+
 - 2026-10-26T17:16Z [USER] Many current stills look good; grip orientation questioned, thumb unclear. [TOOL] Cyan-thumb/violet-little-finger source12.4s review confirms thumb-up, no grip flip/shape change.2595 sampled right-hand/pole/cross-digit checks0flags,1508 held hand-core vertices drift0.0289mm; isolated520-frame opposing motion views remove body occlusion. [PLANS] Whole-arm/release, palm/within-digit/between-frame and full routine/artistic quality remain open; no owner checkpoint.
 
 - 2026-10-26T17:16Z [TOOL] f7f76b2e/116-vertex patch fresh native240Hz proof passes eight95-bone poses<0.123mm and28261-vertex surfaces<0.152mm,24 stills/1039-frame decoded video.120Hz1.389mm failure reproduced by sampling control; tolerance unchanged. Garment nearest-weight and3mm clearance controls rejected for contour; originals preserved. [PLANS] Garment neutral fit/local continuity and Vexa full quality before Joy/Astra; same draft PR96, production unchanged.

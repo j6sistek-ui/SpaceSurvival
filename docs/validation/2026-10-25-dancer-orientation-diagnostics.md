@@ -1144,3 +1144,10 @@ quality are not certified by this screen. Garment weight-transfer/clearance
 controls are rejected for weak or visibly worse shape, despite fewer intersections.
 See DEFORMATION_RECIPE.md and local G2GluteFollowNative240/G2GripMotion receipts.
 No production adoption or new game binary; Vexa remains before Joy/Astra.
+
+Right-hand view follow-up: four private `G2GripMotion/PalmProof` stills
+compare closed/open fingers from the palm and back with unchanged wrist.
+The previously shown closeup is the palm; the reverse exposes fingernails.
+Cyan thumb remains above fingers. Hand matrix difference<7.1e-8 and index
+movement68.264mm distinguish a real open control from the rejected live-action
+reset. Hash guards pass, no asset saved. This does not certify motion or grip fit.

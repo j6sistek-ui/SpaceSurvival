@@ -1378,3 +1378,16 @@ These checks exclude palm/digit junctions, within-digit folding and between-
 frame contact. Keep whole-arm motion, hand shape, release, full G/B coverage,
 garments and multi-character quality open. Do not copy these Vexa-only vertex
 IDs/calibrations onto Joy or Astra. No production map, mesh, DLL or save changed.
+
+### Right-hand view identification (October26)
+
+The source12.4s closeup is the right palm, not its back. In this sideways
+grip the fingers point left and thumb points up. `-- --palm-proof` derives
+the palmar normal from right-hand rest landmarks, transported by the saved
+hand transform; opposite view exposes nails. An unsaved open-finger control
+keeps the wrist matrix within7.1e-8 while the index distal joint moves68.264mm.
+The first control left the action live: render evaluation restored its curl,
+so that comparison was rejected. Freeze the pose by detaching the action
+and restoring local bone transforms before opening fingers. No saved grip
+or motion changed. This resolves view identity only, not whole-arm twist,
+finger fit or artistic acceptance.
