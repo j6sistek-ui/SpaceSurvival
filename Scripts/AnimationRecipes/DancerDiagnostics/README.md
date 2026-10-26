@@ -323,3 +323,36 @@ Add `SS_G1_SHOULDER_MOTION=1` for the separate front close-up capture. After
 both capture receipts and native parity pass, `build_g1_shoulder_review.py`
 encodes/decodes both videos and creates the private `G1ShoulderReview.html`.
 This is a nonlooping G1 review; no game build or broad rig acceptance follows.
+
+## Current flow and source-library studies
+
+Read [CHOREOGRAPHY_BLOCKS.md](CHOREOGRAPHY_BLOCKS.md) before creating new routines:
+restore the current G1/G2 phrases first; show concepts before new rigging/animation.
+The owner-facing CurrentGLegReview.html/video is an assembled82.75s review,
+not an integrated loop. describe_g_routine_sections.py records its source coverage.
+
+The private4s bridge uses review_g1_g2_join.py, fit_g1_g2_join_corrective.py,
+save_g1_g2_join.py and review_saved_g1_g2_join.py. export_g1_g2_join_proof.py
+and SS_G2_VARIANT=g1_g2_join select the existing native import/capture/compare
+entrypoints. Read their receipts; no production adoption follows automatically.
+
+For the first leg pass, review_g2_floating_life.py -- --phrase performs the
+bounded audit; --phrase --render --framed renders unsaved control previews.
+save_g2_floating_phrase.py / --verify-only and export_g2_floating_phrase.py
+preserve original source keys; native variant is floating_phrase.
+The separate --source-legs trial fails contact checks and is diagnostic only.
+Only --render --framed --diagnostic allows its explicitly failed preview.
+Never bypass the acceptance assertion to save or adopt that trial.
+
+review_raw_motion_sources.py inventories original G1/G2 and IMG9733.
+review_library_motion.py takes --out, --mesh, --slow and repeated
+--clip Name=FBX options, using the source mannequin. CPU
+build_library_motion_review.py --root REVIEW_DIR --output OUTPUT_DIR encodes
+and fully decodes each view. Use hidden Blender --factory-startup; no downloads
+or host installs are required. Private review paths/hashes are in the recipe.
+
+`review_current_g_timing.py` creates a separate video-only timing comparison.
+It preserves every original pose frame at a 60 Hz presentation rate, with
+repeated frames, and does not edit an action or evaluate new poses. Smooth
+speed ramps shorten four held sections from 82.75 to 75.05 seconds. This is
+an editorial comparison, not a replacement animation or contact check.

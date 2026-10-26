@@ -11,21 +11,28 @@ import unreal as u
 import json, time, traceback, hashlib, math
 from pathlib import Path
 variant=os.environ.get('SS_G2_VARIANT','')
-assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar', 'g1_shoulder', 'g1_shoulder_cap'), 'Unknown proof variant'
-g1_shoulder=variant in ('g1_shoulder','g1_shoulder_cap')
-palmar=variant=='palmar'
-glute_follow=g1_shoulder or variant in ('glute_follow','glute_follow_240','palmar')
+assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar', 'g1_shoulder', 'g1_shoulder_cap', 'g1_g2_join', 'floating_phrase'), 'Unknown proof variant'
+join=variant=='g1_g2_join'
+g1_shoulder=variant in ('g1_shoulder','g1_shoulder_cap','g1_g2_join')
+palmar=variant in ('palmar','floating_phrase')
+glute_follow=g1_shoulder or variant in ('glute_follow','glute_follow_240','palmar','floating_phrase')
 refined_rate=variant=='glute_follow_240'
 stem='G1Shoulder240' if g1_shoulder else 'G2Palmar240' if palmar else 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
 O=R/('G1ShoulderNative240' if g1_shoulder else 'G2PalmarNative240' if palmar else 'G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
 if variant=='g1_shoulder_cap':
     O,stem=R/'G1ShoulderCapNative240','G1ShoulderCap240'
+if join:
+    O,stem=R/'G1G2JoinNative240','G1G2Join240'
+if variant=='floating_phrase':
+    O,stem=R/'G2FloatingPhraseNative240','G2FloatingPhrase240'
 normal_control=os.environ.get('SS_G1_NORMAL_CONTROL') in ('1','local')
 recompute=os.environ.get('SS_G1_RECOMPUTE') in ('1','local')
 local_normals='local' in (os.environ.get('SS_G1_NORMAL_CONTROL'),os.environ.get('SS_G1_RECOMPUTE'))
+if join:
+    recompute=local_normals=True
 shoulder_motion=os.environ.get('SS_G1_SHOULDER_MOTION')=='1'
 assert not shoulder_motion or (g1_shoulder and local_normals and not normal_control)
-assert not (normal_control or recompute) or variant=='g1_shoulder_cap'
+assert not (normal_control or recompute) or variant in ('g1_shoulder_cap','g1_g2_join')
 control_name='NativeLocalNormalControl' if local_normals else 'NativeNormalControl'
 OUT=O/(control_name if normal_control else 'NativeShoulderMotion' if shoulder_motion else 'NativeViews');OUT.mkdir(exist_ok=True)
 BASE='/Game/SpaceSurvival/Licensed/Vexa'+stem+'Proof_20261026'
@@ -34,7 +41,7 @@ receipt=json.loads((O/'NativeImport.json').read_text()); assert receipt['ok']
 controls=json.loads((O/'SourceControls.json').read_text()); assert controls['source_sha256']==receipt['source_sha256']
 if glute_follow:assert controls['action_sha256']==receipt['action_sha256']
 sk=u.load_asset(receipt['mesh']); clip=u.load_asset(receipt['clip'])
-if local_normals:
+if local_normals and not join:
     normal_receipt=json.loads((O/'NativeLocalNormals.json').read_text())
     assert normal_receipt['ok'] and normal_receipt['source_sha256']==receipt['source_sha256']
     sk=u.load_asset(normal_receipt['mesh'])
@@ -48,9 +55,11 @@ if normal_control or recompute:
         # Installed ESkinVertexColorChannel::None == Alpha == 3. No colour mask.
         assert editor.set_section_recompute_tangents_vertex_mask_channel(sk,0,i,1 if local_normals else 3)
     # No source asset save: this is a bounded rendering control.
-protected={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(u.Paths.project_content_dir())/BASE.replace('/Game/','')).glob('*.uasset')}
+content_root=Path(u.Paths.convert_relative_path_to_full(u.Paths.project_content_dir())).resolve()
+protected={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (content_root/BASE.replace('/Game/','')).glob('*.uasset')}
+assert protected, 'Native proof guard must cover actual files'
 if palmar:
-    reused=Path(u.Paths.project_content_dir())/'SpaceSurvival/Licensed/VexaG2GluteFollow240Proof_20261026'
+    reused=content_root/'SpaceSurvival/Licensed/VexaG2GluteFollow240Proof_20261026'
     protected.update({str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in reused.glob('*.uasset')})
 es=u.get_editor_subsystem(u.EditorActorSubsystem); ls=u.get_editor_subsystem(u.LevelEditorSubsystem); ed=u.get_editor_subsystem(u.UnrealEditorSubsystem)
 assert u.EditorLoadingAndSavingUtils.new_map_from_template('/Game/SpaceSurvival/Licensed/ZeroGSourceBaseline_20261025/L_SourceBaseline_Review',False)

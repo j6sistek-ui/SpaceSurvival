@@ -1277,3 +1277,119 @@ validation and documentation gate pass. No C++ changed; module rebuild/format
 are not applicable. After both videos fully decoded and their hashes were
 rechecked, 1296 disposable motion PNGs were removed (535928500 bytes); all48
 stills, 24 selected motion PNGs, A/B images, videos and receipts remain.
+
+
+### October26 continuation: saved G1-to-G2 bridge and native transfer
+
+The earlier G1 shoulder candidate51c25e24 remains unchanged. A separate four-second
+bridge6172cbdedd07 connects G1cc652d79 to G2409a79ad, with eight compact independent
+shoulder bases97d023f5 rather than another full-character file. Both source clips
+retain their timing. It is not a closed routine loop.
+
+Rejected controls: the original blend cleared the pole but violated the retained
+free-arm rear-reach screen562times (7.963degree peak); reusing G1's96 bases failed
+1.3893mm target fit; adding four residual bases still failed actual key replay
+because large coefficients clamped. A report-only numpy-boolean serialization
+error occurred before any delivery save. These failures remain in private receipts.
+The final free-arm adjustment preserves endpoint poses and local elbow/hand shape.
+Eight normalized join bases fit481 targets within0.026808mm and240 holdouts within
+0.023584mm. Fresh saved replay of961 poses matches95 bones within0.032436mm and
+shape coefficients within5.82e-8, with0 arm-direction flags.481 actual surface
+samples clear the pole and distal-arm/body screen; radius stays within2.147299m.
+Maximum local angular rate66.620degrees/s and pelvis speed0.257758m/s are measured
+pacing, not anatomical acceptance. Contact screen scope is deliberately limited.
+
+A thumb-pad fitting experiment improved its own gap metric but showed no clear
+visual benefit; it was not adopted. Original grip calibration, all prior proof
+hashes, production characters/maps/DLL/saves/package remain unchanged.
+
+The saved bridge and compact basis are private in SourceAssets/DanceRefinement_20261025;
+read the new G1/G2 section of DEFORMATION_RECIPE.md for exact commands and failed
+controls. Native transfer, complete body/garment/artistic review, B1/B2 and the
+remaining dancers are still AI work. No ClickUp write, merge or owner acceptance.
+
+Three saved-action views each fully decode193 frames at24Hz. Selected transition and opposing frames were reviewed; original Workbench normals and remaining garment contours are still visible. Private `G1G2JoinReview.html` has four valid local media/navigation links. After video hashes and full decodes passed,540 intermediate PNGs (355929293bytes) were removed, retaining39 selected boundary/midpoint frames, three overview sheets and all videos/receipts. Native transition validation remains pending.
+
+Fresh boundary-only replay passes: G1/end to bridge/start maximum visible-surface
+difference 0.026141mm; bridge/end to G2/start 0.002653mm. Maximum difference across
+95 bone positions is 0.002365mm. The unchanged gates are 0.3mm surfaces and 0.15mm
+bones. Receipt: G1G2JoinBoundary/Boundary.json. This establishes exact saved pose
+continuity, not native or complete artistic acceptance.
+
+Fresh private native bridge proof a1860e65 retains104 curves. Eight poses match
+95 bone positions within0.258351mm and visible surfaces within0.244242mm;
+145 captures/97 decoded motion frames and opposing sheets are retained under
+G1G2JoinNative240.52 import bind-pose warnings and existing template/UDIM/material
+capture warnings remain. Prior proofs are unchanged; production is untouched.
+The82.75s G1/bridge/G2 review0c1a38c2 fully decodes1986 frames at24Hz. It is an
+edit of native captures with two camera cuts, not live loop integration.
+
+### October26 continuation: leg phrasing remains the current priority
+
+Owner reports too many straight legs and asks for subtle continuous motion,
+alternating knee draw/return and spacing while swinging; reference media inform
+flow rather than mandate new choreography. Finish this routine first. PC review
+will happen later, without blocking work or uploading externally.
+
+G2FloatingLife/LegPhrase.json: both geometric knees below15degrees in38.15% of
+current samples,19.91% of full original G2 and30% of the selected raw passage.
+Different durations prevent a frame-aligned comparison. Measured holds are
+0–6,34–42 and48–50s. Initial tiny overlap is insufficient and unadopted.
+Phrase control51079172 adds alternating12degree thighs/up-to30degree knees,
+3degree spacing and delayed ankle follow in three bounded windows.769 limited
+pole/distal-arm/posterior-hip samples have0flags; protected bones and outside
+windows are exact. Both knees below15degrees becomes18.99%.
+
+Candidate173a6223 copies the prior action and changes ten bone-channel sets;
+850 other curves remain exact.10194 retained/uniform knots at120Hz replay in
+a fresh process over12281 poses with max bone error0.022614mm, matrix error
+2.20e-5, peak local rate94.400degrees/s and loop error5.49e-6. The original
+action/mesh remain unchanged. Source camera clipping at the swing exit was
+rejected; the framed version fits the complete passage. Four opposing clips
+decode164/205/164/205frames. This is saved-source fidelity and limited contact
+evidence, not complete anatomy, choreography, native or owner acceptance.
+Recipes and exact private paths are in DEFORMATION_RECIPE.md; native leg
+transfer is the next gate. No production build, package, ClickUp or merge.
+
+### October26 continuation: native leg proof, rejected source-leg overlay and concepts
+
+Fresh private native leg transfer now supersedes the preceding pending gate:
+eight poses below0.089867mm bones/0.106435mm surfaces,38stills/1229 fully decoded
+motion frames. The assembled current videoaad072ad decodes1986frames at24Hz;
+two camera cuts remain explicit and no live loop is claimed. Production is
+unchanged. Source coverage inspection finds only about7s of original G1/G2.
+
+Source-leg control7d0b0c83 restores G1 leg phrases in existing holds, but39 of769
+15Hz samples flag contacts:4 opening pole,35 return arm/body,31 overlapping hip
+flags. Six opposing diagnostic videos decode940frames. Failed status is retained;
+no saved/native replacement was adopted. Local source library0a38e12a already
+contains arm edits and must not be described as untouched full-body source.
+
+Original FlipsAndTricks source previews (BackFlip, ButterflyTwist, SideFlip)
+use their matching mannequin, checked rest matrices below4.77e-7, six videos/
+726 decoded frames at3x duration. Observed useful rotating fold/extension ideas;
+floating adaptation and dancer fit remain pending. No new pack copy or purchase.
+
+Owner explicitly requested concept agents and independent feedback. Two private
+image boards propose five pole/five off-pole blocks of10–15s; no new block was
+rigged or animated. Floating image9803b656 includes gather/twist/full extension.
+Pole P4 middle has an extra arm and is rejected; its correction was blocked by
+the image tool. The independent reviewer inspected166 half-second routine frames
+and denser release/failure samples, not real-time playback, confirming long
+holds and frozen upper-body response. Source videos hash unchanged. New plans,
+timings, contact-state boundaries and dated primary sources are documented in
+CHOREOGRAPHY_BLOCKS.md; known limits remain RPT-20261021-01. No ClickUp or merge.
+
+### Timing-only comparison, not a replacement action
+
+`review_current_g_timing.py` produces private video1e83e92c, 75.05 seconds,
+4,503 fully decoded frames at a 60 Hz presentation rate. All 1,986 original
+pose frames are represented; repetition does not create newly evaluated poses.
+Four held passages use smooth speed ramps. G1, the bridge, supported G2 motion
+and return blend keep their existing speed. The input video hash is unchanged.
+CurrentGTimingReview.html compares this with the original82.75s edit.
+
+This changes only a review video. Missing whole-body source phrases, continuous
+camera playback, rig/contact checks at revised animation timing and owner
+judgment remain open. No action, rig, production asset or new concept sequence
+was changed. Concept boards were shown before any new-block implementation.

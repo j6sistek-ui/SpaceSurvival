@@ -1652,3 +1652,234 @@ metadata warnings remain in encode logs. FBX inactive vendor-curve/bind-pose
 and template capture warnings remain documented; no expected G1 corrective
 curve is missing. The first masked import's relative-path guard failed before
 writing; the corrected guard resolves the absolute path before hashing.
+
+
+## G1 to G2 join: preserve the shoulder across clip boundaries (October26)
+
+Private bridge `G1G2_Join_ActionLibrary.blend` is four seconds at120Hz, SHA256
+`6172cbdedd0721c2d08813c26c9d977168c28eae21f67b4e06dba7a77394c22f`.
+Use G1cc652d79, this bridge, then G2409a79ad consecutively. This ordering is
+not a closed loop. Original clips, mesh51c25e24 and calibrated hands are unchanged.
+The bridge library is5,159,551bytes; its eight additional local morphs occupy
+103,322bytes in `G1G2_Join_MorphBasis.npz` (97d023f5). There is no duplicate
+full-character Blender file.
+
+`review_g1_g2_join.py` matches endpoint local-bone rotations/velocities with
+spherical cubic interpolation and the pelvis trajectory with a cubic Hermite
+path. An initial30Hz pole/distal-arm screen passed, but the later both-arm
+screen caught562 left rear-reach samples (maximum7.963degrees) during the
+blend. This was rejected before saving. `--forward-arm` moves only the free
+left arm and descendants toward the torso-forward half-space with a smooth
+response; endpoint poses and elbow/hand local rotations stay unchanged.
+Contact clearance alone cannot accept a transition.
+
+The G1 corrective timing cannot just run through the new pose interval.
+Projection into its96 bases alone failed1.3893mm. Four extra residual bases
+reduced target error, but coefficients reached28.339 and Blender's key-value
+range clamped them, producing18.339 coefficient error on actual replay. That
+control is rejected. Never accept the linear algebra fit without evaluating
+the actual saved shape-key action. The first report-only serialization error
+(numpy boolean) occurred before saving and its failed log is retained.
+
+Preferred: `fit_g1_g2_join_corrective.py -- --augment-basis
+--independent-basis --forward-arm` fits the localized smoothing target to
+**eight independent join bases**, each coefficient normalized within[-1,1].
+Use the same549-vertex cap mask, local nonsingular skin inverse and smoothing
+settings as G1. Match G1's endpoint delta and derivative before approaching
+the new target; fade to zero over the final0.6s because G2 uses its preserved
+rig correction. G1's original96 curves are zero during the bridge and remain
+unchanged in G1.481 fitted samples have0.026808mm maximum error;240 unfitted
+half-frame samples have0.023584mm maximum error. This is a time-specific
+correction, not a universal shoulder solver.
+
+`save_g1_g2_join.py` writes the paired bone/shape actions and compact basis;
+`--verify` reloads them in a new hidden Blender process.961 whole/half-frame
+samples retain95 bones within0.032436mm and2.79e-5 matrix units, with shape
+coefficient error below5.82e-8. Both-arm rear/hinge screen flags are0. Peak
+local angular rate66.620degrees/s and pelvis speed0.257758m/s stay under the
+existing slow-passage ceilings; these are artistic pacing criteria, not
+universal human limits.481 actual evaluated skin/morph surface checks have
+0 pole/distal-arm-body intersections and maximum radius2.147299m. These
+screens do not cover every joint, garment, self-contact or between-sample event.
+
+`review_saved_g1_g2_join.py` shows two seconds of unchanged G1, the four-second
+bridge and two seconds of unchanged G2 from three fixed opposing viewpoints.
+Keep G1/join bone and matching shape actions paired; clear stale REVIEW_
+values when switching to G2. The Workbench review uses original normals;
+selected native local-normal behavior must be checked separately. Source
+receipts are under G1G2JoinForward, G1G2JoinForwardSaved/Replay and G1G2JoinMotion.
+Live sequence integration, complete routine artistry and other characters remain open.
+
+A separate static thumb experiment (`fit_palmar_thumb_pad.py`) held the wrist,
+body and four fingers fixed. The pad already faced inward (cosine0.9813).
+Its new face-center gap metric improved3.3982 to2.1661mm, with no pole/cross-digit
+penetration, but the visible hook did not clearly improve. No fit/calibration
+was adopted. Preserve the signed-palmar grip and keep hand polish open; this
+metric differs from the earlier nearest-three-vertices gap and is not directly
+interchangeable with it.
+
+Three saved-action views each fully decode193 frames at24Hz. Selected transition and opposing frames were reviewed; original Workbench normals and remaining garment contours are still visible. Private `G1G2JoinReview.html` has four valid local media/navigation links. After video hashes and full decodes passed,540 intermediate PNGs (355929293bytes) were removed, retaining39 selected boundary/midpoint frames, three overview sheets and all videos/receipts. Native transition validation remains pending.
+
+Run `review_saved_g1_g2_join.py -- --boundary-only` for the inexpensive exact
+boundary check. Fresh saved G1/end and bridge/start differ by at most 0.026141mm
+on evaluated visible surfaces; bridge/end and G2/start differ by 0.002653mm.
+The 95 bone positions differ by at most 0.002365mm. Both pass the unchanged
+0.3mm surface and 0.15mm bone gates. This catches stale corrective curves or
+unmatched shape bases at switching; it does not validate the native renderer.
+
+Fresh private native bridge proof now supersedes the pending-transfer status.
+`export_g1_g2_join_proof.py` exports a1860e65; import/capture use
+`SS_G2_VARIANT=g1_g2_join` with the existing posterior-proof scripts.
+The new private VexaG1G2Join240Proof_20261026 folder retains104 morphs/curves.
+Eight native poses match95 bones within0.258351mm and visible surfaces within
+0.244242mm, under the unchanged0.5mm gates. All145 captures completed,
+including97 motion frames at24Hz; opposing stills were inspected and the
+motion video fully decoded. Old proof hashes remain unchanged.52 bind-pose
+import warnings and existing capture-template/UDIM/material warnings remain;
+this is not a zero-warning or production gameplay claim.
+
+`build_current_g_routine_review.py` assembles existing G1, bridge and G2 native
+videos into the82.75s `G1G2_Current_Full_Unreal.mp4` (0c1a38c2), with1986 decoded
+frames at24Hz. The two camera cuts are explicit: this is not a live sequence
+or a loop. An accidental default25Hz2068-frame encoding was rejected and
+retained privately before forcing24Hz. Owner will review on PC later; no
+external upload was requested and that review does not block AI work.
+
+## G2 leg phrasing: remove accidental holds before adding routines (October26)
+
+Owner requests the current routine first, with overlapping limb movement and
+brief deliberate accents rather than long rigid straight-leg poses. New image
+and video references inform flow/pacing, not literal replacement choreography.
+`audit_g2_floating_holds.py` finds frozen local leg poses at0–6,34–42 and48–50s.
+`audit_g2_leg_phrase.py` measures both knees below15degrees in38.15% of the
+current passage,19.91% of full raw G2 and30% of the selected raw segment.
+The raw and edited durations differ: these proportions diagnose phrasing,
+not a frame-aligned retarget comparison or anatomical limit. The contact recipe
+selects source570–770, slows playback and holds endpoints; do not silently
+claim it contains all original G2 or restore rejected backward swings.
+
+`g2_floating_life_control.py` preserves primary motion outside0–6.8,33.5–44 and
+47–51.1667s, using0.9s quintic fades. Initial4degree thigh/8degree knee overlap
+was too subtle and is retained as an unadopted control. Preferred `phrase=True`
+uses alternating12degree thigh flex, up to30degree knee flex,3degree spacing,
+and delayed3degree ankle follow on a6.2s cycle. Existing glute swing-follow is
+recomputed for changed thighs. The free left elbow/wrist have only2.5/0.8degree
+follow; right grip, shoulders, spine and endpoints stay unchanged. This is
+specific authored motion, not a universal anatomical solver or new routine.
+
+Control51079172 passes769 samples of the limited pole/distal-arm/posterior-hip
+screens with0flags; protected-bone and outside-window matrix differences are0.
+Both knees below15degrees falls to18.99%. This supports the intended direction,
+not artistic acceptance. Opposing source views show a clearer knee draw/return.
+The first source camera clipped the swing exit; `--framed` fits a fixed camera
+to all passage joint bounds plus0.5m margin instead of accepting that view.
+
+`save_g2_floating_phrase.py` copies G2409a79ad and replaces only ten bone-channel
+sets, retaining850 untouched curves exactly and preserving all fractional
+source knots. Candidate173a6223 uses10194 knots,120Hz and51.1667s; it is126914820B
+versus125754768B for the preserved original action, with no duplicate full mesh.
+Fresh `--verify-only` replay checks12281 poses at240Hz: max95-bone position error
+0.022614mm, matrix error2.20e-5, local angular speed94.400degrees/s and loop
+matrix difference5.49e-6. Existing0.15mm/0.001/95degree gates are unchanged.
+These are fidelity/pacing gates; wrists, ankles, garments and anatomy still
+require continuous visual judgment. Candidate is private, not production.
+
+Reproduce with hidden Blender: `review_g2_floating_life.py -- --phrase`, then
+`--phrase --render --framed`; save/replay with `save_g2_floating_phrase.py` and
+`--verify-only`; `build_g2_floating_review.py --framed` encodes source views.
+Receipts live under G2FloatingLife/PhraseControl; originals, rejected controls
+and source hashes remain available. Native transfer was a separate gate, now
+verified below.
+
+Fresh private native leg proof supersedes the pending-transfer status.
+Saved173a6223 exports animationd37bc45c and reuses the unchanged glute mesh.
+Eight95-bone comparisons stay within0.089867mm and visible surfaces within
+0.106435mm;1267 captures complete (38 stills,1229 motion frames). The full
+24Hz video42692e6a decodes all1229 frames. Selected front/back/side stills
+were inspected; their pelvis-focused framing does not show every extremity.
+The motion camera follows the full body. Existing template warnings remain.
+
+The combined leg review is now CurrentGLegReview.html / videoaad072ad,
+1986frames at24Hz (82.75s). It contains G1cc652d79, bridge6172cbde and G2leg173a6223,
+with two explicit camera cuts. It is not live sequence playback or a closed loop.
+No production assets, game DLL, saves or package changed.
+
+## Restore choreography coverage before calling the routine finished (October26)
+
+Owner reports that the current motion reads as one extended orbit. Coverage
+inspection confirms that only sourceG1 frames780–1000 (12.983–16.650s) and
+sourceG2 frames570–770 (9.483–12.817s) are selected: about7seconds combined
+from30.866seconds of original motion. Slowing and adding approaches/returns
+expanded those excerpts to the current review. Repairing contact/deformation
+on narrow excerpts lost most original choreographic variety; do not present
+the82.75s review as the complete original G1/G2 routine.
+
+`describe_g_routine_sections.py` retains a ten-section source/time map and
+adds chapter controls to CurrentGLegReview.html. `review_raw_motion_sources.py`
+inventories original G1/G2 and owner IMG9733 without saving or modifying inputs,
+sampling52 source joints at60Hz and rendering two fixed opposing-axis views.
+First wide source sheets leave substantial empty space because their camera
+fits the complete motion. Rate peaks are diagnostic, not anatomical limits.
+
+The owner specifically approves the raw G1 contact-sheet leg ideas (0–9.5s):
+alternating extensions, knee lifts, folds and exchanges. Restore substantially
+more of that motion at a deliberate pace, preserving repaired upper-body/contact
+behavior; a small periodic knee overlay does not satisfy this correction.
+The additional26s reference video illustrates an arch, backward inversion and
+opening at roughly10.5–13s despite visual drift. Its associated19.667s GLB
+7ca1b394 has a torso inversion at8.633–9.550s and abrupt local rotation peaks
+around10.95–11.03s. Different durations/timing mean these are not frame-aligned
+proof of transfer. Interpret the intended motion through the drift; do not
+discard a useful phrase solely because generated details are distorted.
+The backward flip is optional inspiration, not committed placement in this
+routine. Owner will judge the current video later; AI leg work continues.
+
+`g2_source_leg_control.py` is a separate unsaved candidate: it transfers
+relative leg rotations from the retained target-rig G1 library into held G2
+passages while retaining rest lengths and upper-body transforms. Source windows
+0.5–3,4.5–6.5 and7.5–9s are recorded explicitly. Endpoint fades and established
+glute-follow remain, but contact, speed and appearance must pass before saving
+or replacing the173a6223 candidate. This is neither a universal retarget fix nor
+a silently adopted new routine. Original actions and approved versions remain.
+
+## Source-phrase review and conceptual blocks — October26
+
+The source-leg7d0b0c83 control fails39 of769 sampled times: four opening
+pole intersections at5.2667–5.4667s and35 return arm/body samples at48.2667–
+50.5333s; hip overlaps occur in31 of those times. Six diagnostic videos fully
+decode940 frames, with failed status retained. Greater leg variety is not
+permission to adopt a colliding control. Upper-body preservation was a
+diagnostic isolation choice, not an owner-imposed choreography lock.
+
+Original matching-mannequin FlipsAndTricks previews now cover BackFlip,
+ButterflyTwist and SideFlip front/side at3x duration (726 decoded frames).
+Rest-matrix differences remain below4.77e-7; this establishes source binding,
+not target-dancer anatomy. Review images show useful fold/open and unequal-leg
+rotation; retain complete phrases rather than only0.6s stretched across16s.
+Reproduce with review_library_motion.py and build_library_motion_review.py.
+
+The independent review inspected166 chronological half-second routine samples,
+48 release samples and opposing diagnostic frames. It did not watch real-time
+playback. Long waits31.5–38.2s/64–76s and uncoordinated free-arm/torso poses are
+the immediate repair targets; preserve stronger G1 and G2 fold/extension shapes.
+Seven video input hashes remain unchanged.
+
+[Choreography blocks](CHOREOGRAPHY_BLOCKS.md) records the latest owner direction,
+ten concepts, source windows, compatible contact families, and official UE5.8
+information. Concept agents performed no rigging/animation. Images are planning
+references, not source renders or validation; pole P4 middle has an explicitly
+rejected extra arm. Current routine refinement continues before new blocks.
+
+### Timing-only comparison, not a replacement action
+
+`review_current_g_timing.py` produces private video1e83e92c, 75.05 seconds,
+4,503 fully decoded frames at a 60 Hz presentation rate. All 1,986 original
+pose frames are represented; repetition does not create newly evaluated poses.
+Four held passages use smooth speed ramps. G1, the bridge, supported G2 motion
+and return blend keep their existing speed. The input video hash is unchanged.
+CurrentGTimingReview.html compares this with the original82.75s edit.
+
+This changes only a review video. Missing whole-body source phrases, continuous
+camera playback, rig/contact checks at revised animation timing and owner
+judgment remain open. No action, rig, production asset or new concept sequence
+was changed. Concept boards were shown before any new-block implementation.

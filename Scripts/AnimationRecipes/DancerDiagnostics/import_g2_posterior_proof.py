@@ -15,26 +15,35 @@ import unreal as u
 
 
 variant = os.environ.get('SS_G2_VARIANT', '')
-assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar', 'g1_shoulder', 'g1_shoulder_cap'), 'Unknown proof variant'
-g1_shoulder = variant in ('g1_shoulder', 'g1_shoulder_cap')
-palmar = variant == 'palmar'
-glute_follow = g1_shoulder or variant in ('glute_follow', 'glute_follow_240', 'palmar')
+assert variant in ('', 'glute_follow', 'glute_follow_240', 'palmar', 'g1_shoulder', 'g1_shoulder_cap', 'g1_g2_join', 'floating_phrase'), 'Unknown proof variant'
+join = variant == 'g1_g2_join'
+g1_shoulder = variant in ('g1_shoulder', 'g1_shoulder_cap', 'g1_g2_join')
+palmar = variant in ('palmar', 'floating_phrase')
+glute_follow = g1_shoulder or variant in ('glute_follow', 'glute_follow_240', 'palmar', 'floating_phrase')
 refined_rate = variant == 'glute_follow_240'
 O = R / ('G1ShoulderNative240' if g1_shoulder else 'G2PalmarNative240' if palmar else 'G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
 stem = 'G1Shoulder240' if g1_shoulder else 'G2Palmar240' if palmar else 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
 prefix = 'review_g1_leftaxilla_' if g1_shoulder else 'review_g2_'
 if variant == 'g1_shoulder_cap':
     O, stem = R / 'G1ShoulderCapNative240', 'G1ShoulderCap240'
+if join:
+    O, stem, prefix = R / 'G1G2JoinNative240', 'G1G2Join240', 'review_'
+if variant == 'floating_phrase':
+    O, stem = R / 'G2FloatingPhraseNative240', 'G2FloatingPhrase240'
 contract = json.loads((O / 'Export.json').read_text())
 BASE = '/Game/SpaceSurvival/Licensed/Vexa' + stem + 'Proof_20261026'
 OLD = '/Game/SpaceSurvival/Licensed/VexaContinuousDistalProof_20261025'
 assert 'WorkbenchNative/CharacterWorkbench' in u.Paths.get_project_file_path().replace('\\', '/')
 for key in (('source', 'action', 'animation', 'rest') if glute_follow else ('source', 'animation', 'rest')):
     assert hashlib.sha256(Path(contract[key]).read_bytes()).hexdigest() == contract[key + '_sha256']
-root = Path(u.Paths.project_content_dir()) / 'SpaceSurvival/Licensed'
+root = Path(u.Paths.convert_relative_path_to_full(u.Paths.project_content_dir())).resolve() / 'SpaceSurvival/Licensed'
+assert root.is_dir()
 protected = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
              for sub in ('VexaContinuousDistalProof_20261025', 'VexaHandIsolationProof_20261026', 'VexaZeroGSharedHipProof_20261026', *(['VexaG2PosteriorHipProof_20261026'] if glute_follow else []), *(['VexaG2GluteFollowProof_20261026'] if refined_rate or palmar else []), *(['VexaG2GluteFollow240Proof_20261026'] if palmar else []))
              for p in (root / sub).rglob('*') if p.is_file()}
+if join:
+    protected.update({str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for folder in root.glob('Vexa*Proof*') for p in folder.glob('*.uasset')})
 report = {'base': BASE, 'source_sha256': contract['source_sha256'], 'errors': []}
 if glute_follow:
     report['action_sha256'] = contract['action_sha256']
@@ -61,6 +70,8 @@ try:
         opt.skeleton = skeleton; opt.mesh_type_to_import = u.FBXImportType.FBXIT_SKELETAL_MESH
         opt.skeletal_mesh_import_data.set_editor_property('import_morph_targets', True)
         opt.skeletal_mesh_import_data.set_editor_property('morph_threshold_position', .00001)
+        if join:
+            opt.skeletal_mesh_import_data.set_editor_property('vertex_color_import_option', u.VertexColorImportOption.REPLACE)
         task.options = opt
         u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
         mesh = u.load_asset(BASE + '/' + task.destination_name)
@@ -69,6 +80,10 @@ try:
         settings = editor.get_lod_build_settings(mesh, 0)
         settings.set_editor_property('bone_influence_limit', 12)
         editor.set_lod_build_settings(mesh, 0, settings)
+        if join:
+            for section in range(editor.get_num_sections(mesh, 0)):
+                assert editor.set_section_recompute_tangent(mesh, 0, section, True)
+                assert editor.set_section_recompute_tangents_vertex_mask_channel(mesh, 0, section, 1)
         assert lib.save_loaded_asset(mesh, False)
     expected = {n.casefold() for n in contract['expected_morphs']}
     actual = {m.get_name().casefold() for m in mesh.get_editor_property('morph_targets') if m.get_name().casefold().startswith(prefix)}
@@ -83,6 +98,8 @@ try:
     opt.anim_sequence_import_data.set_editor_property('custom_sample_rate', contract['fps'])
     opt.anim_sequence_import_data.set_editor_property('preserve_local_transform', True)
     opt.anim_sequence_import_data.set_editor_property('delete_existing_morph_target_curves', True)
+    if join:
+        opt.anim_sequence_import_data.set_editor_property('do_not_import_curve_with_zero', False)
     task.options = opt
     u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
     clip = u.load_asset(BASE + '/' + task.destination_name)
