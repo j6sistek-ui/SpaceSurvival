@@ -93,3 +93,7 @@ diagnostics, not the current candidate. See DEFORMATION_RECIPE.md for limits.
 ## Balanced native review
 
 The balanced exporter preserves its source blend. Native import asserts the private workbench and unlimited-influence configuration; capture/readback and parity scripts distinguish component geometry from rendering. Clean captures remove misleading normal bands; motion capture and encoding retain two24fps native views. GPU and garment controls inspect the remaining axilla fold without changing original assets. These are diagnostic recipes, not production adoption or owner acceptance. The encoder uses an existing FFmpeg executable; it installs nothing.
+
+## Distal and wrist-motion follow-up
+
+The hand-contamination and continuous-distal recipes create separate guarded copies. The native distal harness tests48 views and sampled surface parity. G/B reuse disables Spiral-specific correction curves. The wrist continuity repair preserves other local keys and exports a separate library; the comparison harness captures matched native events and complete G1. See DEFORMATION_RECIPE.md for exact hashes, rejected controls, export-root identity and remaining gates. No recipe authorizes production adoption.
