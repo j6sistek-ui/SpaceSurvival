@@ -89,3 +89,7 @@ whole961-frame seam and rejects lossy eight-influence pruning. The current proof
 retains up to10 influences, pending native-budget checks. These scripts never
 launch Unreal or adopt an asset. Earlier helper-bone studies are rejected
 diagnostics, not the current candidate. See DEFORMATION_RECIPE.md for limits.
+
+## Balanced native review
+
+The balanced exporter preserves its source blend. Native import asserts the private workbench and unlimited-influence configuration; capture/readback and parity scripts distinguish component geometry from rendering. Clean captures remove misleading normal bands; motion capture and encoding retain two24fps native views. GPU and garment controls inspect the remaining axilla fold without changing original assets. These are diagnostic recipes, not production adoption or owner acceptance. The encoder uses an existing FFmpeg executable; it installs nothing.
