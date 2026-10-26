@@ -203,3 +203,17 @@ then run `save_g2_glute_follow.py` and a fresh `-- --verify-only` invocation.
 The candidate requires its matching116-vertex weight manifest; the animation
 alone is incomplete. Only two helper channels are rebaked; fractional old keys
 must be cleared first. Full garment/native/artistic acceptance remains open.
+
+
+For the saved glute-follow native proof, run `export_g2_glute_proof.py`, import
+and compare with `SS_G2_VARIANT=glute_follow`, then retain its120Hz failure.
+`probe_g2_glute_resampling.py` isolates sampling error;
+`export_g2_glute_rate_refinement.py` writes the240Hz animation while reusing
+the rest FBX. Import/capture/compare with `SS_G2_VARIANT=glute_follow_240`.
+Author/import scripts refuse to replace previous proof payloads.
+
+`review_g2_grip_motion.py` audits the exact saved candidate without modifying
+it. Its `-- --labels` mode identifies thumb/little finger; `-- --isolate`
+renders unobstructed forearm motion. Cyan is thumb, violet is little finger.
+The sampled native/contact checks pass; whole-rig/garment/artistic quality
+remains open. Read the recipe for source hashes, rejected controls and limits.

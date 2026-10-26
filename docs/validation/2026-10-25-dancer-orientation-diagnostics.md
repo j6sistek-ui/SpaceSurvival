@@ -1122,3 +1122,25 @@ loop after decode (2.412GiB reclaimed), retaining videos and closeups.
 Unanchored waist pull and a mixed-fractional-key export were rejected; see recipe.
 Garment/contour/native/owner acceptance remains open. Source originals and the
 approved shoulder response remain preserved; no production mesh/game changes.
+
+### October26 native transfer and hand-direction follow-up
+
+Private f7f76b2e action plus116-vertex patch now passes fresh native parity at
+240Hz export: eight95-bone comparisons max0.123mm and eight28261-vertex surface
+comparisons max0.152mm. The120Hz version failed1.389mm surface error; a regular
+sampling control reproduced the discrepancy, and the original failure remains.
+24 stills and a1039-frame24Hz video are retained and fully decoded. Bind-pose
+recreation and PNG metadata warnings remain recorded; this is not warning-free
+production acceptance. Prior proofs and protected source hashes remain intact.
+
+Owner likes the current stills and questions grip orientation. Cyan thumb and
+violet little-finger views establish thumb-up at the cited source12.4s pose;
+no hand shape/rotation was changed. A2595-sample60Hz screen finds zero defined
+pole/cross-digit triangle flags, hand-core drift0.0289mm, CPU skin error0.00111mm.
+Wrist direction peak38.176degrees is diagnostic only. Two520-frame12Hz views
+retain complete motion; isolated colored forearm views remove body occlusion.
+Remaining palm/within-digit/between-frame contact, artistry and whole-routine
+quality are not certified by this screen. Garment weight-transfer/clearance
+controls are rejected for weak or visibly worse shape, despite fewer intersections.
+See DEFORMATION_RECIPE.md and local G2GluteFollowNative240/G2GripMotion receipts.
+No production adoption or new game binary; Vexa remains before Joy/Astra.

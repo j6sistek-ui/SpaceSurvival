@@ -14,26 +14,33 @@ from pathlib import Path
 import unreal as u
 
 
-O = R / 'G2PosteriorHip'
+variant = os.environ.get('SS_G2_VARIANT', '')
+assert variant in ('', 'glute_follow', 'glute_follow_240'), 'Unknown proof variant'
+glute_follow = variant in ('glute_follow', 'glute_follow_240')
+refined_rate = variant == 'glute_follow_240'
+O = R / ('G2GluteFollowNative240' if refined_rate else 'G2GluteFollowNative' if glute_follow else 'G2PosteriorHip')
 contract = json.loads((O / 'Export.json').read_text())
-BASE = '/Game/SpaceSurvival/Licensed/VexaG2PosteriorHipProof_20261026'
+stem = 'G2GluteFollow240' if refined_rate else 'G2GluteFollow' if glute_follow else 'G2PosteriorHip'
+BASE = '/Game/SpaceSurvival/Licensed/Vexa' + stem + 'Proof_20261026'
 OLD = '/Game/SpaceSurvival/Licensed/VexaContinuousDistalProof_20261025'
 assert 'WorkbenchNative/CharacterWorkbench' in u.Paths.get_project_file_path().replace('\\', '/')
-for key in ('source', 'animation', 'rest'):
+for key in (('source', 'action', 'animation', 'rest') if glute_follow else ('source', 'animation', 'rest')):
     assert hashlib.sha256(Path(contract[key]).read_bytes()).hexdigest() == contract[key + '_sha256']
 root = Path(u.Paths.project_content_dir()) / 'SpaceSurvival/Licensed'
 protected = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
-             for sub in ('VexaContinuousDistalProof_20261025', 'VexaHandIsolationProof_20261026', 'VexaZeroGSharedHipProof_20261026')
+             for sub in ('VexaContinuousDistalProof_20261025', 'VexaHandIsolationProof_20261026', 'VexaZeroGSharedHipProof_20261026', *(['VexaG2PosteriorHipProof_20261026'] if glute_follow else []), *(['VexaG2GluteFollowProof_20261026'] if refined_rate else []))
              for p in (root / sub).rglob('*') if p.is_file()}
 report = {'base': BASE, 'source_sha256': contract['source_sha256'], 'errors': []}
+if glute_follow:
+    report['action_sha256'] = contract['action_sha256']
 try:
     lib = u.EditorAssetLibrary
     assert not lib.does_directory_exist(BASE), 'Preserve previous proof'
-    skeleton = lib.duplicate_asset(OLD + '/SK_VexaContinuousDistalProof_Skeleton', BASE + '/SKEL_G2PosteriorHip')
+    skeleton = lib.duplicate_asset(OLD + '/SK_VexaContinuousDistalProof_Skeleton', BASE + '/SKEL_' + stem)
     assert skeleton and lib.save_loaded_asset(skeleton, False)
     u.SystemLibrary.execute_console_command(None, 'Interchange.FeatureFlags.Import.FBX 0')
     task = u.AssetImportTask()
-    task.filename = contract['rest']; task.destination_path = BASE; task.destination_name = 'SK_G2PosteriorHip'
+    task.filename = contract['rest']; task.destination_path = BASE; task.destination_name = 'SK_' + stem
     task.automated = True; task.save = True; task.replace_existing = False
     opt = u.FbxImportUI(); opt.automated_import_should_detect_type = False
     opt.import_mesh = True; opt.import_as_skeletal = True; opt.import_animations = False
@@ -54,13 +61,13 @@ try:
     actual = {m.get_name().casefold() for m in mesh.get_editor_property('morph_targets') if m.get_name().casefold().startswith('review_g2_')}
     assert actual == expected, (expected - actual, actual - expected)
     task = u.AssetImportTask()
-    task.filename = contract['animation']; task.destination_path = BASE; task.destination_name = 'A_G2PosteriorHip'
+    task.filename = contract['animation']; task.destination_path = BASE; task.destination_name = 'A_' + stem
     task.automated = True; task.save = True; task.replace_existing = False
     opt = u.FbxImportUI(); opt.automated_import_should_detect_type = False
     opt.import_mesh = False; opt.import_animations = True; opt.import_materials = False; opt.import_textures = False
     opt.skeleton = skeleton; opt.mesh_type_to_import = u.FBXImportType.FBXIT_ANIMATION
     opt.anim_sequence_import_data.set_editor_property('use_default_sample_rate', False)
-    opt.anim_sequence_import_data.set_editor_property('custom_sample_rate', 120)
+    opt.anim_sequence_import_data.set_editor_property('custom_sample_rate', contract['fps'])
     opt.anim_sequence_import_data.set_editor_property('preserve_local_transform', True)
     opt.anim_sequence_import_data.set_editor_property('delete_existing_morph_target_curves', True)
     task.options = opt

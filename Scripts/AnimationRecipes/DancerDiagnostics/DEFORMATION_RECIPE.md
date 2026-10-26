@@ -1307,3 +1307,74 @@ receipt scope; the completed fresh report is GluteFollowDenseAudit, followed
 by GluteFollowReload. Remaining work is garment/contour review, export/native
 comparison, other joints and full choreography; do not call this a gold-standard
 rig or transfer by vertex index to Joy/Astra.
+
+## October26 saved G2 native transfer and visible grip direction
+
+The paired f7f76b2e action/116-vertex waist patch now has a fresh private Unreal
+transfer. Keep the original aa7da985 mesh and previous proofs unchanged.
+`export_g2_glute_proof.py` exports the paired rest mesh and120Hz animation. It
+removes only56 inactive REVIEW_G2_ keys from the export copy; retaining those
+old curves would mix a previous pose-specific correction into this new motion.
+
+The120Hz transfer **failed** the unchanged0.5mm comparison gate:1.349mm bone
+and1.389mm surface error at the fractional paced time corresponding to source
+12.4s. `probe_g2_glute_resampling.py` reconstructs regular-sample local FK and
+reproduces1.363mm error at120Hz, versus0.113mm maximum at240Hz over eight poses.
+This isolates export sampling at the fractional timing corner; do not widen
+the tolerance or edit the leg pose to hide a transfer error.
+
+`export_g2_glute_rate_refinement.py` exports only a240Hz animation and reuses
+the same rest FBX. Set `SS_G2_VARIANT=glute_follow_240` for
+`import_g2_posterior_proof.py`, `capture_g2_posterior_proof.py` and
+`compare_g2_glute_native.py`. Default invocation retains the old posterior
+proof behavior. Use the installed engine with hidden/offscreen launch flags
+and the private CharacterWorkbench, never the owner's open editor.
+
+Fresh saved-map capture gives eight95-bone comparisons max0.123mm and eight
+28261-vertex visible-surface comparisons max0.152mm. It retains24 opposing
+stills and a1039-frame24Hz full-loop video, fully decoded. The destination is
+`/Game/SpaceSurvival/Licensed/VexaG2GluteFollow240Proof_20261026` in the private
+workbench. Animation FBX3513382f reuses rest FBX85405642. Import logs contain
+the existing invalid-bind-pose/recreated-bind-pose warning; FFmpeg reports
+PNG metadata warnings but decodes all frames. This is bounded native parity,
+not a packaged/natural-play/artistic acceptance claim.
+
+### Garment controls remain rejected
+
+The bottom already has glute/pelvis/thigh-twist weights. Neutral fit contains
+16 vertices more than1mm inside the body, deepest2.017mm. Nearby barycentric
+body-weight transfer (full through6mm, fading to zero at20mm) barely changes
+the fold. A3mm rest clearance, capped at6mm, reduces sampled intersections
+but makes the visible surface lumpier; reject it too. The first offset probe
+edited mesh vertices without updating shape-key Basis and therefore did not
+test the intended change. Its failed control is retained separately.
+Receipts and views: G2GluteFollowNative/GarmentFollowControl.json and
+GarmentClearanceControl.json under the local review root. Start further
+garment work from neutral fit and local surface continuity, not global offsets.
+
+### Preserve liked stills; distinguish orientation from contact
+
+Owner says many current stills look good and asks whether the gripping hand
+is upside down, then notes the thumb is hard to identify. No grip rotation or
+finger-shape change was made. `review_g2_grip_motion.py` opens the exact saved
+action/paired patch without saving assets. `-- --labels` colors actual thumb
+vertices cyan and little-finger vertices violet. At source12.4s the thumb is
+above the fingers; index base is63.030mm above little-finger base. This pose
+is not an upside-down grip. Do not flip a wrist from an ambiguous silhouette.
+
+The60Hz review covers2595 samples: zero right-hand/pole triangle flags at
+0.01mm penetration tolerance and zero cross-digit triangle intersection flags.
+1508 hand-core vertices move at most0.0289mm during held contact; CPU surface
+evaluation agrees with Blender within0.00111mm. The initial all-right-weight
+drift included the moving forearm and is retained as a rejected measurement,
+not a contact failure. Wrist direction peaks38.176degrees; this is a geometric
+angle, not an anatomical limit or full twist acceptance.
+
+`-- --render` produces two hand-following12Hz views, but body occlusion makes
+some of those frames inadequate for inspection. `-- --isolate` adds a transient
+forearm mask and colored fingers, producing520 frames per view through the
+same43.233s loop. The cut edge is diagnostic visibility, not a mesh repair.
+These checks exclude palm/digit junctions, within-digit folding and between-
+frame contact. Keep whole-arm motion, hand shape, release, full G/B coverage,
+garments and multi-character quality open. Do not copy these Vexa-only vertex
+IDs/calibrations onto Joy or Astra. No production map, mesh, DLL or save changed.
