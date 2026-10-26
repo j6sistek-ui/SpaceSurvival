@@ -97,3 +97,7 @@ The balanced exporter preserves its source blend. Native import asserts the priv
 ## Distal and wrist-motion follow-up
 
 The hand-contamination and continuous-distal recipes create separate guarded copies. The native distal harness tests48 views and sampled surface parity. G/B reuse disables Spiral-specific correction curves. The wrist continuity repair preserves other local keys and exports a separate library; the comparison harness captures matched native events and complete G1. See DEFORMATION_RECIPE.md for exact hashes, rejected controls, export-root identity and remaining gates. No recipe authorizes production adoption.
+
+## Carrying the approved shoulder response into other clips
+
+Start with the practical procedure at the top of DEFORMATION_RECIPE.md. The `review_gb_shoulder_response` and `bake_gb_shoulder_response` recipes isolate and bake the approved G1 response without replacing the Spiral proof. Export/capture/encode/reload scripts verify four native derivatives and opposing G1 views. No pole-contact or full-motion acceptance is implied. Recipe wrappers reuse the existing tracked harness; keep those dependencies together.

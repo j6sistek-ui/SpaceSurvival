@@ -1,5 +1,90 @@
 # F3 deformation repair recipe
 
+## Working procedure and transfer rules — October26
+
+Use this section first; the sections below retain the experiments and evidence.
+The current target is Vexa. Finish her rig and routines, then document their
+verified results before adapting the technique to Joy, Astra and other dancers.
+The owner approved specific shoulder/hip views, not a complete anatomical rig.
+
+1. **Identify the exact failure.** Record character, source hash, clip, frame,
+   visible body variant and camera. G1 frame881 (14.6667s) is the October26
+   straight raised-arm shoulder regression. A different pose is not a control.
+2. **Preserve a visual baseline.** Keep the original licensed source and the
+   best accepted derivative. Never overwrite a better result to try a new idea.
+   Use one mesh and change one cause at a time; render matching front, back and
+   quarter views with the hair hidden equally. Inspect lit colour afterward.
+3. **Separate the causes.** First compare rest hierarchy, joint placement,
+   local axes, object transforms and animation reference pose. Next isolate
+   clavicle/neck authority, then weights, then normals, then local corrections.
+   Corrective smoothing cannot repair a backwards elbow or unreachable hand.
+4. **Coordinate the shoulder with the actual arm pose.** `coordinated_girdle.py`
+   derives each clavicle from the chest-relative rest frame and elevation,
+   rather than inheriting an unrelated acrobatic clavicle pose. The evaluated
+   recipe uses a smooth zero-to20-degree clavicle lift and shares lower-neck
+   rotation between the two neck joints while retaining head orientation.
+   These are tested F3 recipe settings, not universal anatomical limits.
+5. **Carry that coordination to every clip.** Better Spiral images did not
+   establish G/B quality. G1's raw transfer retained flat clavicles, giving the
+   arm-from-neck silhouette. The matched coordinated G1 frame881 front was
+   explicitly approved. `bake_gb_shoulder_response.py` rewrites only clavicle,
+   upper-arm and neck channels (six bones); all other local keys stay exact.
+   It moves the hands by up to4.671cm and the head by2.969cm in these clips.
+   Solve contact afterward; never reapply an old pole constraint blindly.
+6. **Balance weights using identical mirrored poses.** The original F3 left
+   shoulder weights differ from the right. `mirror_vexa_shoulder_weights.py`
+   mirrors the better side through matched vertices and protected boundaries.
+   A head tilt or unequal arm height can still make correct shoulders differ.
+   Do not force equal silhouettes in an asymmetric pose.
+7. **Keep neck correction local.** `nape_weights.py` diffuses only the small
+   posterior weight discontinuity and treats coincident head/body pairs as a
+   unit. Broad trapezius/scapula helpers produced rejected neck and back bulk.
+   The retained rig has95 original bones; no helper is needed for this result.
+8. **Distinguish shading seams from separation.** Audit coincident vertex
+   distances in motion. The ankle/wrist pairs stayed attached. Averaging normals
+   on separate meshes failed; `build_vexa_continuous_distal.py` copies surfaces,
+   stitches only40 wrist and44 ankle pairs and clears split normals. Original
+   parts remain hidden. Export only the visible derived surfaces.
+9. **Fix demonstrated weight contamination narrowly.** Eight hand vertices had
+   pelvis weights. `repair_vexa_hand_contamination.py` removes only that influence
+   and renormalizes the existing others; it does not auto-weight the hands.
+   Separate finger deformation remains open and must be diagnosed independently.
+10. **Do not confuse continuity with anatomy.** The wrist limiter flipped across
+    quaternion branches, producing near80-degree frame jumps. The derivative
+    filters bounded rotation vectors around fast events and keeps non-wrist
+    keys exact. Its below5-degree/frame result is a continuity check, not a wrist
+    range rule; source fidelity, finger pose and contact still need inspection.
+11. **Keep pose corrections tied to their source.** Hip/axilla morph coefficients
+    baked for Spiral are time-indexed. Disable them on G/B; do not replay them
+    by frame number on another routine. Recompute or build a verified pose-driven
+    correction after changing the joints. Blender preserve-volume and smoothing
+    must be baked or implemented equivalently for Unreal; modifier presence in
+    Blender is not native deformation evidence.
+12. **Test more than showcase poses.** Use bilateral wrist flexion/deviation,
+    forearm roll, ankle pitch/roll, toe and finger poses; test partially open
+    knees as well as deep flexion. Then inspect complete original/retargeted
+    clips, transitions, a moving body with fixed grip, reachable grip changes
+    and garment contact. Reject snaps, inversion, collapsed volume and clipping.
+13. **Check the actual exported result.** The FBX armature object must be
+    `root.001`, matching the mesh's extra native root. Preserve all95 original
+    bones. The private workbench retains12 influences and skin-cache tangents;
+    do not silently prune to8. Verify fresh dependency loads, curve counts,
+    bone/surface parity and actual native rendered frames. Seek times must stay
+    inside each clip; endpoint clamping caused a retained failed capture.
+14. **Transfer a technique, not an unverified file.** Check topology, bone names,
+    rest matrices, shapes, weights and garment transforms before copying body
+    repairs. The four inspected F3 bodies matched; Joy/Astra are not thereby
+    proven compatible. Their repairs need their own source identity and tests.
+15. **Record narrowly and retain failures.** Store exact scripts, hashes,
+    parameters, before/after frames and rejected alternatives here and in the
+    validation record. `docs/KNOWN_ISSUES.md` owns remaining work. A passing
+    numeric screen, successful import or owner-approved still does not close
+    full-motion, contact, native-game or other-character acceptance.
+
+Preserved sources: balanced shoulder `844aae5f`, local axilla `1f677227`,
+continuous distal mesh `d70f17f7`, wrist library `a865e0d9`, separate shoulder
+action library `4d72c70e`. These remain private derivatives, not production swaps.
+
 RPT-20261021-01, 2026-10-25. **Partial, private review only.**
 The owner approved one corrected curled hip silhouette. Open knees, thighs,
 the shoulder/underarm, complete motion and in-game adoption are not approved.
@@ -284,3 +369,13 @@ Receipts under `.agent/local/AnimationReview_20261025`: `VexaDistalRepair/HandRe
 No C++ changed; no module rebuild or package was warranted. Source/Python/documentation checks accompany publication. Whole choreography, contact and owner acceptance remain RPT-20261021-01, with no blocking owner checkpoint.
 
 Fresh-process follow-up reloads all eight native comparison animations with their expected skeleton and duration. The first comparison capture extended a late G1 excerpt past the clip endpoint; the encoder rejected its0.2s seek discrepancy. The retained EndpointClamp receipt is not passing timing evidence. Corrected capture windows produce789 frames with maximum0.000000891s seek error; all nine encoded videos decode to their exact expected frame counts without decode errors. Existing FFmpeg PNG chunk warnings remain in the encoding log. Matched native wrist frames visibly remove the abrupt snap, but finger distortion remains visible.220 protected project files,65 imported copies and all65 original source contents (58 relocated AFS files) still match their hashes.50 source structural checks, Python compileall,26 mesh/17 WAV format checks, both documentation gates and scoped whitespace checks pass.
+
+## October26 approved shoulder response carried to G/B
+
+**October26 G/B shoulder response:** Owner rejected G1 frame881 (14.667s) for an arm-from-neck silhouette, then explicitly approved the matched coordinated front. Earlier Spiral acceptance had not established G/B quality. Separate private action library4d72c70e applies the existing chest-relative clavicle/neck recipe to4566 G/B frames, changing only six local bone channels and retaining all other keys. Maximum sampled matrix reconstruction error4.18e-7; wrist continuity remains below5degrees/frame. Maximum hand-path shift4.671cm means pole contact must be solved again. Four native clips fresh-load;822 captures include two405-frame G1 shoulder-oriented views and12 stills. Both videos decode exactly; maximum seek error0.000000636s. Native front/back samples retain the improved shoulder response. Other rapid motion (up to25.65degrees/frame), fingers, knee/thigh shape, garments, transitions, reachable grips and full-body/multi-character quality remain OPEN. Original mesh, earlier accepted proofs and production assets are unchanged. Owner authorizes continued autonomous work: Vexa first, document the complete process, then Joy/Astra, then remaining dancers. No new owner checkpoint, ClickUp write, schedule or merge.
+
+Source: `GB_ShoulderResponse_ActionLibrary.blend`, SHA256 `4d72c70e5410b55847c81943c4ab7c6a3e4d2baa5b151611673dbec6216f4679`. Its source wrist library `a865e0d9` and current mesh `d70f17f7` remain unchanged. `review_gb_shoulder_response.py` isolates the cause at identical poses/cameras. `bake_gb_shoulder_response.py` rewrites clavicle_l/r, upperarm_l/r and neck_01/02 only. The shoulder action keeps the arm world orientations; its attachment positions move. This is not fixed-contact choreography.
+
+The source recipe now begins with a fifteen-step practical procedure, tested settings, retained failures, export pitfalls, transfer requirements and exact baseline hashes. Do not restart helper-bone/neck-bulk trials or replay Spiral-specific morph coefficients on G/B. Do not transfer weights to Joy/Astra by vertex index without proving compatibility.
+
+Receipts: `GBShoulderResponse/Report.json`, `BakeReport.json`, `Export.json`, `NativeReload.json`, `Videos.json`, `NativeSamples.png`, and `NativeGBShoulderResponse.json`, under the ignored animation review directory. Native assets remain in the private `VexaContinuousDistalProof_20261025` package folder. Captures use diagnostic shading and shoulder-oriented cameras; cropped hands/feet and unsampled transitions are not full-body quality evidence. Known PNG encoding warnings are retained; full video decoding passed. No C++ changes, rebuild, package, production adoption or whole-routine acceptance.
