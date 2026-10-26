@@ -672,3 +672,89 @@ Original native sources, approved proof blends, production map/DLL/saves and
 Joy/Astra remain unchanged. Full Vexa/contact/artistic approval remains open
 before any repair is transferred. PR96 stays draft/unmerged; b9cdff07 source410
 and documentation599/600 passed. No C++ changed or module rebuild was needed.
+
+**October26 matched-camera correction:** The same normal ramp and camera reproduce the knee band in Blender. Static native snapshots with newly calculated smooth normals also retain it. This supersedes the earlier inference of an Unreal-only normal fault; neither explicit-white masking nor duplicate-vertex/cache controls fixed the appearance. The preserved source455c4992 is unchanged. Inspect the source knee contour, weights and intermediate bends next. These controls do not certify anatomy or final materials.
+
+## October26 contact and source-control findings
+
+The approved shoulder copies remain unchanged. Vexa is still the sole repair
+target; none of these experiments is a production swap or a complete rig pass.
+
+### Knee and material controls
+
+Matched-camera Blender normal ramps reproduce the knee band, and newly
+recomputed static Unreal normals retain it. This supersedes the earlier
+Unreal-only-normal inference. The next work belongs on source contour/weights,
+not another skin-cache toggle. After the verified leg-plane correction, a
+local half-bend helper makes a visible knot and is rejected. A knee-only DQ
+control changes little at43degrees and adds bulk in deep flexion. A bound
+Corrective Smooth mask (radius0.14m, fade0.09m, factor0.5, ten length-weighted
+iterations, pinned boundary) moves at most3.812/8.462/7.594mm in three poses,
+with zero change outside the mask, but does not remove the objectionable crease.
+Do not promote these controls as fixes.
+
+Rest-triangle matching restores53904 original material assignments on a
+separate assembly without changing UVs or geometry. Unlit albedo shows that
+most of the apparent torso/leg colour difference was lighting and contour.
+Across48 waist pairs, the largest mean channel difference is about0.014;
+the largest sampled channel difference is about0.029 in linear RGB. Top and
+bottom skin material slots have zero faces, so there is no duplicate body
+inside those garments. No skin recolour was applied. The first material
+render's front/rear labels were reversed by the camera cross-product order;
+use the corrected albedo control for direction, not the old filename alone.
+
+### Unoccluded wrists and ankles
+
+`review_distal_unoccluded.py` extracts the same evaluated surface and cuts it
+only at the proximal forearm/calf for a clear diagnostic view. Twenty cases
+and40 opposing views cover bilateral wrist flexion/deviation and ankle
+pitch/roll. These are controlled ranges, not a universal anatomical standard.
+The repaired wrist is clearer than the old occluded shot; the ankle still has
+an angular heel/Achilles profile in dorsiflexion. Neither is owner-approved.
+The rig object has0.01 scale: normalize camera direction vectors before adding
+the camera distance. Earlier cameras accidentally sat inside the limb. Use
+explicit parent-relative matrix_basis assignment and verify the resulting
+pose; direct world-matrix assignment silently produced stale test poses.
+
+### Supported pole grip: useful local fit, rejected whole-clip constraint
+
+The controlled experiment fixes the right hand through one rigid whole-body
+transform, preserving all arm local transforms. It does not use the rejected
+V8 arm IK, but it intentionally changes the original root trajectory. The
+target hand matrix must retain the rest scale0.01; a unit-scale target made an
+invalid100x character. Finger flexion uses the verified inward sign; the first
+sign bent fingers away from the pole. Both failed controls remain recorded.
+
+`fit_supported_finger_contact.py` fits four three-joint curls against a50mm
+diameter pole using actual weighted mesh vertices. The local CPU evaluator
+matches Blender within0.00349mm. The retained static settings give pad gaps
+of0.19–0.34mm without vertex penetration. `fit_supported_thumb_contact.py`
+adds16degrees of base opposition and0/50/52degrees of the tested thumb flexion
+channels, with about0.296mm pad gap. These are source-specific fitted controls,
+not human range limits or transferable raw angles. The saved Fit.json contains
+exact local matrices and the hand target for reproduction. Opposing and top
+views show contact, but thumb/index self-contact still requires review.
+
+Triangle radial tests, not only vertices, give a minimum pole gap near0.016mm
+for this static grip. Skinning parity does not certify the hand's shape.
+The whole G1/G2 fixed-support experiment is REJECTED: maximum pelvis speeds
+are10.06/6.55m/s and angular speeds1253/1150degrees/s;32/26 of the six-frame
+surface samples contain body/pole intersections. Preserving the arm pose
+alone cannot make a support trajectory safe or artistic.
+
+A separate slowed G1 passage (source frames780–1000 at20percent speed) has441
+samples and two opposing640px videos. Evaluated surface parity is within
+0.00525mm. Importantly, its denser half-source-frame scan catches eight free
+hand/pole intersection samples at944–947.5, missed by the coarse scan. It is
+still a failed contact candidate, not a finished sequence. Keep exact contact
+windows, route the free hand, and use intentional release/regrip passages;
+never force the shoulder or wrist through a constraint to hide these failures.
+The existing five free-floating segments are separate from this pole study.
+
+Private receipts: ZeroGSharedHip/KneeSourceControl, AlignedKneeTargets,
+AlignedKneeSmoothing, MaterialReview, VexaDistalRepair/UnoccludedFinal,
+GBSupportedFingerFit2, GBSupportedThumbFit, GBSupportedMotionAudit and
+GBSupportedPassage beneath .agent/local/AnimationReview_20261025. Inputs remain
+hash-identical. Joy/Astra and the other dancers remain after Vexa, not silently
+marked complete. No game/map/DLL/save changes or Unreal invocation occurred
+in this follow-up; the prior native proof remains available and unchanged.

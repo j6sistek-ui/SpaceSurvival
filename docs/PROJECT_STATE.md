@@ -1,6 +1,6 @@
 # SpaceSurvival project state
 
-**October26 shared zero-G proof:** One private Vexa mesh now carries five paired corrected clips.5472 captured frames/15 decoded videos provide review evidence; native normal bands remain unresolved. RPT-20261021-01 still owns anatomy, pole contact and multi-character acceptance. Production state unchanged.
+**October26 shared zero-G proof:** One private Vexa mesh now carries five paired corrected clips.5472 captured frames/15 decoded videos provide review evidence; knee bands reproduce in matched Blender/native views; source contour review remains open. RPT-20261021-01 still owns anatomy, pole contact and multi-character acceptance. Production state unchanged.
 
 **October26 motion follow-up:** Private G1/G2 library0a38e12a repairs three inspected arm loops while preserving the accepted shoulder pose. Four complete native views and fresh dependency reload pass; pole contact and complete routine quality remain RPT-20261021-01. Production state unchanged.
 

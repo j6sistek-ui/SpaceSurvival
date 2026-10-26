@@ -119,6 +119,17 @@ reloads remain separate from complete routine and owner acceptance.
 The five-segment proof uses one shared basis and explicitly paired rig/shape
 actions. Read the working recipe before export; old Spiral coefficients do
 not transfer by time alone. Normal-mask and failed interpolation controls are
-retained so renderer faults are not mistaken for geometry failures. Native
-normal bands remain unresolved. Videos are review evidence, not full rig/contact
+retained. Matched-camera controls reproduce the knee band in both Blender
+and Unreal; the renderer-only inference is superseded. Videos are review evidence, not full rig/contact
 or owner acceptance.
+
+## Contact and unoccluded joint controls
+
+Read the latest recipe section before repeating a trial. Knee helper/smoothing
+controls and whole-clip fixed support are rejected. The local grip fit is useful
+but not a completed routine. Run finger fit, thumb fit, full-motion audit and
+then dense passage review in that order; each consumes the previous receipt.
+The source-control scripts inspect materials, albedo and unoccluded distal
+patches without adopting changes. Nested recipes resolve their code beside
+these files and private data through SS_ANIMATION_PROJECT. Do not copy licensed
+.blend/FBX/texture data into Git.
