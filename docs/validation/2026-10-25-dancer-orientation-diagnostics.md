@@ -1051,3 +1051,13 @@ not at the upper/lower waist seam. This is not a garment-only defect. The first
 static loop camera clips feet near25.08s; its take is rejected for framing.
 The corrected737-frame camera follows the bone bounds; twelve sampled views
 include the whole body. Neither framing nor surface parity closes anatomy.
+
+### October26 inner-hip controls — not adopted
+
+Body-only ray casts locate the flap in pelvis/glute-weighted vertices of the
+connected4776-vertex lower mesh; surveyed boundary edges are at the waist only.
+Normal recompute, glute swing, local reweight and two smoothing controls leave
+visible folds; broad DQ also degrades distal contours. All remain unsaved and
+unadopted. The earlier aa7da985 source is unchanged. Exact settings, rejected
+setup failures and source references are in the
+[deformation recipe](../../Scripts/AnimationRecipes/DancerDiagnostics/DEFORMATION_RECIPE.md#october26-inner-hip-controls--not-adopted).

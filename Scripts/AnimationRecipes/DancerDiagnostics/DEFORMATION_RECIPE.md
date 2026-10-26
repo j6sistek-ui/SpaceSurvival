@@ -1044,3 +1044,46 @@ not at the upper/lower waist seam. This is not a garment-only defect. The first
 static loop camera clips feet near25.08s; its take is rejected for framing.
 The corrected737-frame camera follows the bone bounds; twelve sampled views
 include the whole body. Neither framing nor surface parity closes anatomy.
+
+### October26 inner-hip controls — not adopted
+
+The raised-leg flap remains with separate clothing hidden. Ray casts into the
+10.60s rear view identify lower-body vertices1547/1555/1599:56–66percent pelvis
+and34–44percent glute_r, with no thigh influence. The4776-vertex lower mesh is
+one connected component. All48 boundary edges in the surveyed hip-height range
+are at the waist (restZ1.065–1.114m), not at the flap. Recomputed smooth normals
+do not remove it. This isolates actual deformation rather than a detached hip
+piece or a normal-map defect; it does not establish that all source topology is good.
+
+Preserved private controls in G2PosteriorHip:
+- GluteFollowProbe: existing glute helpers swing25/50percent around each thigh
+  head toward the posed thigh direction; child arm/leg/pelvis matrices remain
+  unchanged. Half swing shortens the flap but leaves a sharp fold.
+- GluteReweightProbe: smooth posterior mask transfers75percent of masked pelvis
+  influence to own glute across1570 body/clothing vertices, combined with half
+  swing. Rejected: visible creases shift and worsen. No weight adoption.
+- HipSmoothProbe: posterior-only length-weighted Corrective Smooth, factor0.5,
+  five/ten iterations, ORCO and pinned boundaries. The central flap remains.
+- InnerRelaxProbe: only-smooth mode with a narrower12cm midline mask, three/ten
+  iterations. It softens the surface but does not resolve the raised-hip defect.
+- GluteDQProbe: prior time corrections muted, lower-body Preserve Volume plus
+  half helper swing. Inner fold persists and other distal contours degrade.
+
+Two diagnostic setup failures are retained in logs: the first helper control
+was overwritten by the active animation during render; the corrected probe
+detaches the action after sampling and verifies non-glute matrices remain exact.
+The first wireframe thickness was too large;0.45mm gives a usable topology view.
+Neither initial image set is quality evidence. No source .blend was overwritten.
+
+Blender's official5.2 API confirms the smoothing options; the manual explains
+that corrective smoothing reconstructs rest detail and can lose volume. This
+supports the bounded experiment, not a claim that smoothing fixed this mesh:
+https://docs.staging.blender.org/api/current/bpy.types.CorrectiveSmoothModifier.html
+https://docs.blender.org/manual/id/3.0/modeling/modifiers/deform/corrective_smooth.html
+(checked2026-10-26; the latter is an older manual, options verified locally5.2.2).
+
+Next repair must address the inner-hip pelvis/thigh transition with a localized
+pose corrective and assess the actual silhouette; do not repeat broad weight
+transfer, global DQ or count successful exports as visual improvement. The
+aa7da985 posterior-volume candidate and accepted shoulder derivatives remain
+unchanged. Full routine/artistic acceptance is still open.
