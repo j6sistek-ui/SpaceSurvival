@@ -863,3 +863,158 @@ control also does not repair it. Both remain unadopted. Source shape and camera
 orientation must be distinguished from weight collapse before further edits.
 Receipts: GBSupportedRelease/ArmScreen.json, ZeroGSharedHip/ArmRangeScreen.json,
 AnkleWeights.json and VexaDistalRepair/HeelWeightControl. No saved mesh change.
+
+## October26 editable loop orders and native transition verification
+
+The private shared Vexa mesh and five corrected clips now drive two76-second
+Level Sequences in `VexaZeroGLoopProof_20261026/L_ZeroGDuet_Review`:
+
+- OrderA: Drift, Spiral, Butterfly, Inversion, LateralArc.
+- OrderB: Butterfly, LateralArc, Drift, Inversion, Spiral.
+
+The sequences reference the existing clips and their160 corrective curves;
+they do not duplicate animation payloads, body meshes or textures. Both copies
+use Vexa intentionally. This does not establish cross-character compatibility.
+Each sequence binds the actor and its skeletal component, uses60fps display
+and24000 tick resolution, enables force_custom_mode and disables animation
+notifiers. Each clip occupies its exact duration, with no overlapping blend
+section. Common hover endpoints were authored in the source clips. The placed
+LevelSequenceActors autoplay and loop indefinitely without camera/input tracks.
+
+`author_zero_g_duet.py` refuses existing destinations, copies only the private
+review environment, and saves at a new prefix. Existing proof files remain
+SHA-identical. Source guarded coordinates are x=-170/+170cm, y=0, z=1080cm.
+`validate_zero_g_duet.py` verifies those actual loaded actor locations, then
+observes82 seconds of natural Play:704 samples, both players wrap once, nine
+front/back/side/above captures. Both actually move. The middle structural ring
+occludes portions of the performers from several viewpoints; these are stage
+placement views, not unobstructed anatomical proof. The saved production room
+is unchanged. Do not silently remove its ring to make a review look better.
+
+`verify_zero_g_sequence_joins.py` fresh-loads again and compares Sequencer
+against an independent standalone source-clip component before, at and after
+every boundary, including the loop seam, plus segment midpoints. Across40
+cases, each96-bone/160-curve comparison agrees within0.000163mm and0.000000604
+curve value. This proves the sequence preserves the referenced pose/corrective
+evaluation at these samples. It does not certify all skin contacts or artistry.
+
+The attempted AnimComposite route is retained privately as a failed API probe:
+the installed Python factory does not expose target_skeleton. No composite was
+created. The verified LevelSequence route uses already supported repository
+APIs and is directly editable for later dancer orders.
+
+`audit_zero_g_self_contact.py` screens1145 posed samples at15fps. Triangles
+strongly weighted to hands/forearms do not overlap the selected torso/head
+triangles in any of the five segments. Its region thresholds exclude adjacent
+shoulders, other limbs and garment interfaces. It is not a continuous complete
+self-collision certificate. Pairing rig and shape-key actions remains mandatory.
+
+The knee anterior view is more normal than the earlier mislabeled posterior
+camera suggested; partially open and deep-bend posterior contour still needs
+review. Ankle heel shape is not repaired by the rejected weight/DQ controls.
+Vexa full G/B contact, all-joint/garment quality and artistic acceptance remain
+open before Joy/Astra adaptation. Keep the approved front shoulder baseline.
+No production asset/DLL/save/package change; PR96 remains draft and unmerged.
+
+Receipts: ZeroGLoop/{Author,NaturalPlayback,JoinParity}.json and NaturalViews;
+ZeroGSharedHip/SelfContactScreen.json. Previous release publication ad57f75b
+passed exact-head source413 and documentation606/607 CI; CI is not art approval.
+
+## October26 G2 supported subpassage — retained, not a complete routine
+
+The six-frame coarse screen suggested source517–781 was clear. The dense
+525–770 probe instead finds27 free-hand pole intersections at553.8–556 and
+562–564.8, reaching25mm penetration. That wider passage is rejected. Keep its
+receipt; do not use the coarse pass as a collision certificate.
+
+The narrower570–770 interval contains1001 tested poses at0.2 playback and
+60fps, with no pole collisions or the two arm-range flags. The hand-frame
+method moves the body as one rigid transform and leaves arm-local rotation
+unchanged; the fitted finger/thumb locals are applied separately. Sampling
+interpolates parent-relative joints and rebuilds FK. Do not interpolate all
+world matrices independently, which can shorten limbs between keys.
+
+`bake_g2_supported_candidate.py` requires the successful narrower interval
+inside the wider receipt and refuses existing output. It writes only one
+95-bone action to `G2_SupportedPassage_ActionLibrary.blend`, hash
+`3b3673d4dfdce8998f314a644d37253b3d53c8051f323a302aab4d843452cbdd`.
+The action is16.666667 seconds. Fresh Blender reload checks nine poses, with
+maximum matrix-element error0.000006676. Its FBX object root is `root.001`.
+
+`capture_g2_supported_native.py` imports into the new private prefix
+`VexaG2SupportProof_20261026`, reusing unchanged hand-isolation mesh a9dbcbde.
+The orange50mm pole is explicit. Nine native95-bone samples agree with the
+source using one fixed basis/scale within0.095mm. The clip, map, mesh and
+skeleton fresh-load in a separate process. Existing native proof hashes stay
+unchanged.802 PNGs at800px pass decoding; both401-frame24fps videos decode.
+Opposing12-frame filmstrips show the whole body within the camera and varied
+vertical/horizontal poses. They do not establish continuous close-up anatomy.
+FFmpeg emits the existing PNG metadata warning; independent PNG chunk checks
+and decoded output counts pass. This is recorded, not silently called clean.
+
+Use `verify_g2_support.py`, `reload_g2_support_native.py` and
+`check_g2_support_media.py` to reproduce those bounded checks. No new body or
+texture is needed. The existing approved shoulder/hip derivatives are retained.
+
+Entrance, release, G1-to-G2 continuity, full original G/B coverage, wrist/ankle
+and garment quality remain open. This selected passage cannot be advertised as
+the complete repaired G2 or as an accepted loop. No production adoption,
+character swap or package change. Complete Vexa before Joy/Astra adaptation.
+
+## October26 G2 entrance/return: pole clear, self-contact fails
+
+The selected passage now has an explicit2.5s approach and2.5s release. A
+one-second quintic speed ramp at either end preserves0.2 source playback in
+the middle; integrating the ramps adds one second to the motion duration.
+The fingers open while the whole body moves40cm away from the pole, avoiding
+arm IK. An8s floating return retreats another metre, interpolates local joint
+poses by FK, then approaches the starting pose. The resulting30.666667s loop
+is1841 frames at60fps, with exact endpoint matrices and maximum visible radius
+2.728m inside the3.48m stage radius.1841 pole samples have no intersection and
+no elbow-reversal/rear-reach flags. This is not enough to approve the result.
+
+The action-only source `G2_ContactLoop_ActionLibrary.blend`, SHA
+`ea304873ce4aaa9ac75459f48c91010784440e67ca00f9f72f51c056d4b9f223`,
+fresh-loads95 bones at nine comparison poses. Its private native copy in
+`VexaG2LoopProof_20261026` captures1474 opposing frames without changing the
+older proof. It is a failed quality control, not a production-ready routine.
+
+The separate hand/forearm-versus-torso/head screen flags143 of461 samples.
+Close-ups confirm the supporting right forearm cuts into the waist/raised
+hip. Restoring the original source finger locals leaves69 intersections at
+the initial pose and192 at10.6s, so the new finger fit is not their cause.
+The loop return midpoint has no such contact; the source motion is the main
+problem. This supersedes any reading of the narrower G2 pole-clearance result
+as complete contact clearance. Do not adopt either G2 candidate yet.
+
+`probe_g2_support_clearance.py` tests0/10/20/30-degree forward rotation of the
+whole right arm around its shoulder, then reanchors the body to the unchanged
+hand frame. It preserves the local elbow and wrist relationships rather than
+forcing a new elbow route. At the inspected worst pose10degrees still has120
+triangle pairs;20 and30degrees clear them. Six sampled poses at20degrees also
+clear the pole. Close-ups show a separated forearm/hip. This is a bounded
+hypothesis; `audit_g2_arm_clearance.py` owns the dense range/contact check.
+No20-degree bake or native adoption is established by the six-pose probe.
+
+The saved loop script first failed because a newly introduced local helper
+was absent from Blender's module search path. Adding the explicit recipe
+directory fixed that execution failure. Keep the failed log; it did not write
+an asset. The grip loader's checked-in calibration returns identical19 fitted
+local matrices and only accepts the exact two recorded source hashes.
+
+Next: finish the forward-reach control through motion and recheck contact and
+native anatomy; then finish full G1/G2/B coverage, distal/garment quality and
+artistic continuity. Vexa remains first; Joy/Astra are not silently marked
+blocked by owner review, but no unverified repair is copied onto them.
+
+
+**Dense fixed-axis control rejected:** The six-pose20-degree probe does not
+generalize.1841 samples find4 brief head/pole intersections and157 rear-reach
+flags; the461-sample body screen still has9 failures. A fixed chest-X rotation
+that moves a lowered arm forward moves an overhead arm backward. Preserve this
+failure. `audit_g2_forward_aim.py` instead uses the cross product of the actual
+upper-arm direction and chest-forward direction, rotating toward the latter
+before reanchoring the hand. It preserves elbow/wrist local transforms but
+still requires its own dense contact/anatomical result; do not infer success.
+
+**Direction-aware result:** The actual-direction20-degree control removes all1841-frame rear-reach/reversal flags, but still has30 head/pole collision samples and9/461 body-contact samples. It is also rejected for adoption. The next repair must change contact timing/reach only where needed; a blanket fixed grip plus uniform arm offset is insufficient. No new corrected loop was baked from either failed reach control.

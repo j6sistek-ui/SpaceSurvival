@@ -144,3 +144,22 @@ recapture fixes first-pass framing and never saves assets. Fresh-reload and
 fixed-basis bone comparison are separate from visual acceptance. The Cartesian,
 hinge and keypose detours are rejected controls, not recommended solvers.
 No complete routine or production adoption is claimed.
+
+## Supported G2 and editable zero-G loops
+
+The G2 passage is a selected570–770 source interval, not a complete original clip.
+Use `review_g2_supported_passage.py` to retain its failed wider probe, then
+`bake_g2_supported_candidate.py`, `capture_g2_supported_native.py`,
+`verify_g2_support.py`, `reload_g2_support_native.py` and
+`check_g2_support_media.py` for the guarded private transfer.
+`author_zero_g_duet.py` creates two editable76s sequence orders referencing the
+existing five clips. `validate_zero_g_duet.py` observes ordinary loop playback;
+`verify_zero_g_sequence_joins.py` compares native curves/joints at boundaries.
+See DEFORMATION_RECIPE.md for exact provenance and remaining limitations.
+
+The retained right-hand50mm-pole calibration is versioned in
+`calibration/vexa_right_pole_50mm.json`. `load_supported_grip.py` checks both
+exact source hashes before returning its fitted matrices. Reproduction no
+longer depends on a private optimizer receipt or rerunning the fit. This
+preset is specific to Vexa a9dbcbde and action library0a38e12a; do not apply
+it to Joy, Astra or another pole size without separate calibration.

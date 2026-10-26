@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October26 private loop review:** Two editable76s Vexa sequence orders naturally loop after fresh load; sampled native joints/curves match the referenced clips at boundaries. Existing proof/production assets are preserved. Stage ring occlusion and complete anatomy/contact/artistic acceptance remain open under RPT-20261021-01. This is a private review map, not a new game build or release.
+
 **October26 pole release:** Private action49f87654 gives a deliberate18.333s G1 support/release, with dense pole clearance and bounded native transfer/reload checks. Full routine/loop and anatomical acceptance remain open under RPT-20261021-01. Production unchanged.
 
 **October26 shared zero-G proof:** One private Vexa mesh now carries five paired corrected clips.5472 captured frames/15 decoded videos provide review evidence; knee bands reproduce in matched Blender/native views; source contour review remains open. RPT-20261021-01 still owns anatomy, pole contact and multi-character acceptance. Production state unchanged.

@@ -15,7 +15,8 @@ measurements are therefore required. Outputs are private diagnostics.
 from pathlib import Path
 exec(compile((_recipe_dir/'review_gb_body_supported_contact.py').read_text().split("cases=[('g1',881)]")[0],__file__,'exec'))
 O=R/'GBSupportedMotionAudit';O.mkdir(exist_ok=True)
-fit=json.loads((R/'GBSupportedThumbFit/Fit.json').read_text())
+from load_supported_grip import load_supported_grip
+fit=load_supported_grip(hashes)
 target=Matrix(fit['hand_world_matrix']);finger_basis={n:Matrix(m) for n,m in fit['finger_local_matrices'].items()}
 names=[b.name for b in ordered];index={n:i for i,n in enumerate(names)}
 inverses=np.array([rest[n].inverted() for n in names])
