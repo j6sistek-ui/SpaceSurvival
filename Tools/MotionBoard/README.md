@@ -112,3 +112,31 @@ The shared timing tests cover legacy stretch, repeated/partial/reversed cycles,
 exact boundaries, source trim preservation, pause/reload and card-speed
 independence. Private framing/FBX fixture checks skip explicitly when their
 local inputs are absent. No test starts Unreal or changes an owner's board.
+
+## FBX preview compatibility
+
+`prepare_vendor.py` pins all11 MIT Three r180 files by SHA-256 and applies
+`fbx_r180_patch.json` only to the exact known loader. Unknown local bytes are
+rejected before any write; each replacement is atomic. Repeated runs retain
+the same content. `--check` validates without writing. No licensed media are
+included in the patch or synthetic tests.
+
+The patch selects the canonical rest transform and samples independently keyed
+axes at their actual times. It prevents delayed translation keys from collapsing
+limbs and sparse rotation axes from being paired by unrelated key indices.
+It is a preview approximation: native cubic/auto tangents are not evaluated,
+more than four skin influences are reduced, and rotation tracks with missing
+axes remain unsupported. A single unsplit0-to360-degree Euler span can still
+lose its turn; the test suite records this explicitly as a TODO failure.
+Use a native evaluator/export for fidelity-critical decisions.
+
+After a corrected GLB or loader is deployed, refresh the page to replace already
+loaded previews. Reload libraries adds entries but preserves loaded versions.
+The54 new Awesome Dog clips comprise14 Pro Club Girl,14 Goddess and26 Sensual
+Dancer clips; source FBXs and native assets remain separate and unchanged.
+
+`python -B -m unittest -v prepare_vendor_test` exercises bootstrap guards in
+temporary directories. `npm run check` includes sparse-axis synthetic tests;
+prepare the pinned private vendor first. Neither command opens Unreal/Blender
+or modifies a saved proposal. The documented unsplit-turn TODO is an open limit,
+not a universal rotation pass.

@@ -1,1 +1,1 @@
-{"name":"spacesurvival-motion-board","private":true,"type":"module","scripts":{"check":"node --check app.js && node --test model.test.js library.test.js framing.test.js fbx.test.js"}}
+{"name":"spacesurvival-motion-board","private":true,"type":"module","scripts":{"check":"node --check app.js && node --test model.test.js library.test.js framing.test.js fbx.test.js fbx_compat.test.js","check:vendor":"python -B -m unittest prepare_vendor_test"}}

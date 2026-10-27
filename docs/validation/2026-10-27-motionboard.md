@@ -120,3 +120,50 @@ and its earlier Undo defect remain separate; broad dancer repair stays paused.
 No C++ module, production rig/map, packaged game or release changed. C++ build,
 gameplay/performance and packaging checks do not apply to this browser-only delta.
 Final documentation gates must use the exact assembled publication files.
+
+## Sparse FBX preview repair — 2026-10-27T06:20Z
+
+The54 added Awesome Dog UE30fps FBXs match native AssetImportData MD5 identities:
+14 Pro Club Girl,14 Goddess,26 Sensual Dancer. Sources are on D; no new Unreal
+export was needed. These are54 clips, not108 clips from counting60fps copies.
+All137 imported-folder files and selected originals remain unchanged.
+
+The initial Sensual26 GLB (a0234a8d) was rejected. Its delayed constant translation
+axes started from identity after a same-ID skin-cluster node overwrote the canonical
+rest transform; independently keyed rotation axes were paired by index. Earlier
+52,105 same-parser samples could not detect this common-parser fault and are
+explicitly superseded as sufficient preview evidence. New checks use raw FBX
+keys and actual adjacent limb lengths, not just output-versus-parser agreement.
+
+- Corrected Sensual GLB: SHA-256
+  `ad1b8ea2c6bc4343141d92c7f57b27e7da6074fd6f0c49dfbd630d0b515b21f5`,
+  37,419,584bytes. The other28 new preview files/clips are untouched; three GLBs
+  total115,175,436bytes. Both loopback endpoints read back the exact corrected
+  file,48 libraries/1374clips and unchanged other47 manifest records.
+- Independent raw-key check:1,750,276 authored union knots; translation error
+  below0.00000191cm and orientation error below9.42e-8rad. Structural check:
+  106,379 poses at120Hz plus offset samples; eight actual arm/leg segments vary
+  at most0.07884mm. Corrected CPU joint overview was inspected. This is not
+  full-rate rendered motion, native tangent or skin acceptance.
+- Between-key linear-Euler versus quaternion preview sampling differs by up to
+  5.95degrees on unweighted ik_hand_gun; largest weighted difference is1.5734degrees
+  on ball_r, Exotic25 at5.25s. Neither approximation is the native FBX evaluator.
+- Durable three-edit patch produces loader SHA-256
+  `dd1efb67ac04f1a741cb90d87ef44735be113f3ee30ea35d3f3b32aa3c2218cd` from
+  exact r180 input d97724a6. All11 dependencies are pinned; MIT notice retained.
+  Independent review matched the patch to the tested candidate.
+- After deployment, Node checks:29 passed,0 unexpected failures,1 explicit TODO
+  failure for an unsplit0-to360-degree span. Docker bootstrap tests:7 passed.
+  This known upstream large-angle limit, missing rotation axes, cubic tangents
+  and four-influence reduction remain open. Dense28 tracks remain numerically
+  unchanged (signed zero bit differences only in13 Pro clips).
+- Initial Docker deployment mount was too shallow for the script's repo-relative
+  default and failed before writes. Correct repo-shaped mount then succeeded;
+  fresh loader hash and post-deployment tests bind the deployed bytes.
+
+Private receipts are in `.agent/local/MotionBoardNewPacks_20261027/CorrectedSparseAxes`
+and `.agent/local/OwnedDancePacks_20261027/CorrectedSparse*`. The rejected generated
+preview is retained separately. No owner-board writes, portal restart, native
+asset edits, GPU launch or host installation occurred. Browser refresh is needed
+for already loaded preview bytes. Native/target/artistic and owner acceptance
+remain OPEN; current S09 study is unchanged by this repair. No native build applies.
