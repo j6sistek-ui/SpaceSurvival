@@ -187,3 +187,34 @@ A separate CPU inspection of the inherited S08 catch distinguishes an inaccurate
 The separate clock-only trial retains the Dance6 interval and endpoints. It cannot by itself repair the stage-yaw speed change at38s or the earlier change from a moving twist donor to a frozen-endpoint fade. Discrete source-key corners and finite-difference precision must be distinguished from introduced timing discontinuities. No static pose substitution, source geometry change or new native animation was accepted from these studies.
 
 Private evidence: `.agent/local/PerformancePlan_20261027/S09Replacement/Entry43Assessment/HandChainReview.json`, `SmoothHandOffsetReview.json` and `TimingStudy/`. Current full-performance movie, native assets, source clips and owner boards remain unchanged. RPT-20261021-01 remains open; no GPU, Unreal or Blender launch occurred. Source/core/documentation CI passed on PR97 head3c2726c520294f190d2363862c781857c5e25b1d; that is tool/document evidence, not performance acceptance.
+
+## Full motion before detail — 2026-10-27T07:19Z
+
+Owner direction: complete the intended performance before micro contact/skin/physics.
+This is a priority change, not acceptance of unresolved defects. RPT-20261021-01 remains open.
+
+- Review: `SourceAssets/PerformancePlan_20261027/FullMotionReview/Review.html`.
+- Movie: `FullPerformance_24fps.mp4`,88seconds/24fps/2112frames, decoded successfully;
+  SHA-256 `529a65e7b00e9414fab65f3dd54397d22a9cb780ea242be915f7d217c2f005de`.
+- Pose samples SHA-256 `ca59f1593795846b29acea2117479e3ea211372e7f2f8194ceae921ecf68ba2c`.
+- Private recipe/evidence: `.agent/local/PerformancePlan_20261027/S09Replacement/CombinedCatch/full_motion.py`,
+  `timing.py`, `TimingReceipt.json` and `FullMotionMacroReview.json`;
+  output `Receipt.json` binds recipe/source/output identities. These are local experiments.
+- Changes: moving twist/catch donors overlap; source clock and stage yaw ease through the
+  catch. The33.5–35s **proxy** proportion blend avoids an abrupt scale cut; no native mesh,
+  source clip or character geometry is edited. The44–88s plan retains inversion,2.5descending
+  turns, release and return. No rejected finger-calibration candidate is used.
+- Bounded macro review: no sustained frozen-body interval in2112samples; each0.25s window
+  changes at least one body point by6.6cm. This does not prove natural timing. Joint-center
+  framing stays within both fixed views. It is not a full skin/framing assertion.
+- **Still open:** exact88→0 resets pelvis0.788m/head0.685m/worst joint0.934m, so playback is
+  intentionally non-looping. The71.0–71.5s return has a paused pelvis with a fast arm sweep;
+  judge the moving preview before changing it. Native retargeting, actual skin/contact,
+  physics and owner acceptance remain unverified. Finger candidates are frozen/rejected,
+  not silently promoted because the priority changed.
+- Sources, original80s/88s studies and owner MotionBoard proposals are preserved. No
+  Unreal/Blender/GPU launch, native asset write, portal restart or owner-board write.
+
+Next lead work is whole-performance flow and the finish/start connection; detailed contact
+and physics follow, then Joy/Astra. Documentation-only publication requires the documentation
+gate; no C++/Unreal build is applicable to this private CPU preview/evidence update.

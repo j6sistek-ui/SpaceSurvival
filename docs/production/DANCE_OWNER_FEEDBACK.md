@@ -14,6 +14,16 @@ work is in the local-only recipe at
 `C:/Users/j6sis/SpaceSurvival/Scripts/AnimationRecipes/DancerDiagnostics/DEFORMATION_RECIPE.md`;
 that file is not present on PR97 or current main at this consolidation's check.
 
+## Current order of work — 2026-10-27T07:19Z
+
+The owner's latest direction is to get the **complete intended performance running first**,
+then fine-tune physics and small contact/deformation defects. This supersedes contact-first
+experiments as the immediate priority; it does not waive the anatomical or collision gates
+below. Keep the original motion and better rig versions intact. Judge the full motion,
+source moves, pacing, coordinated transitions, inversion/descent, release and return before
+spending more iterations on individual fingers or local skin. Use the current routine first;
+Joy/Astra and the other dancers follow it. A planning proxy is not native rig acceptance.
+
 ## Main takeaways
 
 1. **Preserve the dance.** Do not remove difficult motion, simplify a strong
