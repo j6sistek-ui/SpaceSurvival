@@ -3,27 +3,44 @@
 ## Saved Sequencer practice and Undo crash — October 26
 
 The private practice map is `/Game/Developers/James/AnimationPractice/L_AnimationPractice`;
-open its `Animation_Test` Level Sequence after stopping Play. It binds Nyxar's
-**Body** skeletal component to the compatible `/Game/Nyxar/Demo/Anim_MM_Walk_InPlace`
-clip, at 30 fps with playback frames `[0, 82)`. Binding resolution passed; scrubbing
-frames 10 and 30 changed both hand and foot positions. This is a simple practice
-setup, separate from the station and paused dancer-repair work.
+open its `Animation_Test` Level Sequence after stopping Play. **Current setup:**
+the owner-requested practice character is `Practice_Mannequin_Quinn`, using
+`/Game/VarietyDanceAnims/Demo/Mannequins/Meshes/SKM_Quinn_Simple` and that package's
+`SK_Mannequin` skeleton. Its **Body** track now uses the compatible 42.5-second
+`/Game/VarietyDanceAnims/Animations/InPlace/AS_PartyDance3` clip instead of Nyxar's
+walk. The accidentally one-frame playback range `[0, 1)` was expanded to
+`[0, 3399)` at30fps (113.3seconds), encompassing the owner's arranged clips.
+All four bindings and both owner clips on `AS_PartyDance3RM` remain; its competing
+Control Rig sections were made inactive reversibly, not deleted. Map and sequence
+were saved. During owner interaction, sampled frames79 and3398 resolved Body to
+the intended Quinn mesh and evaluated different poses; frame3398 is beyond the
+starter clip's end1275, so this is not proof of full playback. The additional
+`AS_PartyDance3RM` spawnable did not resolve in that binding check and its playback
+remains unverified. Later owner unsaved edits were not resaved or overwritten.
 
-The later owner drag of `MM_WallJump` and Undo exposed an editor failure. At
-00:43:58 UTC on October 27, **Undo Drop Assets** first reported a Control Rig shape
+The prior Nyxar setup verified binding and hand/foot changes between frames10/30;
+the mannequin change is practice-only and does not modify Nyxar, source clips or
+runtime assets. Owner edits were saved and backed up before switching
+(`BeforeMannequin`: sequence `23920a73`,332,667bytes; map `af5c8279`). Broad dancer
+repair remains paused. Private setup/verification receipts are in
+`.agent/local/AnimationLibraryOrganization_20261026/SequencerSetup`.
+
+Most source-package clips are mannequin-based, but different vendor skeletons are
+not automatically compatible: the recorded `/Game` inventory has1,933 mannequin-named
+clips among2,078 outside project derivative roots (93.0%, a folder-location proxy,
+not deduplicated unique motions). UE4 and UE5-style/vendor skeleton references
+remain distinct. Use an exact compatible skeleton or explicitly retarget.
+
+The earlier owner drag of `MM_WallJump` and Undo exposed an editor failure. At
+00:43:58 UTC on October27, **Undo Drop Assets** first reported a Control Rig shape
 detaching from a component it was not attached to. **Undo AI: Create Sequence**
 then left no valid sequence; EaseCurveTool appears in the query stacks, followed
-by Sequencer's invalid focused/root sequence error and a null-read crash at
-00:44:12. The log establishes this Undo failure chain, not a defective clip,
-an out-of-memory crash, or a proven fix in either plugin.
-
-The saved map and sequence predate the crash and were preserved with matching
-SHA-256 backups (`af5c8279` map / `9419fd57` sequence). Private evidence is under
-`.agent/local/AnimationLibraryOrganization_20261026/SequencerSetup`, including
-`CrashRecovery/Receipt.json`. Reopening is **untested**: when the owner is ready,
-reopen the saved map and sequence, verify binding/scrubbing, and avoid replaying
-the failed Undo chain. No restart, engine repair or owner acceptance is claimed.
-Native practice assets and recovery files remain private and are not in this PR.
+by invalid focused/root sequence and a null-read Sequencer crash at00:44:12.
+The pre-crash map/sequence were preserved (`af5c8279` / `9419fd57`), with evidence
+in `CrashRecovery/Receipt.json`. The later reopened practice setup supersedes the
+initial untested-reopening state; it does not demonstrate a fix for that Undo
+failure. Avoid replaying the failed Undo chain. Native files and recovery copies
+remain private; this documentation PR does not recreate the practice assets.
 
 ## Animation collection tree — October 26
 
