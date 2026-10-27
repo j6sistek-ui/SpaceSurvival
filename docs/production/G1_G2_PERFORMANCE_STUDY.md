@@ -366,6 +366,75 @@ garment response, chamber clearance, native transfer and owner acceptance remain
 open. Keep the whole-performance-first priority; do not resume isolated detail
 experiments or weaken the choreography to conceal rig defects.
 
+## Full-mesh performance playback — 2026-10-27T09:00Z
+
+The current private review is
+`SourceAssets/PerformancePlan_20261027/FullMeshMotionReview_Framed/Review.html`.
+It plays the entire88-second performance at24fps with Vexa's original geometry
+and all skin influences from two fixed views. Movie9fd319e7 / motion7e958903
+supersede the08:26 playback for this CPU draft. This advances whole-performance
+review; it does not restore the original clip-specific corrective animation or
+adopt a native/game asset.
+
+### Repair the moving transitions, not the body shape
+
+Independent source comparison isolated two introduced Cartesian blend defects.
+The15.5–16.5s transition froze an outgoing endpoint and blended world positions
+across a large facing change; proxy hip width collapsed from22.25cm to9.98cm.
+The20.5–22s departure blend likewise compressed the proxy calf to7.69cm.
+Those direction collapses propagated into abrupt rotation of the fixed-length
+target rig. Fast raw G1 motion also exists; it is not all a transfer failure.
+
+The replacements use moving donors, one quaternion body frame and local
+articulation-direction blending. The first overlaps source clocks while matching
+full-joint donor roll. The second uses saved moving2Hz departure poses before22s,
+joining the preserved24Hz tail with a velocity-matched last half-second.
+Recompute the existing20.8–21.8s arm-connector controls after changing the provider.
+Do not independently reuse controls cached against the old collapsed poses.
+
+The first transition now retains at least22.25cm hip width; target pelvis peak
+step falls29.39→12.27degrees/frame. The second retains at least41.71cm calf length;
+target calf peak falls48.22→11.94degrees/frame. These are bounded comparisons,
+not anatomical thresholds. Exactly58interior samples change; interval boundaries,
+every outside matrix and the exact88→0 endpoint are preserved. Local translations
+stay within0.290µm of target rest offsets. Geometry, hierarchy, weights, source
+clips and earlier approved comparisons are unchanged.
+
+### Reproduction and review evidence
+
+All inputs and recipes are private under
+`.agent/local/PerformancePlan_20261027/FullRigTransfer`.
+After the preceding whole-rig recipe:
+
+1. Run `MacroAudit/check_s02_s03.py` and `MacroAudit/check_departure.py` to
+   regenerate the bounded source-guarded candidate caches.
+2. Run `assemble_body_flow.py` once against the guarded original continuous
+   NPZ; it refuses to overwrite its output. `BodyFlowVerification.json` binds
+   both caches, original sources and the2113-sample result.
+3. Run `full_mesh_video.py --motion <FullRigMotion_BodyFlow.npz> --out <new-review-folder>`.
+   Four CPU workers and software ffmpeg produce the complete2112-frame movie.
+   Use the revised renderer a26b81e9: the first side camera cropped17frames;
+   a fixed36px center shift makes the entire skin envelope visible. The initial
+   framing receipt remains as failure history.
+4. `MacroAudit/FullTimelineMeshAudit_Framed.json` verifies all28,261 vertices
+   at2113 poses from both angles; minimum pane margins30.105/13.690px.
+   The movie fully decodes to88seconds/2112frames. No whole-body freeze lasting
+   at least0.5s was found; this narrow screen is not artistic acceptance.
+5. `NativeTransfer/README.md` records the parameterized GLB export and separate
+   convention audit. `Vexa_Complete88s_BodyFlow_MotionDraft.glb` (c6d04df7)
+   preserves five meshes,95bones, original topology/binds and all positive
+   influences through ten per vertex. Independent CPU decode checks97frames
+   within0.170µm per vertex; scene-coordinate checks stay within0.158µm.
+
+The GLB is a neutral baked-motion draft, not a replacement shipping character:
+UVs, original materials/textures/split normals, time-indexed corrective shapes
+and physics are absent. Native import must verify multiple joint/weight sets;
+a successful import alone does not prove every influence survived. Existing
+wrist/source speed watchpoints, detailed gripping, deformation, chamber clearance,
+physics and native/owner acceptance remain open under RPT-20261021-01.
+Whole-performance flow remains first; then detail/physics, then Joy/Astra.
+No Unreal/Blender/GPU launch, owner-board write or portal restart occurred.
+
 ## Later implementation gates
 
 1. Approve the phrase order, pacing and silhouette changes from the full study.

@@ -310,3 +310,41 @@ and `MotionVerification.json`. Their full source identities, failed controls
 and reproduction are documented in the performance study. This follow-up
 publishes documentation only; C++/Unreal build and game tests do not apply.
 
+## Full-mesh performance playback — 2026-10-27T09:00Z
+
+Current private review:
+`SourceAssets/PerformancePlan_20261027/FullMeshMotionReview_Framed/Review.html`.
+Movie SHA-256 `9fd319e73aabf1c7aed4539a35d64145843aaad8f96b961d5399b0a759d22aef`;
+motion `7e958903d2155b4dc589d9710ed1851c011293dbd2064cfb3971351f194a8b7a`.
+Both views show the original28,261-vertex/95-bone/full-weight mesh at24fps,
+2112decoded frames/88seconds, with neutral CPU shading.
+
+Two moving donor/body-frame overlaps replace frozen Cartesian transitions
+at15.5–16.5s and20.5–22s. Exactly58interior samples change; boundaries and every
+outside matrix match ce090dd2, and88→0 matrices are exact. The protected sources
+remain unchanged. Proper rotations and fixed local translations pass within
+0.290µm. Independent full-timeline analysis found no new catastrophic body collapse
+or whole-body freeze lasting0.5s; this is a bounded screen, not motion acceptance.
+Target pelvis/calf peak reductions are29.39→12.27 and48.22→11.94degrees/frame.
+
+The initial full-mesh movie07e432dc was rejected for side-view cropping on17frames.
+The corrected renderer a26b81e9 shifts only that camera center36px. Independent
+projection of all28,261vertices at2113times from both angles passes, with minimum
+front/side margins30.105/13.690px. The lead inspected the changed-phrase contact
+sheet and corrected worst-frame image. The final movie fully decodes.
+
+Private GLB `c6d04df76a179522332f8b03dbca7c7d7061706276dcb9b44097d57946105ccc`
+preserves topology/binds and all up-to10 positive influences. CPU decode of97frames
+stays within0.170µm per vertex; a separate coordinate/scene audit stays within
+0.158µm. Original sources and prior proof files remain unchanged. Native importer
+support for every influence set is untested; UVs, original textures/split normals,
+time-indexed corrective shapes and physics are absent from this neutral draft.
+
+Private recipes/evidence: `FullRigTransfer/assemble_body_flow.py`,
+`BodyFlowVerification.json`, `full_mesh_video.py`, `MacroAudit/` and
+`NativeTransfer/README.md`. Nine private Python recipes parse successfully.
+No C++/native source changed; Unreal build/game checks are inapplicable.
+Documentation/body gates apply to this four-document follow-up.
+RPT-20261021-01 remains open for whole-flow quality, then contact/skin/physics,
+native playback and owner acceptance. No native/GPU/owner-board operation occurred.
+
