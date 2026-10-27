@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-27T14:25Z [USER] Requests native AnimGen run for missed pole contact and asks where Joy repairs landed. [TOOL] Isolated UE5.8.4 NullRHI preflight loads AnimGen/AnimGenEditor and one owned flip into a transient database; no pretrained assets or usable trained model, torch undiscoverable. Headless script cannot access training_settings; native training UI is not a reflected train/bake API. No generation/training, dependency install or chamber change. Joy Candidate04 remains private/offline; comparison and recipe are now in the continuation handoff, distinct from historical Oct16 saved counter/handoff repairs. [PLANS] Pole support/missed reach and Joy native adoption remain OPEN under existing issues; no background Unreal remains. Evidence: .agent/local/AnimGenEvaluation_20261027/NativeProbe.json and JoyAssessment_20261026/VisualProof_Candidate04.
+
 - 2026-10-27T13:57Z [USER] Other three girls reportedly share the body; prioritize one reusable body correction, validate Vexa first, preserve character-specific appearance. [TOOL] Read-only inventory finds G1 axilla and hip PCA correctives driven by old source-time curves, with zero pose drivers; the rest FBX lacks activation curves. This supersedes any implication that copying morphs alone produces a shared working fix. [PLANS] Shared geometry compatibility and pose-dependent activation remain unverified; bounded inventory only, no new native/rig changes. Evidence: AppearanceRestore_20261027/SharedBodyCorrectives/Recommendation.md.
 
 
