@@ -1,5 +1,8 @@
 # SpaceSurvival continuity
 
+- 2026-10-27T13:57Z [USER] Other three girls reportedly share the body; prioritize one reusable body correction, validate Vexa first, preserve character-specific appearance. [TOOL] Read-only inventory finds G1 axilla and hip PCA correctives driven by old source-time curves, with zero pose drivers; the rest FBX lacks activation curves. This supersedes any implication that copying morphs alone produces a shared working fix. [PLANS] Shared geometry compatibility and pose-dependent activation remain unverified; bounded inventory only, no new native/rig changes. Evidence: AppearanceRestore_20261027/SharedBodyCorrectives/Recommendation.md.
+
+
 - 2026-10-27T13:10Z [USER] Supersedes neutral review with corrected AFS joined body/clothing/chain rig, skin/hair; omit leather gun holster, jiggle+20%. [TOOL] Separate editable FullVexaChamber_20261027/L_FullVexaChamber plays88s on97AFS bones+root; native skin/hair/outfit restored, no holster.6,027 skin vertices get bounded repaired-weight blend;99767geometry/UV and garment/chain weights unchanged. Native37sample input/render comparison shows active four-bone springs (pelvis<.004cm, chest≤4.20/glute≤7.74cm). Config enables unlimited influences/virtual textures; copied dependencies on C, AFS untouched. [PLANS] Owner targeted review next; donor morph correctives, chain secondary motion and full-cycle/artistic/contact acceptance remain open. New edit/game shortcuts and updated continuation prompt; owned Unreal closed. Broader backlog held.
 
 
