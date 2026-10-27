@@ -9,6 +9,18 @@ rejections and later clarifications. Use it to evaluate future changes without
 repeating resolved misunderstandings. This log still owns open work; the guide
 is not another task queue or evidence of a new animation/rig validation pass.
 
+**2026-10-27T05:19Z S09 CPU study — RPT-20261021-01, PARTIAL / lead:**
+The separate 88-second/176-frame proposal passes the source-bound new-route CPU
+checks: fitted views, unchanged samples before 43s, fixed segment lengths,
+sampled proxy clearance and checked joins. Independent 240 Hz transfer review
+confirms the finger-direction snap repair; it does not certify a native grip.
+The inherited **43–44s contact/proportion defects remain open** and excluded
+from the new-route pass. The hand release still needs full-rate actual-rig review.
+**Next:** lead review with the owner, then separate native deformation/contact,
+chamber and loop checks before adoption. Prior approval covered the 80-second
+concept except S09. No source clip, native asset or owner-board changes; planner
+follow-ups remain under RPT-20261016-03. [Study and limits](production/G1_G2_PERFORMANCE_STUDY.md).
+
 **2026-10-27T02:55Z CPU performance-planning follow-up — RPT-20261021-01, OPEN / lead:**
 The full80-second articulated proxy study now has160 frames at2Hz and a private
 Review.html. Recorded CPU checks preserve source hashes, fit both camera views,

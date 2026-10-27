@@ -136,6 +136,99 @@ both camera views contain the sampled figure, source hashes are unchanged,
 section-boundary positions are continuous, and S04 matches its preserved
 24 Hz source at the displayed times. They do not validate character quality.
 
+## S09 replacement proposal — October27
+
+Owner calls the complete CPU study a strong animation concept, but requests a
+full replacement of S09. This is scoped concept feedback, not acceptance of
+native rigging, grip, skin weights or the final loop. Preserve the 80-second
+study as the comparison. The new review is a separate 88-second proposal.
+
+The new Meshy download supplies `Upside_Down_Rope_Hang` and
+`Upside_Down_Rope_Hang_1`; `Breakdance_1990` comes from the **earlier** Meshy
+download. The nine-second owner recording shows a narrow inverted silhouette,
+alternating folded and lengthened legs, and changing arms. It contains no pole,
+so it is a motion reference, not evidence of an existing knee grip.
+
+| Beat / target time | Intended movement | Support and connection |
+| --- | --- | --- |
+| S09a / 44–47.5 | Continue S08's arriving reach, pull the torso toward the pole and gather the knees into inversion. | S08 already ends with left-hand contact; retain that continuity rather than release merely to catch again. Add the supporting hand as the body folds. |
+| S09b / 47.5–49.5 | Settle into a compact breakdance shape, with one leg folded and the opposite leg shaping the silhouette. | Transfer support toward the thigh/calf hold before freeing the hands. Avoid the wide Spider-Man shape. |
+| S09c / 49.5–59.5 | Descend gently through **2.5 complete rotations**, with a free-leg fold/extension and arm response. | Allow a small, smooth change of contact along the thigh/calf region; prioritize fluid rotation and descent over an artificially fixed knee point. No pole-through-body contact is acceptable. |
+| S09d / 59.5–62 | Unhook, gather and flip away, carrying angular motion into the existing zero-G section. | Clear the pole before extending; no magnetic return or cancelled flip. |
+
+S01–S08 retain their existing times. Samples before43s remain unchanged; the
+final S08 second prepares the corrected approach/support placement for S09.
+S10–S12 move eight seconds
+later (62–71, 71–75, 75–88); their existing phrases remain the comparison, with
+the S09 exit connection and consistent proxy proportions adjusted where necessary. The extra time belongs
+to inversion, visible support transfer and the slow descent, not uniform
+slowing of the whole performance.
+
+The 18-second timing is a lead proposal, not an owner-prescribed duration.
+Owner's subsequent references explicitly permit different inverted holds and
+limited grip movement: preserve character geometry, do not force a wider knee
+bend, and make the smooth spin/descent the focus. The additional one-knee-up
+pose references inform free-limb variety without changing this phrase order.
+
+Sources and planned adjustments are explicit:
+
+- New Meshy `Upside_Down_Rope_Hang` 0.533333–1.10s supplies the pull/inversion;
+  mirror its pose to preserve S08's existing left-hand support.
+- Earlier Meshy `Breakdance_1990` 0–0.5s supplies the descending phrase. Remove
+  its existing axial turn before adding the stage's 2.5 turns, repeat it at
+  four seconds per turn, and smooth only 0.025 source seconds on either side
+  of its seam. Preserve source leg directions; no forced calf opening.
+- New Meshy `Rope_Hang_Backflip_to_Crouch` 0.9–1.3s supplies the airborne exit,
+  before the source's grounded landing. The moving exit blends into S10 until64s.
+- Use the S08 endpoint's constant segment lengths for the new proxy poses.
+  Tangent bridges interpolate travel/directions and rebuild the hierarchy at
+  those lengths. This supersedes rejected direct position interpolation that
+  shrank/stretched limbs; no source rig, skin, mesh or animation is edited.
+- Fit a smooth periodic two-harmonic pole-relative offset against explicit
+  study-capsule dimensions, allowing thigh/calf contact to shift. This
+  supersedes a forced65-degree knee opening and a misleading fixed contact
+  marker. The yellow marker now shows the nearest support proxy surface.
+- The entry wrist was originally on the pole axis/radius despite having a
+  nonzero forearm/hand radius. A corrected approach uses83mm wrist stand-off
+  and source-plane two-bone IK, together with whole-body placement; moving
+  the elbow cannot fix a shoulder origin already inside the pole. Incoming
+  S08 velocity continues into the new pull. This is proxy placement, not a
+  change to character geometry, a grip solution or native joint-limit proof.
+- During47–49.5s, the transfer uses a bounded whole-body corridor around the
+  folded leg and retains sliding cylindrical wrist contact until48.90s, when the
+  left-leg proxy is near the pole. Then it releases around the pole surface
+  into the descending pose. A stable projected elbow guide replaces the
+  bridge's invalid through-pole elbow route; it is not a new anatomical limit.
+  This preserves segment lengths. The quick arm motion through this inversion
+  still needs full-speed review with the actual performer.
+- The proxy hand is not a fixed world-space grip during this transfer. Direct
+  normalized blending between nearly opposite finger directions caused a
+  sharp snap; an outward spherical arc preserves the direction endpoints and
+  avoids cancellation. This repairs the study marker, not native fingers or
+  palm orientation. The verifier records angular speed and a recipe-specific
+  regression alarm; it does not impose a universal anatomical threshold.
+- Temporary outward clearance bumps on the release were rejected because
+  they recoiled28.4cm toward the pole before departing again. The replacement
+  uses continuously increasing root distance through59.5–64s, preserving
+  endpoint tangents and source limb articulation. The authored path is a
+  choreography proposal, not a validated zero-gravity dynamics simulation.
+
+Use CPU source sampling and a two-angle articulated proxy at two frames per
+second. The exact generated placement range, capsule gaps, source/recipe hashes
+and validation results belong to the review receipts. Capsule clearance is a
+planning screen, not actual skin clearance or physical support. Real thigh/calf
+contact, joint limits, fingers, clothing, skin and swept clearance still require
+the later actual-rig pass. No native asset or owner MotionBoard sequence changes.
+The owner places hair last: evaluate hair/clothing follow-through after body
+motion, support, deformation and transitions. Numeric simulation suggestions in
+the reference screenshot are unvalidated and are not adopted settings.
+Additional owner-supplied rigging and weightlessness notes are references for
+the later actual-rig pass: evaluate pivot/contact-space switching, coordinated
+limb counter-rotation and overlapping follow-through. They do not authorize a
+blind replacement of the improved rig, fixed4–8-frame offsets, generic helper
+bone gains or anatomical limits. Preserve source movement and assess the
+existing corrected rig before introducing more controls.
+
 ## Later implementation gates
 
 1. Approve the phrase order, pacing and silhouette changes from the full study.

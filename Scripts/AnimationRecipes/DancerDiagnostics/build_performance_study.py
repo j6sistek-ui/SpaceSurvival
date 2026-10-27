@@ -63,13 +63,14 @@ def quat_matrix(q):
 
 
 class GLBPose:
-    def __init__(self, path, clip):
+    def __init__(self, path, clip, joint_names=None):
         note_source(path)
         raw = path.read_bytes()
         length = struct.unpack_from('<I', raw, 12)[0]
         self.g = json.loads(raw[20:20+length])
         self.bin = raw[28+length:]
         self.a = next(a for a in self.g['animations'] if a['name'] == clip)
+        self.joint_names = joint_names or STANDARD
         self.idx = {n.get('name'): i for i, n in enumerate(self.g['nodes'])}
         self.parent = {c: i for i, n in enumerate(self.g['nodes']) for c in n.get('children', [])}
         self.channels = []
@@ -119,7 +120,7 @@ class GLBPose:
                     m[:3, 3] = v['translation']
                 world[i] = matrix(self.parent[i]) @ m if i in self.parent else m
             return world[i]
-        positions = np.array([matrix(self.idx[n])[:3, 3] for n in STANDARD])
+        positions = np.array([matrix(self.idx[n])[:3, 3] for n in self.joint_names])
         # glTF Y-up -> Blender-style Z-up.
         return positions[:, [0, 2, 1]] * [1, -1, 1]
 
@@ -353,8 +354,8 @@ button{font:inherit;text-align:left;background:#203448;color:#edf6fa;border:1px 
 button:hover,button:focus-visible{border-color:#75dfd0}button span{display:block;font-size:14px;color:#b8cbd9}
 output{align-self:center;font-variant-numeric:tabular-nums}summary{cursor:pointer;padding:12px 0}img{max-width:100%}
 </style><main><p>SPACE SURVIVAL · CHOREOGRAPHY PROPOSAL</p>
-<h1>Full performance study — 80 seconds</h1>
-<p>160 numbered frames at two frames per second. Existing source poses drive a simple figure;
+<h1>Full performance study — DURATION_SECONDS seconds</h1>
+<p>FRAME_COUNT numbered frames at two frames per second. Existing source poses drive a simple figure;
 the proposed travel and catches show the idea before character animation. This is not a new Vexa animation or a grip, skin-weight or collision check.</p>
 <video id="movie" controls playsinline preload="metadata" poster="Overview.jpg" src="FullPerformance_2fps.mp4"></video>
 <div class="controls"><button id="previous">← Previous frame</button><button id="next">Next frame →</button>
@@ -371,19 +372,20 @@ Finger contact, full-rate transitions, the final loop and chamber fit remain to 
 const v=document.querySelector('#movie'),o=document.querySelector('#position');
 const sections=PLAN;
 function show(){const t=v.currentTime,s=sections.find(s=>t>=s.start&&t<s.end)||sections.at(-1);
-o.textContent=`${s.id} · F${String(Math.min(160,Math.floor(t*2)+1)).padStart(3,'0')} · ${t.toFixed(1)}s`;}
-function seek(t){v.pause();v.currentTime=Math.max(0,Math.min(79.5,t));show();}
+o.textContent=`${s.id} · F${String(Math.min(FRAME_COUNT,Math.floor(t*2)+1)).padStart(3,'0')} · ${t.toFixed(1)}s`;}
+function seek(t){v.pause();v.currentTime=Math.max(0,Math.min(LAST_FRAME_TIME,t));show();}
 document.querySelectorAll('[data-time]').forEach(b=>b.onclick=()=>seek(Number(b.dataset.time)));
 document.querySelector('#previous').onclick=()=>seek((Math.ceil(v.currentTime*2)-1)/2);
 document.querySelector('#next').onclick=()=>seek((Math.floor(v.currentTime*2)+1)/2);
 v.addEventListener('timeupdate',show);
 </script></main></html>'''
+    page = page.replace('DURATION_SECONDS', str(DURATION)).replace('FRAME_COUNT', str(int(DURATION*FPS))).replace('LAST_FRAME_TIME', str(DURATION-1/FPS))
     page = page.replace('SECTIONS', rows).replace('const sections=PLAN;', 'const sections='+json.dumps(
         [dict(id=s[0], start=s[1], end=s[2]) for s in SECTIONS])+';')
     (OUT/'Review.html').write_text(page, encoding='utf-8')
 
 
-if __name__ == '__main__':
+def build():
     plan_data = {'fps': FPS, 'seconds': DURATION, 'sections': [dict(zip(
         ['id', 'start', 'end', 'title', 'source', 'sourceStart', 'sourceEnd', 'contact', 'direction'], s)) for s in SECTIONS],
         'scope': 'Articulated proxy plan. Source motion not edited. Proposed root travel, anchor blocking and simple crossfades are not production choreography.'}
@@ -417,3 +419,7 @@ if __name__ == '__main__':
         'seconds': DURATION, 'movieSha256': hashlib.sha256(movie.read_bytes()).hexdigest(),
         'gpu': False, 'scope': plan_data['scope']}, indent=2))
     print(json.dumps({'movie': str(movie), 'frames': len(frame_index), 'seconds': DURATION}))
+
+
+if __name__ == '__main__':
+    build()
