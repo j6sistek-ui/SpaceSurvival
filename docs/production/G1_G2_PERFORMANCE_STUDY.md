@@ -6,6 +6,11 @@ Owner direction: continue imports, use CPU only, document the current routine
 and its gaps before visualizing a complete proposed performance at two frames
 per second. Keep the repaired rig; do not reduce choreography to conceal defects.
 
+The [owner-feedback guide](DANCE_OWNER_FEEDBACK.md) preserves the referenced
+videos/images and distinguishes accepted ideas or individual views from rejected
+motion and unresolved quality. Consult it alongside this study; it does not
+turn concept feedback into native animation acceptance or replace the issue log.
+
 ## What actually exists
 
 - The latest complete video is still the 82.75-second private Unreal edit

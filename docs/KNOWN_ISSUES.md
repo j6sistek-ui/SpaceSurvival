@@ -2,6 +2,13 @@
 
 **October25 owner-authorized PR consolidation:** The 21 open source PRs are consolidated for merge over main's already-merged PR86. [Review and ClickUp action matrix](validation/2026-10-25-pr-backlog-consolidation.md) maps every PR to retained AI work and James checks. This supersedes historical unmerged/merge-permission wording only; no gameplay, native appearance or performance acceptance is closed. Owner checkout, maps and installed binary are unchanged.
 
+**2026-10-27T04:22Z owner-feedback preservation — RPT-20261021-01 / RPT-20261016-03:**
+The [consolidated feedback guide](production/DANCE_OWNER_FEEDBACK.md) retains
+owner comments, private video/image locations and partial approvals alongside
+rejections and later clarifications. Use it to evaluate future changes without
+repeating resolved misunderstandings. This log still owns open work; the guide
+is not another task queue or evidence of a new animation/rig validation pass.
+
 **2026-10-27T02:55Z CPU performance-planning follow-up — RPT-20261021-01, OPEN / lead:**
 The full80-second articulated proxy study now has160 frames at2Hz and a private
 Review.html. Recorded CPU checks preserve source hashes, fit both camera views,
