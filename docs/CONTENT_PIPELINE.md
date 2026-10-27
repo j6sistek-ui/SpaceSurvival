@@ -1,5 +1,30 @@
 # Phase 1 content pipeline
 
+## Saved Sequencer practice and Undo crash — October 26
+
+The private practice map is `/Game/Developers/James/AnimationPractice/L_AnimationPractice`;
+open its `Animation_Test` Level Sequence after stopping Play. It binds Nyxar's
+**Body** skeletal component to the compatible `/Game/Nyxar/Demo/Anim_MM_Walk_InPlace`
+clip, at 30 fps with playback frames `[0, 82)`. Binding resolution passed; scrubbing
+frames 10 and 30 changed both hand and foot positions. This is a simple practice
+setup, separate from the station and paused dancer-repair work.
+
+The later owner drag of `MM_WallJump` and Undo exposed an editor failure. At
+00:43:58 UTC on October 27, **Undo Drop Assets** first reported a Control Rig shape
+detaching from a component it was not attached to. **Undo AI: Create Sequence**
+then left no valid sequence; EaseCurveTool appears in the query stacks, followed
+by Sequencer's invalid focused/root sequence error and a null-read crash at
+00:44:12. The log establishes this Undo failure chain, not a defective clip,
+an out-of-memory crash, or a proven fix in either plugin.
+
+The saved map and sequence predate the crash and were preserved with matching
+SHA-256 backups (`af5c8279` map / `9419fd57` sequence). Private evidence is under
+`.agent/local/AnimationLibraryOrganization_20261026/SequencerSetup`, including
+`CrashRecovery/Receipt.json`. Reopening is **untested**: when the owner is ready,
+reopen the saved map and sequence, verify binding/scrubbing, and avoid replaying
+the failed Undo chain. No restart, engine repair or owner acceptance is claimed.
+Native practice assets and recovery files remain private and are not in this PR.
+
 ## Animation collection tree — October 26
 
 In the canonical SpaceSurvival editor, expand **Collections** at the bottom-left of

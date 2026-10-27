@@ -227,6 +227,19 @@ Owner supplied this list without a fixed order. Lead owns implementation and ver
 - **RPT-20261016-01 — Figma key map and prompt readability: OPEN / lead.** Locate the owner's updated frames and reconcile actual KBM/controller actions with existing kit glyphs. Next: one small live prompt comparison; acceptance requires correct bindings, readable scales and device switching, preserving the approved menu.
 - **RPT-20261016-02 — Drunk bar patrons and one always passed out: OPEN / lead.** Inventory owned drunk/idle/recovery clips and choose suitable patrons/locations. Verify coherent loops, interactions and clear paths; exact patron choices remain open. Existing staff shots do not implement intoxication.
 - **RPT-20261016-03 — Interaction inventory and simple animation sequencing: OPEN / lead.** Reconcile the existing animation inventory and show one useful sequence with simple click-by-click authoring steps. Verify compatible rigs, prop contacts, transitions and interruption; do not claim all clips tested.
+  **October26 saved Sequencer practice / Undo crash — partial, lead:** owner-authorized
+  `L_AnimationPractice` / `Animation_Test` binds Nyxar Body to its compatible walk
+  clip at30fps, frames `[0, 82)`; binding and frame10/30 hand/foot movement passed.
+  After an owner animation drop, Undo Drop Assets first failed Control Rig shape
+  detachment; the next Undo AI: Create Sequence lost the open sequence, followed
+  by invalid root/focus and a Sequencer null-read crash (October27,00:43:58–00:44:12UTC).
+  Both saved native files predate the crash and have hash-matched private backups;
+  [setup and recovery evidence](CONTENT_PIPELINE.md#saved-sequencer-practice-and-undo-crash--october-26).
+  **Next — lead:** verify saved-map/sequence reopening and binding/scrubbing when
+  the owner is ready; recovery and an engine-side fix remain untested. **Next — owner:**
+  report whether the reopened practice workflow is usable. Broader dancer repair
+  remains paused; this setup/crash receipt closes no animation-quality acceptance.
+
   **October26 collection organization — implemented locally; sequencing remains open:**
   Owner chose a collection tree instead of moving native assets. **Animations** now
   contains 108 local collections spanning 4,879 unique assets (4,691 project assets
