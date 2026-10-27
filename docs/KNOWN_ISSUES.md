@@ -244,6 +244,38 @@ Owner supplied this list without a fixed order. Lead owns implementation and ver
   without replaying it in the owner's working session. Broader dancer repair stays
   paused; library compatibility and animation-quality acceptance remain open.
 
+  **October27 cross-pack ordering still open — lead:** owner reports other packs
+  absent from the Sequencer picker and dragging clips spawning another actor;
+  the mannequin switch alone did not provide the requested rough clip ordering.
+  Read-only inspection found VarietyDance `SK_Mannequin.compatible_skeletons=[]`.
+  No compatibility, retargeting or native asset changes were made in this follow-up.
+  Owner will highlight movements in the downloaded
+  `Meshy_AI_Studio_T_Pose_Study_All_Animations.glb` before choosing a simple
+  shortlist/ordering workflow. CPU inventory records one mesh, a 36-joint
+  `SmartRigArmature`, and 19 separately named animations with valid key times
+  (40,182,788bytes; SHA-256 `43f368b4ac3df2e820ccccb9ed6f6efba81ef077ef03ac8692b873db9b83cba8`).
+  Examples include `Backflip_Sweep_Kick` (4.833s), `One_Arm_Handstand` (3.833s),
+  `Sprint_Roll_and_Flip` (2.733s), `Magic_Genie` (6s), and
+  `Wake_Up_and_Look_Up` (3.5s). This is a distinct rig, not a mannequin clone;
+  structural inventory does not prove visual quality or compatibility. Private
+  evidence: `SequencerSetup/MeshyReference/Inventory.json` under the existing
+  animation-library receipt folder. **Next — owner:** identify useful moments.
+  **Next — lead:** assess those examples, then provide a simple clip selection
+  and ordering workflow without altering original assets. Broad dancer repair
+  stays paused; the Undo defect and animation-quality checks remain open.
+  **Owner concept order:** slow off-pole `Backflip_Sweep_Kick` ->
+  `Breakdance_1990` slowed to 6s -> drift near the wall ->
+  `diagonal_wall_run` up the wall -> jump toward the pole -> catch and spin.
+  The supplied `Breakdance_1990` is only 0.5s/16 source keys; 6s is a requested
+  duration, not validated retiming. Drift, wall push, reach and catch connections
+  are not authored. This records concept planning, not production resumption
+  or animation adoption.
+  A second, separate proposal is zero-G `One_Arm_Handstand` -> reverse into
+  `Magic_Genie` -> `Sprint_Roll_and_Flip` off the wall. Reversing the handstand
+  clip is the lead's interpretation, not confirmed mechanics; nothing is authored.
+  Exact owner wording and mapping are in sibling `SequenceProposals.json`
+  (`Meshy-01` / `Meshy-02`), a private concept recipe, not a separate task list.
+
   **October26 collection organization — implemented locally; sequencing remains open:**
   Owner chose a collection tree instead of moving native assets. **Animations** now
   contains 108 local collections spanning 4,879 unique assets (4,691 project assets
