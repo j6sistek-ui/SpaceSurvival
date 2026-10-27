@@ -297,6 +297,75 @@ Rejected finger candidates remain frozen. Fit this whole performance to the
 preserved Vexa rig next, then assess detailed contact/physics and the other
 characters in the established order.
 
+## Whole-rig CPU motion — 2026-10-27T08:26Z
+
+The owner explicitly prioritizes the entire intended performance before micro
+contact, deformation or physics. The new private review is
+`SourceAssets/PerformancePlan_20261027/FullRigFlowReview/Review.html`.
+It shows actual95-bone motion at24fps with simplified anatomy, then the same
+motion skinned onto the preserved mesh at2fps. Both movies run88seconds.
+This is an offline motion draft, not a saved native action or final skin result.
+
+### Reproducible transfer and rejected controls
+
+Private recipe: `.agent/local/PerformancePlan_20261027/FullRigTransfer`.
+Run `transfer.py`, then `verify_motion.py`, then `render_motion.py` with the
+existing Python/NumPy/Pillow runtime and existing ffmpeg. These are CPU operations;
+they do not launch Unreal or Blender. The private target/donor extraction uses
+the existing Three parser only; no renderer, installation or shared-loader edit.
+
+1. Preserve Vexa's shoulder candidate `51c25e24` and corrected rest FBX
+   `243a8f3e`. Recover95 unique bones and actual parents from raw FBX Model
+   connections: Three duplicates bone objects for the five mesh skins, so
+   its object-instance parent list is not the hierarchy authority.
+2. Read raw mesh cluster weights without Three's four-influence truncation.
+   Retain all28,261 vertices,53,904 triangles and up to10 influences per vertex.
+   Per-mesh bind matrices reproduce rest surfaces within4.324micrometres.
+   No vertex, weight, bone length or source asset is changed.
+3. Keep native G1/G2 full-joint donor rotations and GLB donor rotations.
+   The target/native reference comparison is a single world Rz180 alignment;
+   it is not a per-bone rotation and must not be applied again to the already
+   aligned performance. Rest origins agree within5.32micrometres.
+   Preserve target local translations, fit major directions, and carry donor
+   roll/fingers through the actual hierarchy. Missing helpers retain rest locals.
+4. The first full-rig draft exposed a161-degree upper-arm step near21.25s:
+   the old proxy's Cartesian blend collapsed its arm direction to13.47mm.
+   A direction-only spherical repair moved the flip into the forearm; adding
+   a fast transverse-frame fade still produced94-degree and90-degree steps.
+   These stacked fixes were rejected.
+5. Replace only20.8–21.8s with one local quaternion connector for the left
+   clavicle, upper arm and forearm. Spherical cubic control rotations match
+   endpoint angular velocities sampled at0.0001s. Reconstruct descendants at
+   fixed translations; keep current wrist/finger locals and the entire
+   pelvis/spine/leg motion. Maximum24Hz upper-arm step falls161.43→17.27degrees;
+   forearm89.29→15.91degrees. This is a new one-second transition, not unchanged
+   source motion or a freeze.
+6. A separate171.87-degree forearm step near69.35s came from minimum-swing
+   ambiguity at nearly opposite aim directions. Over68.75–70s, project the
+   donor world transverse onto the desired aim plane, build a proper frame,
+   and blend at the boundaries. Using the already-fitted parent transverse
+   failed. The successful bounded frame reduces the maximum step to19.61degrees.
+7. Do not aim a wrist at middle_03: that is an articulated composite finger
+   marker. Preserve donor wrist rotation instead. Fingers remain animated;
+   fast or unsuitable source wrists are still a later repair, not accepted.
+8. Never replay the original96 G1 time-indexed shoulder corrective curves on
+   the new88s timeline. Original corrections are retained for later remapping.
+   This first transfer also approximates the liked departure from source clocks;
+   it is not an exact native replay of that previously accepted saved passage.
+
+`MotionVerification.json` binds source and recipe hashes. All2113 samples at24Hz
+have finite, proper rotations; fixed local-translation error is below0.290µm.
+The88→0 matrix endpoint is exact. Protected body/legs match the first whole-rig
+draft throughout; outside the two repair windows, non-wrist bones match it exactly.
+Independent review verifies endpoint and local-chain preservation.
+
+Remaining watchpoints include the94-degree left-wrist step at44.25s and rapid
+source/transfer motion near15.83/16.25s. Endpoint equality does not prove velocity
+or artistic continuity. Full-rate skinned playback, anatomical limits, gripping,
+garment response, chamber clearance, native transfer and owner acceptance remain
+open. Keep the whole-performance-first priority; do not resume isolated detail
+experiments or weaken the choreography to conceal rig defects.
+
 ## Later implementation gates
 
 1. Approve the phrase order, pacing and silhouette changes from the full study.

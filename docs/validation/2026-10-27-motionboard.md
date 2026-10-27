@@ -261,3 +261,52 @@ limits, chamber clearance, native motion, physics and owner acceptance are not
 established. Micro work stays deferred. No Unreal/Blender/GPU launch, native asset,
 owner-board write or portal restart. Documentation/body gates apply to this
 four-document publication; no C++ or native build applies.
+
+## Whole-rig CPU motion — 2026-10-27T08:26Z
+
+Status: full-performance draft, not native adoption or owner acceptance.
+Private review: `SourceAssets/PerformancePlan_20261027/FullRigFlowReview/Review.html`.
+
+| Artifact | Identity and coverage |
+| --- | --- |
+| FullRigMotion_Continuous.npz | `ce090dd21dc8660e22e3d593b9af0977fef14918471894898e0189022d1ac702`;2113 samples/95bones/24Hz, including88s endpoint |
+| Vexa_RigMotion_24fps.mp4 | `c7423376c4d451c8d3ff26cf241727e7a689ffd0b62965e5697be7176a98dd15`;88s/2112 frames, actual rig positions with simplified anatomy |
+| Vexa_FullRoutine_2fps.mp4 | `2cf27fb10e3e4bced2a2c138eaeb56359fce58828bc2ba2805bc9766d13f38d2`;88s/176 frames, original geometry and full skin weights |
+
+Both movies decode. No GPU, Unreal or Blender process was launched. Four private
+Python recipe files compile. All seven protected source hashes pass, including
+original shoulder blend51c25e24, rest FBX243a8f3e and earlier full-flow movie12860736.
+
+The raw FBX hierarchy has95 unique bones; five skin instances are not five rigs.
+All28,261 vertices and up to10 skin influences are retained; rest surface replay
+error is4.324µm. Across2113 samples, max rotation orthogonality error is9.92e-8,
+determinants range0.999999898–1.000000112, fixed local translations differ by at
+most0.290µm, and the exact88→0 matrix endpoint error is0.
+
+Independent review rejected two macro transfer failures rather than accepting
+finite matrices as motion quality. A collapsed21s proxy direction produced a
+161.43-degree arm step; a coherent20.8–21.8s local-arm connector reduces it to
+17.27degrees while preserving body/legs. A near-antiparallel69s minimum-swing
+frame produced171.87degrees; donor-transverse framing reduces it to19.61degrees.
+The short direction-only/fast-fade controls were rejected. Removing wrist aim
+toward the articulating middle-finger marker preserves donor wrist locals.
+
+Independent readback confirms exact repair endpoints, unchanged protected body
+and legs throughout, unchanged non-wrist bones outside repair windows, and wrist/
+finger local preservation within the connector to8.52e-14. This does not accept
+the remaining94-degree wrist step at44.25s or rapid15.83/16.25s sections.
+
+Lead inspected opposing30s/53s mesh stills: the flip and inverted folded descent
+are present without a gross mesh explosion. Full24fps motion uses simplified
+anatomy;2fps flat-shaded mesh captures cannot establish final smoothness, normals,
+garment quality, support or hidden intersections. Original96 G1 time-indexed
+corrective curves are intentionally not replayed on the new clock. Exact saved
+departure replay, full-rate skin, contact/physics and native/owner checks remain
+open under RPT-20261021-01. Earlier reviews and source assets are preserved.
+
+Private recipe and evidence: `FullRigTransfer/transfer.py`, `target.py`,
+`verify_motion.py`, `render_motion.py`, `Donors/RestReferenceComparison.json`
+and `MotionVerification.json`. Their full source identities, failed controls
+and reproduction are documented in the performance study. This follow-up
+publishes documentation only; C++/Unreal build and game tests do not apply.
+
