@@ -1426,3 +1426,11 @@ encode with build_g2_floating_review.py --source-phrase --framed --diagnostic.
 The saved first-leg verifier accepts both historical 'phrase' and newer
 'PhraseControl' receipt names while still enforcing passed status and exact
 control/source hashes. These names do not relax any geometry gate.
+
+## October26 source-return and service follow-up
+
+See the [source-return and Joy/Astra audit](2026-10-26-dancer-source-followup-and-service-audit.md)
+for the rejected fixed-world wrist policy, limited source-local improvement,
+unresolved hip response and separate service-rig reproduction. The complete
+82-second review video has not been replaced; these results do not accept the
+whole routine or current service gameplay.

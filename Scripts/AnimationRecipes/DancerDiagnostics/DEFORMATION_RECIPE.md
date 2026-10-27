@@ -3,8 +3,10 @@
 ## Working procedure and transfer rules — October26
 
 Use this section first; the sections below retain the experiments and evidence.
-The current target is Vexa. Finish her rig and routines, then document their
-verified results before adapting the technique to Joy, Astra and other dancers.
+The main target is Vexa. Finish her rig and routines, then document their
+verified results before broad adoption on Joy, Astra and other dancers. The
+owner now authorizes parallel Joy/Astra evaluation and isolated corrections;
+this does not establish shared topology or permit copying Vexa morph curves.
 The owner approved specific shoulder/hip views, not a complete anatomical rig.
 
 1. **Identify the exact failure.** Record character, source hash, clip, frame,
@@ -1916,3 +1918,64 @@ encode with build_g2_floating_review.py --source-phrase --framed --diagnostic.
 The saved first-leg verifier accepts both historical 'phrase' and newer
 'PhraseControl' receipt names while still enforcing passed status and exact
 control/source hashes. These names do not relax any geometry gate.
+
+## Released-hand and service-motion lessons — October26
+
+Full evidence: [source return and service audit](../../../docs/validation/2026-10-26-dancer-source-followup-and-service-audit.md).
+This section supersedes no accepted mesh/action. Current originals remain
+51c25e24/173a6223/0a38e12a; the current whole-body source return is still held.
+
+1. **Separate world orientation from wrist posture.** The released-left-hand
+   route cleared the foot but holding its world orientation forced41.81degrees
+   of new wrist compensation. Opposing views rejected that policy. Keeping the
+   source wrist relative to its forearm clears the same319 limited samples and
+   preserves its local angle within0.000022degrees. Do not apply this free-hand
+   rule to Joy's bottle/cup: their coordinated pouring tilt is intentional.
+2. **Preserve choreography and measure actual surfaces.** The G2 corridor is
+   a measured0.18m chest outside/up target on48.8–50.1s,0.4s quintic ramps and a
+   small residual pulse49.2–49.65s. The calibrated residual in chest metres is
+   `[-0.025947406888008118,0.0103490324690938,0.01972557045519352]`.
+   `source_return_left_corridor(..., hand_orientation='source_local')` keeps
+   other-body matrices and arm lengths; its10–145degree elbow interval is a
+   conservative review envelope, not a universal human limit. The source
+   pose/forearm plane still needs direction/skin checks.
+3. **Do not mistake a local pass for a repaired phrase.** The319-sample240Hz
+   screen excludes upper arms, hips, garments and whole-body anatomy. Forty
+   stills and the20-image independent comparison support the narrower wrist
+   improvement only. Other contacts/hip folds remain; added world joint speed
+   must be judged in motion. Bone markers occluded inside skin do not prove
+   thumb direction. Use opposing closeups instead of guessing from them.
+4. **Hip mirroring is not the missing solution.** Donor/target axes and local
+   translations agree. A pre-existing pelvis/rest alignment difference does
+   not establish a new bug. The targeted mirror trial leaves18L/45R triangle
+   contact pairs and worsens stretch; preserve the waist patch. Next hip repair
+   needs localized pose-dependent surface response and surrounding contour
+   checks, not broad weight/helper gains or deletion of the folded pose.
+5. **Calibrate the actual service rig.** Joy's CC_Base rig has101 bones; Astra
+   uses a different PerfectFemaleBody71-bone rig. Neither inherits Vexa's
+   topology-specific weights/morphs by assumption. Joy's native import metadata
+   identifies `outfit_v25/SK_Joy.fbx`; an older same-name FBX is insufficient.
+6. **Near-extension elbow normals can flip.** Joy's framewise cross-product
+   solve generated >120degree jumps. Candidate04 calibrates a hinge direction
+   in original2.0s bone space, transports it with orientation and unwraps signed
+   roll through the existing contact envelope. Right wrist maxstep57.45→16.22
+   degrees is improvement, not acceptance. Shared original cup-hand travel
+   preserves bottle/cup placement and tilt; six tracks change,95 remain exact.
+7. **Astra needs a stance-aware departure.** Stopped pickup feet into a moving
+   carry phase cannot be cured by matching endpoints alone. The velocity-aware
+   bridge held the tray but tripled left-foot travel. Both bridge trials remain
+   withheld. Trace current phase, actor velocity/yaw, speed and support foot
+   before choosing a start-step or native transition. Do not transfer Vexa
+   weights or retime the entire carry clip to hide that handoff.
+
+Private receipts are `G2FloatingLife/SourcePhraseWristPoliciesPrecise/Audit.json`,
+`SourcePhraseDirectionAudit/LocalWristReview.json`, `JoyAssessment_20261026/`
+and `AstraAssessment_20261026/` beneath the existing AnimationReview directory.
+The precise wrist comparison uses float64 quaternion normalization; the earlier
+float32-dot result's0.04degree floor is not a real wrist change. Source file
+guards, failed controls and independent readback remain retained. No production
+adoption, native service replay, ClickUp write or merge follows these checks.
+
+The source-only [Joy pour reproduction bundle](JoyPour/README.md) guards both
+private pose exports and the exact Candidate04 patch hash. Run into a new private
+directory, then validate to a new report; neither operation overwrites evidence.

@@ -5,6 +5,13 @@ in `docs/KNOWN_ISSUES.md`; this is not a second task queue.
 
 ## Order and boundaries
 
+**Owner update, October26 23:12 UTC:** Concept side work is paused. Ten final
+numbered F1–F5/P1–P5 sheets and frame notes were copied and SHA-verified in
+`C:/Users/j6sis/OneDrive/Pictures/SpaceSurvival_Animation_Concepts_2026-10-26`.
+The owner will propose combinations later. The gallery builder remains an
+unpublished draft, not an available review delivery. Continue the current
+Vexa sequence; parallel Joy/Astra source evaluation is now explicitly allowed.
+
 1. Continue the current Vexa routine. Restore the missed G1/G2 body phrases,
    including coordinated torso, free arm, knees and feet. A periodic leg
    overlay alone does not meet the owner's correction.
@@ -25,6 +32,28 @@ implementation problem. Original target-rig FBX baselines remain in private
 0a38e12a contains arm repairs; it is not untouched full-body source.
 
 ## Proposed blocks, not approved animation
+
+### Numbered concept revision requested October26
+
+Owner feedback rejects F4's malformed limb and the sparse/slow impression of
+the first sheets, and requests usable pole visuals. Revision2 keeps F1–F5 and
+P1–P5 but gives each six individually addressable beats: `.01` through `.06`.
+The proposal must show multiple coordinated moves rather than one extension
+held for an entire block. Proposed times are not proof of playback pacing.
+Frame IDs are revision-specific; do not silently apply v2 feedback to v1 art.
+
+Private source plans/images are under `BuildingBlocks/*Concepts/V2`; the
+final revision has ten sequence IDs and sixty frame IDs. F4's malformed leg
+was corrected; drawing QA found no obvious extra limbs in the final sheets.
+Concept anatomy/hand continuity is still not rig or motion acceptance.
+Use the saved Pictures copies for later feedback. Every new transition requires the contact,
+velocity, orientation and swept-volume checks below. Current routine repair
+continues separately; none of these new blocks is authorized for animation
+before its concept is shown and directed.
+
+The table below retains the first proposal's source basis and durations. V2
+`Frames.json` owns the revised beat timings and captions (10–12seconds),
+superseding v1 durations for this review; neither is a completed action.
 
 | ID | Target | Main phrase | Evidence or inspiration |
 | --- | --- | --- | --- |

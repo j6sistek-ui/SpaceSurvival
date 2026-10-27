@@ -365,3 +365,24 @@ intersection checks and must remain diagnostic. Add `--render --framed
 `build_g2_floating_review.py --source-phrase --framed --diagnostic`.
 The resulting private `G2SourcePhraseCurrentReview.html` is an unsaved preview,
 not an adopted action or a new conceptual block.
+
+Concept side work is paused. Final numbered sheets are saved in the owner's
+Pictures/SpaceSurvival_Animation_Concepts_2026-10-26 folder. The local gallery
+builder remains an unpublished draft; it is not required for current repairs.
+
+`validate_g2_free_hand_corridor.py` runs in hidden Blender with `-- --output
+NEW_DIRECTORY --calibration PATH_TO_MEASURED_AUDIT_JSON`. It compares world-
+and forearm-relative hand orientation on the released left arm in the restored
+G2 return. Both policies retain limb lengths and other body motion. Fixed-world
+orientation is visually rejected because it transfers the arm adjustment into
+the wrist; source-local orientation retains the source wrist pose. Neither
+policy is an adopted animation, whole-body collision test or universal ROM fix.
+The required private calibration and exact guards are recorded in the recipe.
+This final-return diagnostic does not repair the bridge/G2 approach singled out
+in the owner's later recording; the accepted G1 departure must remain intact.
+
+The [Joy pour recipe](JoyPour/README.md) reproduces a separate six-track,
+source-bound CC_Base correction using existing Python/NumPy only. It refuses
+existing output/report paths and does not launch an editor or import native
+content. Joy and Astra findings and acceptance limits are in the
+[October26 follow-up](../../../docs/validation/2026-10-26-dancer-source-followup-and-service-audit.md).
