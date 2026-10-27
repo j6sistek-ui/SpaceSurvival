@@ -227,6 +227,19 @@ Owner supplied this list without a fixed order. Lead owns implementation and ver
 - **RPT-20261016-01 — Figma key map and prompt readability: OPEN / lead.** Locate the owner's updated frames and reconcile actual KBM/controller actions with existing kit glyphs. Next: one small live prompt comparison; acceptance requires correct bindings, readable scales and device switching, preserving the approved menu.
 - **RPT-20261016-02 — Drunk bar patrons and one always passed out: OPEN / lead.** Inventory owned drunk/idle/recovery clips and choose suitable patrons/locations. Verify coherent loops, interactions and clear paths; exact patron choices remain open. Existing staff shots do not implement intoxication.
 - **RPT-20261016-03 — Interaction inventory and simple animation sequencing: OPEN / lead.** Reconcile the existing animation inventory and show one useful sequence with simple click-by-click authoring steps. Verify compatible rigs, prop contacts, transitions and interruption; do not claim all clips tested.
+  **October26 collection organization — implemented locally; sequencing remains open:**
+  Owner chose a collection tree instead of moving native assets. **Animations** now
+  contains 108 local collections spanning 4,879 unique assets (4,691 project assets
+  across45 packages and188 plugin assets); 3,952 are AnimSequences. SpaceSurvival's
+  1,918 members have source/character subgroups. Persisted parent/membership checks
+  pass, 71 existing collections remain unchanged, and fresh registry comparison
+  finds zero missing/stale root members. No native package/path, rig, animation or
+  runtime changed. [Usage and evidence](CONTENT_PIPELINE.md#animation-collection-tree--october-26).
+  **Next — owner:** expand Collections then Animations and try a package/clip preview;
+  report missing or confusing grouping. **Next — lead:** address organization feedback
+  and resume the separate sequencing/animation work only when requested. Animation
+  repairs remain paused; metadata verification closes no motion-quality acceptance.
+
 - **RPT-20261016-04 — Squirrel work duties and second Meshy station squirrel: DEFERRED / lead.** Owner October15 asks not to prioritize squirrel changes while developing a new hero. Defer asset changes, new duties and retirement of the current hero; preserve the current cast. Resume after owner coordination, then identify each squirrel separately and validate the replacement before retirement.
 - **RPT-20261016-05 — Hero replacement: DEFERRED / owner developing candidate.** Owner October15 is building a new hero and testing the texture plug-ins. This supersedes prioritizing the retro-futuristic soldier as temporary hero. Do not swap or retarget a candidate or alter the owner's Blender session; coordinate after the candidate is selected, then verify locomotion, camera/collision, seating, boarding and interactions.
 - **RPT-20261016-06 — Hero dive and roll: DEFERRED / hero-dependent work.** Keep the request open, but defer candidate-specific rigging, retargeting and controls implementation while the owner develops the hero. After selection, verify compatible clips, conflict-free KBM/controller input, collision-safe travel, entry/recovery and restored movement; flight evade is separate.

@@ -1,5 +1,40 @@
 # Phase 1 content pipeline
 
+## Animation collection tree — October 26
+
+In the canonical SpaceSurvival editor, expand **Collections** at the bottom-left of
+the Content Drawer, then expand **Animations**. Select a package child to browse
+its existing clips and related animation assets; double-click an AnimSequence to
+preview it. Stop Play before editing a sequence in Sequencer. These are collection
+views of existing assets, not a new Content folder or imported animation set.
+
+The local tree contains 108 collections and 4,879 unique assets: 4,691 `/Game`
+assets across 45 top-level packages and 188 assets from six plugin mounts. Of these,
+3,952 are AnimSequences, including 92 plugin clips. Coverage also includes poses,
+montages, blend spaces/aim offsets, animation Blueprints, Level Sequences, IK rigs,
+retargeters and Control Rigs. This is the current loaded registry selection, not a
+claim that every downloaded archive or engine asset is imported or indexed.
+
+The large **SpaceSurvival** branch has 1,918 assets, divided into existing source
+groups such as `SS_CharacterWorkshop`, `SS_PlayableHeroes_20261020` and
+`SS_StationAssets`; the latter divides into Joy, waitress, clip-library and Tripo
+crew groups, with individual Tripo character children. Plugin content remains
+grouped separately. Clear an active type/search filter if expected members are hidden.
+
+The tree is local metadata under `Saved/Collections`. No animation package was
+moved, copied, renamed, retargeted or changed; skeleton/AnimBP links, runtime asset
+paths and cook rules stay as they were. Back up these collection files separately
+if the local view must survive clearing `Saved`; this documentation PR does not
+include licensed native assets or reproduce the collections on a fresh checkout.
+
+Verification: `CollectionPlan.json`, `CreateCollectionsReceipt.json`,
+`PersistedVerification.json` and `FinalRead.result.json` under
+`.agent/local/AnimationLibraryOrganization_20261026` record all 108 memberships and
+parent links, 71 pre-existing collections unchanged, and a fresh registry comparison
+with zero missing/stale members in the 4,879-asset root. This verifies organization,
+not animation compatibility, deformation, contact or owner visual acceptance.
+Sequencing follow-up remains under [RPT-20261016-03](KNOWN_ISSUES.md#october16-owner-backlog-paraphrase).
+
 ## Supplied playable heroes — October20
 
 Keep each supplied body on its own skeleton and preserve packed source PBR/UVs. Derive centimeter-native unit-root FBXs before Interchange import, bake additive references into standalone full poses, and measure planted-foot speeds/contact before activating tuning. Four cloth sections use the supplied low resolution simulation cages with body collision; a saved binding is separate from verified live simulation. Never rerun the authoring pipeline on adopted packages or use `AuthorContent.py` to activate a roster. The guarded scripts, source/native receipts and D-drive archive are described in [HeroIntegration](../Scripts/HeroIntegration/README.md); current checks and failures are in the [dated evidence](validation/2026-10-20-playable-heroes.md).
