@@ -218,3 +218,46 @@ This is a priority change, not acceptance of unresolved defects. RPT-20261021-01
 Next lead work is whole-performance flow and the finish/start connection; detailed contact
 and physics follow, then Joy/Astra. Documentation-only publication requires the documentation
 gate; no C++/Unreal build is applicable to this private CPU preview/evidence update.
+
+## Full-flow candidate — 2026-10-27T07:42Z
+
+The owner prioritizes a complete intended performance before micro detail.
+The new private review is `SourceAssets/PerformancePlan_20261027/FullFlowReview/Review.html`.
+It is an articulated CPU proxy, not a native Vexa action or a game build.
+
+- Full movie:88seconds/24fps/2112frames; SHA-256
+  `12860736a48f94f1dfe17062fb28b35f7dee42f1e8549977dff82dc5f6553c5f`.
+- Pose samples SHA-256
+  `e1bfdc7630260dd3927610ad3222bcbc2118f0f2098bdbed963b45e6bdfac074`.
+- Separate finish/start movie:8seconds/192frames; SHA-256
+  `55a24ff3761d0c003609c1a968a0c82bc775263b83bc575cee3b9613f25521db`.
+- Both movies decode; the full review offers continuous looping and speed choices.
+  Original sources and both earlier studies are hash-unchanged. Sampled positions
+  outside0–0.5,70.5–71.5 and84–88seconds match the previous full-rate preview exactly.
+- Return overlap uses moving outgoing/incoming donors and connected root travel.
+  Maximum24Hz joint step in the affected return changes from0.495m to0.126m.
+  This is a proxy comparison, not a universal animation-quality threshold.
+- Finish connects a reverse-G1 gather through a separately blended torso frame
+  and local limb motion. A rejected world-direction blend created an abrupt leg
+  swing; the body-frame blend reduces its largest24Hz step from about0.414m to0.167m.
+  The final four seconds are newly authored, not preserved G2 choreography.
+- Independent CPU review: quaternion/frame reconstruction error below1.1e-15;
+  exact88→0 joint-position error3.24e-16m and sampled velocity mismatch2.86e-5m/s.
+  The0.5s and84s joins have no material introduced velocity jump.
+  The86s velocity corner originates in reversed G1 source phase0.3, not the fade
+  ending; it remains a normal-speed playback watchpoint.
+- Lead and independent reviewer inspected the changed-phrase stills: the return
+  progresses and the inverted finish unfolds through diagonal to upright.
+  Stills and numerical continuity do not establish normal-speed artistic acceptance.
+
+`Receipt.json` binds source/recipe/output identities. Reproducible clocks,
+blend strategy and rejected approaches are recorded in
+[the performance study](../production/G1_G2_PERFORMANCE_STUDY.md#full-flow-candidate--2026-10-27t0742z).
+Private recipes remain under
+`.agent/local/PerformancePlan_20261027/S09Replacement/CombinedCatch`.
+
+RPT-20261021-01 remains open: actual-rig adaptation, skin, contact/support, joint
+limits, chamber clearance, native motion, physics and owner acceptance are not
+established. Micro work stays deferred. No Unreal/Blender/GPU launch, native asset,
+owner-board write or portal restart. Documentation/body gates apply to this
+four-document publication; no C++ or native build applies.

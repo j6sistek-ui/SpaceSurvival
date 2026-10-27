@@ -11,6 +11,8 @@ videos/images and distinguishes accepted ideas or individual views from rejected
 motion and unresolved quality. Consult it alongside this study; it does not
 turn concept feedback into native animation acceptance or replace the issue log.
 
+Current priority and full-rate review: [complete performance before detail](#full-flow-candidate--2026-10-27t0742z). Earlier two-frame studies below remain provenance; current preview is24fps and still CPU-only.
+
 ## What actually exists
 
 - The latest complete video is still the 82.75-second private Unreal edit
@@ -228,6 +230,72 @@ limb counter-rotation and overlapping follow-through. They do not authorize a
 blind replacement of the improved rig, fixed4–8-frame offsets, generic helper
 bone gains or anatomical limits. Preserve source movement and assess the
 existing corrected rig before introducing more controls.
+
+
+## Full-flow candidate — 2026-10-27T07:42Z
+
+The owner's later priority supersedes micro-contact-first work: get the complete
+intended performance working, then fine-tune physics and deformation. The original
+2fps studies remain history; current motion review is a separate88s/24fps proxy at
+`SourceAssets/PerformancePlan_20261027/FullFlowReview/Review.html`.
+Movie12860736 / posese1bfdc76 identify this candidate. Neither a numerical pass nor
+this preview adopts a target-rig action. Keep the improved Vexa rig and original
+motions intact while adapting the complete sequence.
+
+The full phrase order and S09 pull,2.5-turn descending inversion and release remain.
+This iteration changes only0–0.5,70.5–71.5 and84–88seconds relative to FullMotionReview.
+The accepted departure and S09 are untouched. The final four seconds are a new
+reverse-G1 gathering turn; do not label them unchanged G2 source motion.
+
+### Repeatable motion recipe
+
+Private recipe root:
+`.agent/local/PerformancePlan_20261027/S09Replacement/CombinedCatch`.
+`FullFlowReview/Receipt.json` pins all input and output hashes.
+
+| Recipe | SHA-256 | Role |
+| --- | --- | --- |
+| full_flow.py | 943c619488e3696aa657362012bcec0023be8f2537af1df9f1ef811639e65c8e | Combines candidates; CPU24fps render and preservation receipt |
+| full_motion.py | 59b222186988bbbb7f554968b3df575d5603c2373b6396ac9f6e90942eb86647 | Prior full-rate catch/timing base |
+| return_overlap.py | 1478d62cb6091f601131bd3acbca10dfbc58685c19afe4eca73f7e0b7463aa5b | Moving return-source overlap |
+| finish_loop.py | f3a4df7b7c6a7e28e672079f2b93ba8832e4ec9587e38848fb90afc0b4ea9f17 | Torso/local-limb finish connector and start clock |
+
+1. **Return70.5–71.5s:** set x=t−70.5. Advance the outgoing old-clock donor by
+   62.5+x−0.5x² and the incoming donor by63+0.5x². Normalize the individual
+   proxy donors before blending; remove their stage yaw and apply one shared
+   yaw12x+5x² above the entry yaw. Use the quintic overlap
+   x³(10−15x+6x²), with root Hermite endpoints/tangents from the prior motion.
+   This continues side-flip/G1 recovery into G2 rather than fading a frozen pose.
+   The original routine resumes exactly at71.5s.
+2. **Finish84–88s:** reverse-gather G1 with phase1.2((88−t)/4)².
+   Its stage yaw follows a four-second Hermite turn263.209191→360degrees with
+   22degrees/second endpoint rates. Tilt is8sin((t−88)×0.3)degrees.
+   The right-wrist proxy anchor is[0.035,0,3]metres. It is a choreography anchor,
+   not an accepted finger grip or force model.
+3. **Overlap84–86s:** outgoing clock is84+2(x−0.5x²), x=(t−84)/2 clamped0–1.
+   It advances rather than freezes immediately. Separate torso orientation
+   from local articulation: construct an orthonormal right-handed frame from
+   chest−pelvis and right-hip−left-hip; quaternion-blend the frames, then blend
+   hierarchical limb directions in those local frames and reconstruct positions.
+   This prevents whole-body inversion from forcing a near-antipodal leg swing.
+4. **Opening0–0.5s:** G1 phase0.21875x²(2−x), x=t/0.5, starts with zero source
+   speed and rejoins the original phase/rate at0.5s. Stage yaw22t and tilt
+   8sin(0.3t), with the same right-wrist anchor, match the finish's direction.
+   The exact end/start positions agree; finite-difference velocity mismatch
+   is2.86e-5m/s. This is only proxy loop continuity.
+5. **What not to repeat:** world-space limb-direction blending across nearly
+   opposite whole-body poses produced an abrupt knee/leg arc even when the
+   final pose matched. Shortening the fade alone did not solve it. Blend the
+   body frame and local articulation separately; preserve moving donor clocks.
+   Do not trade away the flip, leg variety or torso motion to hide rig problems.
+
+The86s source-key speed corner remains; independent comparison isolates it to
+G1 source phase0.3 rather than the new fade. Judge it in motion before retiming.
+The preview still blends normalized source proxies with different proportions;
+it does not prove fixed target-rig geometry, skin, fingers or anatomical limits.
+Rejected finger candidates remain frozen. Fit this whole performance to the
+preserved Vexa rig next, then assess detailed contact/physics and the other
+characters in the established order.
 
 ## Later implementation gates
 
