@@ -376,3 +376,21 @@ source and installed tool behavior before relying on a specific API/rig recipe.
 Later feedback should append a stable FB identifier, exact reference/time,
 accepted/rejected/qualified scope and the canonical issue it affects. Supersede
 withdrawn conclusions explicitly rather than accumulating contradictory rules.
+
+## Evidence follow-up to FB-A12–14 — 2026-10-27T10:30Z
+
+The owner's routine-first direction is unchanged: preserve the expressive moves,
+make travel and inversion purposeful, then refine exact grip, skin and physics.
+The separate88-second CPU candidate `8c1f8026` now combines a visible wall
+redirect on each free-flight return with actual-rig wrist/leg support through
+inversion. The original performance remains an unchanged comparison. The liked
+22–27.5s articulation is preserved exactly while whole-body translation changes
+to carry momentum from the preceding pole release; this is not new owner
+approval of that route.
+
+The engineering recipe and rejected attempts are recorded in
+[G1_G2_PERFORMANCE_STUDY](G1_G2_PERFORMANCE_STUDY.md). Sampled fixed-length and
+surface-envelope checks support the draft, but the open-hand catch, contact
+impacts, inherited fast wrist/toe sections, native playback and artistic
+acceptance remain unverified. This evidence addresses the existing feedback;
+it neither closes FB-A12–14 nor authorizes a return to detailed physics work.

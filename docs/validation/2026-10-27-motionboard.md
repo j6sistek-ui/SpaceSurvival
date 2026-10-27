@@ -385,3 +385,12 @@ Evidence lives privately under
 `.agent/local/PerformancePlan_20261027/FullRigTransfer/NativeTransfer`;
 the immutable `NativeLiveComparisonSource.json` is the comparison input.
 No C++ build, packaged release or owner acceptance is claimed.
+
+## Routine causality CPU review — 2026-10-27T10:30Z
+
+- Isolated combined motion `8c1f80263e75631e1f73adb3958992303377c17190cf26fcf4d80bce2aa3cc68` combines early route `efe47398`, inversion `da471833` and late return `86c297c1`; input hashes are verified in `RoutineCausality/FullRoutine_CausalityCandidate.assembly.json`.
+- `FullRoutine_Checks.json`:2113 finite poses/88s, proper rotations, local offsets within0.547 micrometers, exact outside20.25–61.5/62–75s and exact loop. All full-weight mesh samples fit the3.48m side envelope to numerical tolerance, with camera margins43.70/83.99px. No geometry/weight edit.
+- Independent `LateReturn/FinalCombinedMacroAudit.json` (`9702d128`) verifies original hierarchy, source hashes, actual segment lengths within0.000463mm and no new isolated limb flip/reset at the requested joins. Added48.04s/73.17s arm cadence and inherited wrist/toe rotations remain review points, not hidden passes.
+- New full movie `0eecf848b5f06ad1ce3e4a75e8c58870ce18f36a1d7ff57680c14ef3243bb5ae`:2112 decoded frames/88.000s/24fps, no decode error, duplicate or dropped frame. Two fixed opposing views and explicit schematic chamber framing; lead sampled image review is not owner acceptance.
+- Review:`SourceAssets/PerformancePlan_20261027/RoutineCausalityReview/Review.html`. Earlier reviews remain intact. No Unreal/GPU launch, production asset adoption, owner-board write, texture/corrective/physics change or game build. New candidate native playback and lit actual chamber remain unverified; prior233sample native evidence belongs only to older motion `7e958903`.
+- Scope of this follow-up is documentation/evidence only. Local and assembled documentation checks are required before publication; native build/test is not applicable to these tracked changes. RPT-20261021-01 remains OPEN/AI.

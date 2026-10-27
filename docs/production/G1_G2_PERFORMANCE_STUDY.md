@@ -487,3 +487,91 @@ A wall push must show actual foot/body contact and clearance in the real
 A trial placing the unchanged rotating foot at the glass failed this criterion,
 so it is not adopted. Full-rate, opposing-view motion review precedes adoption.
 Exact finger shape, skin refinements and hair remain later work.
+
+## Source-backed causal routes and support — 2026-10-27T10:30Z
+
+This CPU candidate responds to FB-A12–14: preserve the expressive performance,
+give travel and inversion visible support, and judge the whole routine before
+exact grip, skin and physics. It does not supersede the owner's limited approval
+of earlier poses or establish acceptance of this new motion. The original
+88-second BodyFlow remains an unchanged comparison.
+
+The combined `FullRoutine_CausalityCandidate.npz` is
+`8c1f80263e75631e1f73adb3958992303377c17190cf26fcf4d80bce2aa3cc68`.
+Its assembly receipt binds original BodyFlow `7e958903`, early route `efe47398`,
+S09 support `da471833` and late route `86c297c1`. Recipes and complete hashes
+remain private under `.agent/local/PerformancePlan_20261027/RoutineCausality`,
+with the early route under `FullRigTransfer/RoutineCausality/Trajectory`.
+
+### Reusable method
+
+- **Establish a cause before redirecting travel.** The earlier free-flight
+  Hermite accelerated without contact and is rejected. The replacement begins
+  at the visible pole-release phase,20.25–20.5s, then holds a straight approximate
+  body-center coast to the opposite wall. All95 original bone rotations during
+  the liked22–27.5s phrase remain exact; uniform whole-body translation changes.
+  The center is a surface-weighted visual estimate, not physical mass COM.
+  Meshy's `diagonal_wall_run` supplies the31.8–35.5s overlaps and wall phrase:
+  source0.15→0.28s compresses, then0.28→0.15s reverses into extension. The full
+  original foot surface reaches the3.48m cylinder near32.41s before the contact
+  reaction starts. Coast/reach continues to the actual-rig wrist catch at39.2s.
+- **Solve support on the actual hierarchy.** Direction transfer alone left the
+  actual wrist41.8cm from the pole at46s while the proxy wrist was8.3cm away.
+  The shared44s wrist target is(-0.055,0.084,3.15)m. S09 keeps reachable arm
+  support while the folded knee moves outside the pole, then closes into the
+  original49.5s spiral pose. The bounded47.3–49.5s left-leg phrase uses a45-degree
+  outboard gather and small8-degree tuck; geometry, weights and bone lengths
+  are unchanged. The49.5–59.5s moving spiral from the support candidate remains.
+- **Transport IK guidance continuously.** Re-projecting an elbow plane each
+  frame or independently fading world rotations against a modified parent can
+  flip the arm. The48.5–49.5s release uses a moving wrist target, transported
+  elbow guide, calibrated anatomical frame offsets and local wrist release.
+  The49s forearm/wrist step falls35.68/30.95→12.22/5.30degrees per24Hz frame.
+- **Keep moving donors through late return.** The62–75s route retains the flip,
+  plants actual forefoot skin at68.666–69.016s, then coasts toward a right-wrist
+  catch at73.2s before the body pulls inward. A transported chest-relative elbow
+  guide replaces a rejected100.39-degree elbow flip. Two short moving local-arm
+  connectors reduce isolated69/71s peaks while retaining source endpoint poses
+  and velocities. The source hand is still open: this is wrist-level staging,
+  not a verified gripping hand.
+- **Audit the exported hierarchy, not interpolated world positions.** Rebuild
+  parent-local translations and quaternion rotations for fractional playback.
+  Linear interpolation of world joint positions falsely reported3.39cm of bone
+  shortening. Proper replay retains every saved key and limits early-route
+  local-translation error to0.253µm. Compare visible limb joints against source
+  motion; unweighted IK markers are not equivalent to visible limb snaps.
+
+### Evidence and retained limitations
+
+`FullRoutine_CausalityCandidate.assembly.json` and `FullRoutine_Checks.json`
+record2113 poses/88seconds at24Hz, finite proper matrices, fixed local offsets
+within0.547µm, exact outside-window matrices and exact88→0 endpoint. The changed
+windows are20.25–61.5 and62–75s. All original weighted vertices remain within the
+3.48m side-wall envelope to numerical precision; both review cameras contain
+the sampled mesh, with43.70/83.99px minimum margins. Source geometry, full skin
+weights and original clips remain untouched.
+
+The S09 full-rate triangle screen finds zero **non-hand** pole-overlap frames
+across433 authored frames44–62s, compared with14 in its earlier V2. Dominant skin
+weights classify those regions; this is not perfect anatomical segmentation.
+The failed nearest-clearance route switched sides and jumped17.3cm/frame; it is
+retained as evidence that clearance alone does not make good motion. Late-return
+elbow-flip and wall-overlap trials likewise remain rejected comparisons.
+
+The early-route contact velocity corners at32.458s and39.208s remain deliberate
+impact/catch review points. Faster inherited wrist/toe sections, exact palm and
+finger contact, self-collision, between-frame swept clearance, physical forces,
+corrective shapes, final materials, native chamber playback and owner acceptance
+are not established. Full-rate opposing-view review is required; numerical
+passes and attractive stills do not close those gates. Current work stays
+CPU-only; the earlier native BodyFlow test does not validate this new candidate.
+
+The complete two-view CPU movie is `0eecf848b5f06ad1ce3e4a75e8c58870ce18f36a1d7ff57680c14ef3243bb5ae`.
+A full decode confirms2112 frames/88.000 seconds at24fps with zero dropped/duplicated frames.
+Open `SourceAssets/PerformancePlan_20261027/RoutineCausalityReview/Review.html`;
+chapter buttons jump to departure, inversion and late return. Lead opposing-view
+sample review and independent source-relative join audit found no new isolated
+limb reset. Deliberate support/catch speed changes require full-motion judgment.
+Inherited local wrist94.37deg at44.2917s, wrist48.66deg at48.7083s and toe52.61deg
+at60.2083s remain exact baseline motion and are explicitly deferred; do not
+interpret the structural checks as a complete animation-quality pass.
