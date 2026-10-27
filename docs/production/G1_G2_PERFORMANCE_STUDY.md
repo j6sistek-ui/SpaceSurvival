@@ -450,3 +450,40 @@ No Unreal/Blender/GPU launch, owner-board write or portal restart occurred.
 
 The five pole/five free-flight building-block concepts remain separate deferred
 work. This study improves the current complete performance first.
+
+## Native replay and routine causality — 2026-10-27T09:40Z
+
+The original full-weight BodyFlow motion `7e958903` was exported privately
+and played in Unreal during the owner's short GPU window. The proof map is
+`/Game/SpaceSurvival/Licensed/FullBodyFlowLive_20261027/L_FullFlowLive` in
+`.agent/local/CharacterBatch_20261021/WorkbenchNative/CharacterWorkbench.uproject`,
+not the live station. The animation is 88 seconds and the imported skeleton
+contains 95 original bones plus the import root. Native sampling spans two
+wraps. It does not prove the final skin, textures, clip-specific corrective
+shapes, contact or physics: the neutral export intentionally lacks those
+final presentation layers.
+
+The owner's newest feedback and reference R32 are preserved in
+[DANCE_OWNER_FEEDBACK](DANCE_OWNER_FEEDBACK.md#native-motion-feedback--2026-10-27t0940z).
+The macro-motion defects have two separate causes:
+
+1. Proxy support coordinates are not preserved automatically when the source
+   directions are rebuilt using Vexa's fixed bone lengths. The actual hand can
+   be visibly away from the pole even when the planning proxy is anchored.
+   Evaluate actual rig support through the pull and leg handoff; never fix this
+   by stretching limbs or reshaping the mesh.
+2. Root translation blends can move the body inward before any limb catches.
+   The late return accelerates from about 0.137 to 1.044 m/s over 71.5–73.5s;
+   both wrists are still about 1.03 m radially from the pole at 72.5s. The early
+   free-flight path also nearly stops at the 32.5s source join. These are pelvis
+   measurements, not a physical center-of-mass calculation.
+
+Keep the current 88-second motion and approved 22–27.5s departure untouched
+as comparisons. Isolated CPU candidates under
+`.agent/local/PerformancePlan_20261027/RoutineCausality` address the early
+free-flight redirect, actual-rig inversion support and late reach/catch.
+A wall push must show actual foot/body contact and clearance in the real
+3.48 m chamber radius; a helper marker or root-only repositioning is not proof.
+A trial placing the unchanged rotating foot at the glass failed this criterion,
+so it is not adopted. Full-rate, opposing-view motion review precedes adoption.
+Exact finger shape, skin refinements and hair remain later work.

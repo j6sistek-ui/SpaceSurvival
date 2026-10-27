@@ -348,3 +348,40 @@ Documentation/body gates apply to this four-document follow-up.
 RPT-20261021-01 remains open for whole-flow quality, then contact/skin/physics,
 native playback and owner acceptance. No native/GPU/owner-board operation occurred.
 
+## Native replay and routine feedback — 2026-10-27T09:40Z
+
+- Source motion: `FullRigMotion_BodyFlow.npz`, SHA-256
+  `7e958903d2155b4dc589d9710ed1851c011293dbd2064cfb3971351f194a8b7a`.
+  Native mesh/motion FBX: `cf734f77b339f140300277e06f7f2f26e03edb02ba2768f67f2f66d48a4906fa`.
+- Private workbench/map: `.agent/local/CharacterBatch_20261021/WorkbenchNative/CharacterWorkbench.uproject`,
+  `/Game/SpaceSurvival/Licensed/FullBodyFlowLive_20261027/L_FullFlowLive`.
+  No main station or shipping character adoption.
+- `FullRigTransfer/NativeTransfer/NativeLiveComparison.json` compares 233 native
+  samples spanning two 88-second wraps against the source. Pelvis, head and
+  right-hand position RMS error is 0.166 cm; maximum is 0.466 cm using the
+  explicit source-metres to Unreal-centimetres axis conversion. Half-frame
+  offsets are worse. This is sampled bone-motion parity, not all-surface parity.
+- Import retained 96 bones including the added root. Original source has up
+  to ten skin influences; the workbench is configured for twelve/unlimited.
+  UV warnings remain because this neutral export has no UVs. Original textures,
+  time-indexed corrective shapes and physics were not restored or accepted.
+- CPU all-skin chamber envelope audit covers 2,113 poses at placement
+  `(0,0,850)` cm, radius 348 cm, floor 615 cm and ceiling 1,775 cm.
+  Minimum room clearances are 83.46 cm radial, 327.67 cm below and 525.00 cm above.
+  Pole/skin overlaps remain detected; room containment does not clear pole contact.
+  Evidence: `NativeTransfer/StageEnvelope.json`.
+- The actual observatory map was staged for a later review but was **not shown
+  or visually accepted**. The initial proposed camera was rejected for deck
+  occlusion; replacement sightlines remain a CPU check.
+- Owner feedback: overall greatly improved; unsupported inversion and
+  unmotivated floating returns remain open under RPT-20261021-01.
+  Preserve good sections and fix these connections before exact grip/skin work.
+- The review harness encountered an invalid skeletal component after PIE ended;
+  that shutdown error is retained, not erased. Native review auto-closed at the
+  GPU deadline; no Unreal process remained at the 09:27 UTC check. Subsequent
+  work is CPU-only. A future harness needs an invalid-component guard.
+
+Evidence lives privately under
+`.agent/local/PerformancePlan_20261027/FullRigTransfer/NativeTransfer`;
+the immutable `NativeLiveComparisonSource.json` is the comparison input.
+No C++ build, packaged release or owner acceptance is claimed.

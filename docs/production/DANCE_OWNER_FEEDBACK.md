@@ -24,6 +24,35 @@ source moves, pacing, coordinated transitions, inversion/descent, release and re
 spending more iterations on individual fingers or local skin. Use the current routine first;
 Joy/Astra and the other dancers follow it. A planning proxy is not native rig acceptance.
 
+## Native motion feedback — 2026-10-27T09:40Z
+
+The owner called the current native routine “10x better” and asked to preserve
+its strong sections while touching up a few connections. This is qualified
+whole-flow feedback, not acceptance of contact, deformation or the final scene.
+
+- **FB-A12 — unsupported inversion:** the hands and leg do not appear to hold
+  the pole while entering the upside-down phrase. Establish a visible reach,
+  catch, pull and leg-support handoff before polishing individual fingers.
+- **FB-A13 — unmotivated travel:** some departures and returns look purposeful,
+  while others appear pulled by a tractor beam. The attached recording R32
+  shows travel toward the pole before the reach explains it. A free-flight
+  course change needs a visible contact/impulse; do not merely ease the root
+  back to the pole or disguise that movement with limb motion.
+- **FB-A14 — order reaffirmed:** fix those routine-level connections first;
+  exact grip and skin-weight issues are deferred, not closed. Retain the
+  improved choreography and approved departure rather than restart or
+  simplify the whole routine.
+- The owner still wants the actual lit observatory/chamber presentation.
+  The native review ran in a private neutral motion map, not that chamber.
+  Its limited GPU window ended at 09:25 UTC; continue CPU-only until another
+  window is authorized.
+
+R32 is `C:/Users/j6sis/Downloads/Recording 2026-10-27 052310.mp4`.
+Its 6.933-second recording time is not a routine timestamp. Pose comparison
+suggests the early free-flight/return phrase, but exact alignment is
+**UNCONFIRMED**; retain the original recording and do not invent a time offset.
+All three FB items remain under RPT-20261021-01.
+
 ## Main takeaways
 
 1. **Preserve the dance.** Do not remove difficult motion, simplify a strong
