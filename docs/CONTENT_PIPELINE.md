@@ -1,5 +1,63 @@
 # Phase 1 content pipeline
 
+## MotionBoard local animation planner — October 27
+
+[MotionBoard](../Tools/MotionBoard/README.md) is deployed locally through Docker
+at `http://127.0.0.1:8769`. Preview animated cards, drag clips into eight slots,
+trim them, change duration/reverse and add notes. Save keeps a local board; Export
+writes a JSON proposal with source names, hashes and timing, not a baked animation.
+The **All cards** speeds (¼×, ½×, 1×, 2×) preserve the current card phase and persist
+in this browser; they do not change main playback, slot timing or proposal export.
+
+Per-slot **Playback mode** separates slowing from repetition: **Stretch to duration**
+plays once (legacy default), **Repeat for seconds** fills a chosen timeline length,
+and **Repeat count** calculates total time from trim × count ÷ speed. A 0.5-second
+trim at 1× repeats ten times in five seconds, or twenty times over ten seconds.
+Reverse applies inside each cycle. JSON export includes mode/count/speed, slot
+times and loop boundaries; seams remain hard cuts. These controls pass CPU tests;
+lead browser verification and deployment/reload coordination remain pending.
+
+The 2026-10-27T02:15Z manifest snapshot contains **12 registered libraries / 330 clips**, including
+Meshy, Flips and Tricks, Variety Dance, Ritual Dance and both Sensual Moves packs.
+This supersedes the earlier 59-clip / exported-but-not-packed snapshot; all 72
+priority dance clips are now among the registered libraries. Conversion is still
+partial: unregistered packs and failed checks remain lead-owned work. The private
+discovery audit's 38 candidates are not proof of complete Fab ownership coverage.
+
+Choose local animated GLBs from the browser file picker; files remain local and
+must be reselected after reopening. Direct FBX loading is implemented with CPU
+fixture checks; browser interaction/skin fidelity remain unverified. UASSET packs require a compatible preview export. Source clips use
+their own rigs; this tool neither retargets them nor solves contacts/blends. Models,
+vendor modules, manifest and `state/board.json` are ignored in
+`SourceAssets/MotionBoard`; only tool source is tracked. Docker mounts source/assets
+read-only, state separately writable and publishes only loopback port 8769. Save uses
+atomic replacement and revision conflicts to protect edits from another tab.
+
+Lead browser QA repaired overlay/root-follow/framing/narrow-layout defects; a
+separate port 8770 test state passed trim, duration, reverse, save and JSON export checks.
+Actual gesture drag-and-drop and owner usability remain unconfirmed. 11 JS tests
+and 18 backend tests pass; they do not establish motion quality or every library's
+appearance. [Evidence and limits](validation/2026-10-27-motionboard.md).
+Native game/rig assets, packaged releases and the paused broader dancer repair
+are unchanged. Existing Sequencer compatibility/Undo concerns remain under
+[RPT-20261016-03](KNOWN_ISSUES.md#october16-owner-backlog-paraphrase).
+
+**2026-10-27T02:55Z evidence update:** both loopback backends (8769 and 8770) now
+serve the repeat implementation. Read-only API/disk checks agree on owner items
+at revisions22/23; metadata normalization is separate from those items. The owner
+is actively editing8770, so an older state hash is not a preservation check.
+Repeat-control layout and direct-FBX browser usability still need review.
+The completed import snapshot is **1,304 clips / 22 logical packs**, comprising
+1,285 clips in43 preview GLBs plus19 Meshy clips (about490.5MB). The43 files are
+pack/chunk outputs, not43 owned purchases. Missing/ambiguous sources remain open.
+
+The [G1/G2 performance study](production/G1_G2_PERFORMANCE_STUDY.md) adds an
+80-second CPU planning review at2Hz, with160 frames and a privateReview.html.
+Recorded checks confirm unchanged source hashes, both views fitted, continuous
+section-boundary positions and S04 departure matching its preserved source at
+displayed times. These checks do not establish skin, grip/contact, velocity,
+full-speed performance, seamless looping or native adoption.
+
 ## Saved Sequencer practice and Undo crash — October 26
 
 The private practice map is `/Game/Developers/James/AnimationPractice/L_AnimationPractice`;

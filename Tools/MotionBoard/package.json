@@ -1,0 +1,1 @@
+{"name":"spacesurvival-motion-board","private":true,"type":"module","scripts":{"check":"node --check app.js && node --test model.test.js library.test.js framing.test.js fbx.test.js"}}

@@ -1,5 +1,11 @@
 # Build and run
 
+**MotionBoard local authoring:** with Docker Desktop running, use
+`docker compose -f Tools/MotionBoard/compose.yaml up --build -d`, then open
+`http://127.0.0.1:8769`. The browser planner needs private preview/vendor libraries;
+it does not launch Unreal or create a game build. [Setup, storage and tests](../Tools/MotionBoard/README.md),
+[coverage and verification limits](CONTENT_PIPELINE.md#motionboard-local-animation-planner--october-27).
+
 **Open the new entertainment layout:** In the canonical C-drive project, use the Content Browser to open `/Game/SpaceSurvival/Licensed/EntertainmentObservatory/L_EntertainmentObservatory`. Play in this map uses the First Person template for walking review; it is separate from the normal game's startup level. Ground floor contains the copied crew/performance lounge, the middle is enclosed, and the third floor has the panoramic windows. All construction is editable by actor/folder. Do not rerun its generation recipe over your edits. [Review images and verification](validation/2026-10-23-entertainment-observatory.md); original station/workshop and packaged build remain unchanged.
 
 October23: the active engine is `C:/Program Files/Epic Games/UE_5.8` (5.8.4). The former plugin-only standard folder is archived on D, and launcher records/desktop shortcut were repointed after the owner moved the full engine. No `EpicGames2` compatibility junction is required by current scripts. NVIDIA8.9 plugins live under engine `Plugins/Marketplace`; matching temporary project copies remain local pending separately reviewed cleanup. Pause > Settings > Graphics has Image & Performance, Advanced and Display sections; stage controls and choose Apply, or Back to cancel. [Graphics usage and validation](production/NVIDIA_GRAPHICS_UI.md).

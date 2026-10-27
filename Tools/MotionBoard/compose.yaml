@@ -1,0 +1,43 @@
+services:
+  motionboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8769:8769"
+    environment:
+      MOTION_BOARD_ASSETS: /assets
+      MOTION_BOARD_STATE: /state
+      MOTION_BOARD_CONTAINER: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace/Tools/MotionBoard
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ../../SourceAssets/MotionBoard
+        target: /assets
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ../../SourceAssets/MotionBoard/state
+        target: /state
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    init: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8769/api/info', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

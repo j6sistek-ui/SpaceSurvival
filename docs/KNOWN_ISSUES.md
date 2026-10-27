@@ -2,6 +2,15 @@
 
 **October25 owner-authorized PR consolidation:** The 21 open source PRs are consolidated for merge over main's already-merged PR86. [Review and ClickUp action matrix](validation/2026-10-25-pr-backlog-consolidation.md) maps every PR to retained AI work and James checks. This supersedes historical unmerged/merge-permission wording only; no gameplay, native appearance or performance acceptance is closed. Owner checkout, maps and installed binary are unchanged.
 
+**2026-10-27T02:55Z CPU performance-planning follow-up — RPT-20261021-01, OPEN / lead:**
+The full80-second articulated proxy study now has160 frames at2Hz and a private
+Review.html. Recorded CPU checks preserve source hashes, fit both camera views,
+keep section positions continuous and reproduce accepted S04 departure samples
+exactly at displayed times. The study restores varied source phrases for review;
+it does not replace the native routine or prove skin, hands/contact, full-speed
+transitions or looping. **Next:** owner phrase/pacing review, then separately
+authorized character/contact implementation. [Plan and limits](production/G1_G2_PERFORMANCE_STUDY.md).
+
 **October25 dancer feedback and new choreography — RPT-20261021-01: FAILED OWNER MOTION REVIEW / lead active.** James tried Vexa: G1/G2 and B1/B2 look much worse than generation and cannot grip the pole. Earlier finite-pose/source checks do not establish motion fidelity or contacts. Inspect source-to-F3 transfer and runtime behavior, repair contact/joins and review continuous cycles on multiple dancers before owner retest. The owner also authorizes 4–5 slow, calculated/artistic zero-G segments combining the newly installed Hammerhead Flips and Tricks pack in AFS with the prior zero-G clips. Require multiple tested orders/loops, vertical and horizontal travel within the existing Observatory chamber, multi-angle motion and two-dancer separation. Preserve source clips and owner edits. [Contact repair](https://app.clickup.com/t/86bcpw7dy), [new routine](https://app.clickup.com/t/86bcqyvca), [later owner review](https://app.clickup.com/t/86bcqyvcb). No repaired choreography or AAA-quality acceptance is claimed.
 
 **October25 diagnosis-only follow-up (RPT-20261015-01 / RPT-20261020-06): OPEN / lead; repairs held by owner.** Owner reports D-pad Story stopping at the stool invitation/teaser, Joy hunching through the bar, stationary pour props despite body motion, Astra not moving and sparse NPCs. Source confirms Story has one authored line/gesture and no continuation; a separately logged spoken request received a short generated answer, which does not validate D-pad Story. Retained October24 normal-PIE log reports50 hidden characters under the earlier performance trim; unattended/automation reviews skip that trim. Joy contact/prop and Astra inactivity causes and regression timing remain UNCONFIRMED; logs lack their pose/socket/service-state history. Astra's authored waitress label is a trim exception. The precise owner session is not confirmed. Earlier scripted passes are historical, not current acceptance. Next lead action after repair authorization: inspect actual Joy sockets/prop motion and counter clearance, and Astra service/navigation state in ordinary Play. No Unreal launch or game changes. [Diagnostic evidence](validation/2026-10-25-bar-play-diagnosis.md).
@@ -227,6 +236,46 @@ Owner supplied this list without a fixed order. Lead owns implementation and ver
 - **RPT-20261016-01 — Figma key map and prompt readability: OPEN / lead.** Locate the owner's updated frames and reconcile actual KBM/controller actions with existing kit glyphs. Next: one small live prompt comparison; acceptance requires correct bindings, readable scales and device switching, preserving the approved menu.
 - **RPT-20261016-02 — Drunk bar patrons and one always passed out: OPEN / lead.** Inventory owned drunk/idle/recovery clips and choose suitable patrons/locations. Verify coherent loops, interactions and clear paths; exact patron choices remain open. Existing staff shots do not implement intoxication.
 - **RPT-20261016-03 — Interaction inventory and simple animation sequencing: OPEN / lead.** Reconcile the existing animation inventory and show one useful sequence with simple click-by-click authoring steps. Verify compatible rigs, prop contacts, transitions and interruption; do not claim all clips tested.
+
+  **2026-10-27T02:55Z deployment and coverage update:** the repeat backend is deployed
+  on8769/8770. Read-only served/disk revisions22/23 retain identical owner items;
+  normalized library metadata explains the nonidentical whole response on8770.
+  The owner continues editing; no claim is made that an older board hash is unchanged.
+  Lead's final import snapshot contains1304 clips in22 logical packs (43 preview
+  GLBs contain1285 clips, plus19 Meshy; about490.5MB). Source guards cover1307
+  unchanged originals and6345 pose probes within0.235mm; this is export evidence,
+  not all-clip visual acceptance. **Next — lead:** repeat/FBX browser usability and
+  actual drag gesture, source-time offsets and remaining Flight/AFS glider-zombie,
+  large Paragon weapon, ambiguous FBX and seven unlocated-title coverage.
+  **Owner:** rough-order workflow acceptance remains open. [Evidence](validation/2026-10-27-motionboard.md).
+
+  **October27 repeat/FBX follow-up (2026-10-27T02:35Z):** independent slot stretch,
+  repeat-for-seconds and repeat-count controls are implemented; a 0.5-second source
+  repeats ten times in five seconds at1×. Old boards keep legacy behavior and exact
+  trims; reverse/partial cycles and loop boundaries survive save/export. 22 JS and
+  20 isolated backend tests pass. Actual private FBX fixtures parse, but the loader
+  reduces influences beyond four; this is not a rig-quality claim. **Next — lead:**
+  coordinate backend restart/page reload around the owner's current8770 session,
+  verify repeat controls/FBX in browser, and continue library coverage. Existing
+  Dance6 end10.9333 versus newer export10.9 is preserved with a last-frame-hold hint;
+  source-time offset reconciliation remains open. **Owner:** usability acceptance
+  remains open. No running server, owner board or native animation changed by this pass.
+
+  **October27 MotionBoard — partial, lead (2026-10-27T02:15Z snapshot):** the requested
+  browser planner is deployed at `http://127.0.0.1:8769` with animated cards,
+  eight slots, trims/duration/reverse, saved boards and JSON proposal export.
+  [Launch/use](../Tools/MotionBoard/README.md). The manifest registers 12 libraries /
+  330 clips, including all 72 priority dance exports; broader conversion remains
+  incomplete, with failed checks retained for retry. Lead repaired overlay,
+  root-follow, framing and narrow-layout defects; separate port 8770 browser QA passed
+  trim/duration/reverse/save/export, and 11 JS/18 backend tests pass. Global card-only
+  speeds persist without changing sequence timing. **Next — lead:** verify actual
+  gesture drag/drop, finish direct FBX validation and resolve remaining library
+  conversion failures. **Next — owner:** try previewing and arranging a few moves;
+  usability and motion-quality acceptance remain open. JSON proposals do not author
+  native choreography or repair rigs. Existing Sequencer picker/Undo limitations
+  and paused broader dance repair remain open. [Evidence](validation/2026-10-27-motionboard.md).
+
   **October26 practice setup, updated October27 — partial, lead:** the reopened
   `L_AnimationPractice` / `Animation_Test` now uses owner-requested Quinn and the
   exact-compatible VarietyDance `AS_PartyDance3` instead of Nyxar's starter walk.
