@@ -167,3 +167,23 @@ preview is retained separately. No owner-board writes, portal restart, native
 asset edits, GPU launch or host installation occurred. Browser refresh is needed
 for already loaded preview bytes. Native/target/artistic and owner acceptance
 remain OPEN; current S09 study is unchanged by this repair. No native build applies.
+
+## Source screening and catch follow-up — 2026-10-27T06:38Z
+
+The corrected preview data provides five bounded screening leads for the existing routine. These are source-relative seconds, not added performance sections; no excerpt has been adopted.
+
+| Pack / clip | Source excerpt | Potential use |
+| --- | --- | --- |
+| Goddess / Sensual Goddess 13 (Slow) | 18.0–21.2s | Fold, recover and reorient with unequal knee recovery |
+| Pro Club Girl / AD Pro Club Girl 8 | 18.0–21.2s | Coordinated knee exchange and arm sweep |
+| Sensual Dancer / Exotic Dancer 14 | 17.2–20.4s | Torso unfold, asymmetric reach and turn |
+| Goddess / Sensual Goddess 7 (Slow) | 10.0–13.2s | Alternate gather and release connector |
+| Sensual Dancer / Exotic Dancer 17 | 15.6–18.8s | Alternate gather, reach, turn and fold |
+
+Private `ShortlistAfterCorrection.md` and its JSON under `.agent/local/OwnedDancePacks_20261027` retain exact source/native hashes and five metric beats per excerpt. All five FBX/native identities were freshly checked. The 5Hz joint screen does not establish visual fluidity, continuous timing, support or zero-G suitability. Review each coordinated phrase before adapting it; grounded dancer routines remain later scope.
+
+A separate CPU inspection of the inherited S08 catch distinguishes an inaccurate composite hand capsule from a real defect. The wrist-to-middle_03 segment spans articulated joints and is too broad to represent the whole hand. Nevertheless, a sampled thumb_03 joint centre lies inside the pole cylinder; removing that composite alarm would hide real contact trouble. One bounded outward wrist-placement trial retains torso/leg positions and original hand shape while clearing the tested articulated hand proxies, but its contact gap is too large to establish a supported hold. It is not adopted. Joint/capsule checks still do not prove actual skin clearance or a valid palm/finger grip.
+
+The separate clock-only trial retains the Dance6 interval and endpoints. It cannot by itself repair the stage-yaw speed change at38s or the earlier change from a moving twist donor to a frozen-endpoint fade. Discrete source-key corners and finite-difference precision must be distinguished from introduced timing discontinuities. No static pose substitution, source geometry change or new native animation was accepted from these studies.
+
+Private evidence: `.agent/local/PerformancePlan_20261027/S09Replacement/Entry43Assessment/HandChainReview.json`, `SmoothHandOffsetReview.json` and `TimingStudy/`. Current full-performance movie, native assets, source clips and owner boards remain unchanged. RPT-20261021-01 remains open; no GPU, Unreal or Blender launch occurred. Source/core/documentation CI passed on PR97 head3c2726c520294f190d2363862c781857c5e25b1d; that is tool/document evidence, not performance acceptance.
