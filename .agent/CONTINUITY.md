@@ -1,5 +1,8 @@
 # SpaceSurvival continuity
 
+- 2026-10-27T13:10Z [USER] Supersedes neutral review with corrected AFS joined body/clothing/chain rig, skin/hair; omit leather gun holster, jiggle+20%. [TOOL] Separate editable FullVexaChamber_20261027/L_FullVexaChamber plays88s on97AFS bones+root; native skin/hair/outfit restored, no holster.6,027 skin vertices get bounded repaired-weight blend;99767geometry/UV and garment/chain weights unchanged. Native37sample input/render comparison shows active four-bone springs (pelvis<.004cm, chest≤4.20/glute≤7.74cm). Config enables unlimited influences/virtual textures; copied dependencies on C, AFS untouched. [PLANS] Owner targeted review next; donor morph correctives, chain secondary motion and full-cycle/artistic/contact acceptance remain open. New edit/game shortcuts and updated continuation prompt; owned Unreal closed. Broader backlog held.
+
+
 - 2026-10-27T11:16Z [USER] Authorizes a bounded20-minute chamber delivery/touch-up pass then another-chat handoff. [TOOL] Current88s e2afa234 (only7.65-8.5s connector changed from8c1f8026) now plays in canonical separate RoutineChamberReview_20261027_Final/L_RoutineChamberReview, cloned from actual observatory;96 imported bones/full influences and opposing inversion captures. Local Review in Game.cmd enables unlimited influences; neutral draft lacks original textures/UVs/correctives. [PLANS] Owner timestamped native feedback next; pole cuts/closing support, exact grips/appearance/physics remain RPT21-01 OPEN. CONTINUE_IN_NEW_CHAT.txt beside launcher preserves exact sources/method/limits. Broader work remains held; original station/source unchanged.
 
 
