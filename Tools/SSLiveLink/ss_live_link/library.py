@@ -422,9 +422,39 @@ class SSPartItem(bpy.types.PropertyGroup):
     in_game: BoolProperty()       # the game's C++ loads this mesh by name: fixing it changes what a player sees
 
 
+def auto_refresh_marker():
+    root = core.project_root()
+    if root and (root / 'SpaceSurvival.uproject').is_file():
+        return root / 'Artifacts/PrefabLibrary/auto-refresh.enabled'
+    return None
+
+
+def get_auto_refresh(self):
+    # The project flag is authoritative across scenes. Old .blend files stored True;
+    # opening one must not silently resume expensive exports in another application.
+    marker = auto_refresh_marker()
+    return marker.exists() if marker else bool(self.get('_auto_refresh_library', False))
+
+
+def set_auto_refresh(self, enabled):
+    marker = auto_refresh_marker()
+    if marker is None:
+        self['_auto_refresh_library'] = bool(enabled)
+        return
+    try:
+        if enabled:
+            marker.parent.mkdir(parents=True, exist_ok=True)
+            marker.touch()
+        else:
+            marker.unlink(missing_ok=True)
+    except OSError as exc:
+        self.status = f'Cannot change library auto-refresh: {exc}'
+
+
 class SSLinkState(bpy.types.PropertyGroup):
-    auto_refresh_library: BoolProperty(name='Auto-refresh library', default=True,
-                                      description='Detect saved Unreal mesh changes and refresh the local browser; offline copies refresh by Import Library')
+    auto_refresh_library: BoolProperty(name='Auto-refresh library', default=False,
+                                      get=get_auto_refresh, set=set_auto_refresh,
+                                      description='Opt in to saved Unreal mesh scans and local browser updates; leave off for manual refresh')
     parts: CollectionProperty(type=SSPartItem)
     part_index: IntProperty(default=0, update=index_changed)
     part_pick: EnumProperty(name='Part', items=pick_items, update=pick_changed)

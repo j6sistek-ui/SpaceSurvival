@@ -37,12 +37,6 @@ def watch_catalog():
         if lib is None or not (lib / 'catalog.json').is_file():
             return 5.0
         enabled = bpy.context.scene.ss_link.auto_refresh_library
-        if (core.project_root() / 'SpaceSurvival.uproject').exists():
-            marker = lib / 'auto-refresh.enabled'
-            if enabled and not marker.exists():
-                marker.touch()
-            elif not enabled and marker.exists():
-                marker.unlink()
         if not enabled or _job['process'] is not None:
             return 5.0
         digest = catalog_digest()

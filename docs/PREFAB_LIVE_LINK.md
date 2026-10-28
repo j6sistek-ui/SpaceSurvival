@@ -8,7 +8,12 @@ apply it back.
 This page is written for the person using the tools. Button names are in **bold** exactly as they appear.
 The last sections (pieces, transport, tests) are for whoever maintains them.
 
-## Current station workflow (SS Link 0.5.0)
+## Current station workflow (SS Link 0.5.1)
+
+**October28 update:** the desktop library contains3,857 static meshes, including1,056 Building
+pieces. Library auto-refresh is off; use the manual controls below. The verified geometry/layout
+package is on D; see [package identity and coverage](validation/2026-10-28-sslink-portable-library.md).
+The October6 counts and paths below describe the earlier working-scene snapshot.
 
 Use the canonical `C:/Users/j6sis/SpaceSurvival` project for both gameplay and authoring.
 **Edit Current Station.cmd** opens `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`.
@@ -33,8 +38,9 @@ Blueprint; they are not the Wayfarer editing path. The Wayfarer scene hides thos
 The full station is loaded in Blender and saved as
 `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`: 12,315 placements,
 including the apartment, with the previous Blender scene retained. The large asset
-browser is open with all 2,825 static meshes. SS Link 0.5.0 is installed and library
-auto-refresh is enabled; Live placement synchronization remains off.
+browser was open with all2,825 static meshes. SS Link0.5.0 and library auto-refresh were enabled
+in that October6 snapshot; the October28 opt-in setting supersedes this. Live placement
+synchronization remains off.
 For the laptop, use
 `Artifacts/BuildingSandbox/SpaceSurvival-Library-0.5.0-20261006-final.zip`.
 It contains the current addon and the full prepared mesh library. Copy the working
@@ -96,11 +102,20 @@ Save your arrangement as `.blend` and open that file on the desktop: placed mesh
 references travel together. Opening it does not push changes into Unreal; use the existing explicit
 Push/Apply commands. Keep Live off until you want synchronization.
 
-**Auto-refresh Library** enables saved-mesh scanning in the desktop Unreal editor, about every
+**Manual refresh is the default.** In Blender use **Load Catalogue** to re-read the cached list and
+**Prepare Large Library** to update the pop-out browser from cached geometry. To include new or
+changed Unreal meshes, first use Unreal's **SS Prefabs > Rebuild Catalogue (with Blender proxies)**,
+then those Blender buttons. These manual operations do not enable automatic scanning.
+
+To opt in later: Blender **N > SS Link > Parts library > Auto-refresh library**. This enables
+saved-mesh scanning in the desktop Unreal editor, about every
 30 seconds while outside Play. It processes one catalog entry per editor tick, then Blender notices
 the catalog change and rebuilds only changed native asset files. An individual large mesh export can
-still briefly stall the editor. Turning the checkbox off disables subsequent scans. Unreal must be
-restarted after the Python update; Blender must remain open to pick up changes. Laptop libraries are
+still briefly stall the editor. Turning the checkbox off disables subsequent scans immediately.
+The checkbox reflects a shared project flag, rather than the value saved in an old .blend file;
+opening an old scene cannot silently enable exports. Closing Blender leaves an explicitly enabled
+flag enabled; uncheck it when finished. Push/Pull/Send and the separate **Live** placement control
+are unchanged. Blender must remain open to pick up catalog changes. Laptop libraries are
 offline snapshots: refresh them with Export/Import. Dependency-only texture/material edits are not
 detected by mesh timestamps; rebuild with forced thumbnails when those previews need updating.
 
@@ -108,7 +123,8 @@ The October21 callback guard prevents export work that pumps Slate from re-enter
 the active generator and repeatedly restarting the library pass. Disable/re-enable
 clears the interrupted scan state. A genuine export error still backs off60seconds.
 Four focused regressions pass; full-library responsiveness remains an owner retest
-under RPT-20261020-13. The update does not toggle the checkbox or existing marker.
+under RPT-20261020-13. The October28 opt-in change additionally removes the active desktop marker;
+the guard itself remains unchanged. The editor already observes the flag and needs no restart.
 
 ### Per-object materials
 

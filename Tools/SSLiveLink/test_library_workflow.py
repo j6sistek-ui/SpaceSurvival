@@ -40,6 +40,33 @@ row = {'asset': '/Game/Test/Wall.Wall', 'name': 'Wall', 'pack': 'Test', 'group':
        'origin': [0, 0, 0], 'extent': [100, 100, 100], 'triangles': 12}
 (lib / 'catalog.json').write_text(json.dumps({'meshes': [row]}))
 sl.core.load_catalog(force=True)
+# Auto-refresh is explicit project state, not a saved scene's historical True.
+state = bpy.context.scene.ss_link
+state['auto_refresh_library'] = True
+assert not state.auto_refresh_library, 'legacy scene silently enabled portable refresh'
+project = root / 'SpaceSurvival.uproject'
+project.touch()
+marker = lib / 'auto-refresh.enabled'
+assert not state.auto_refresh_library, 'legacy scene silently enabled Unreal exports'
+state.auto_refresh_library = True
+assert marker.is_file() and state.auto_refresh_library
+other_scene = bpy.data.scenes.new('OtherRefreshScene')
+assert other_scene.ss_link.auto_refresh_library, 'project toggle was not shared between scenes'
+other_scene.ss_link.auto_refresh_library = False
+assert not marker.exists() and not state.auto_refresh_library
+old_digest = sl.popout.catalog_digest
+digest_calls = []
+sl.popout.catalog_digest = lambda: digest_calls.append(True)
+assert sl.popout.watch_catalog() == 5.0
+assert not digest_calls and sl.popout._job['process'] is None, 'disabled watcher inspected or rebuilt the library'
+assert not marker.exists(), 'watcher restored a flag from an old scene'
+sl.popout.catalog_digest = old_digest
+project.unlink()
+state.auto_refresh_library = True
+assert state.auto_refresh_library and not marker.exists(), 'offline toggle wrote an Unreal flag'
+state.auto_refresh_library = False
+assert not state.auto_refresh_library
+print('SS_LIBRARY_AUTO_REFRESH_OK: default off, legacy scene ignored, explicit toggle, shared project state, idle watcher, offline isolation')
 first = sl.core.add_part(row['asset'], name='A_Wall')
 second = sl.core.add_part(row['asset'], name='B_Wall')
 values = {'base_color': [0.2, 0.5, 0.8], 'metallic': 1.0, 'roughness': 0.02,
