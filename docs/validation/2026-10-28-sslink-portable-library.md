@@ -81,3 +81,28 @@ Open: the ZIP and guide above. Check: install on the actual other computer,
 browse/place a building part, then save/reopen the layout. Still open:
 second-machine installation, interactive drag/drop and owner layout acceptance
 under RPT-20261028-01; no game-performance or textured-material acceptance.
+
+## Manual refresh update
+
+At22:20UTC the owner requests automatic library work off and manual refresh as the normal workflow.
+The desktop auto-refresh.enabled flag is removed; the existing editor callback observes that flag
+without an editor restart. No new Unreal process, native catalog rebuild or asset export is run.
+The other chat's editor is left alone.
+
+SS Link0.5.1 makes the explicit shared project flag authoritative for its checkbox. Historical
+saved-scene True values no longer recreate it. Offline libraries default off and cannot set the
+Unreal project flag. Manual Load Catalogue reads cached rows; Prepare Large Library builds the
+native Blender browser from cached proxies. A fresh Unreal mesh export still requires the explicit
+SS Prefabs > Rebuild Catalogue (with Blender proxies) menu. Push/Pull/Send and Live are unchanged.
+
+Verification: hidden isolated Blender5.2.2 test_library_workflow.py exits0; default-off, legacy
+scene state, explicit toggles, shared project state, disabled-watcher inactivity and offline
+isolation pass alongside existing asset/package tests. Tests/TestCatalogRefresh.py passes4cases;
+Python compilation, scoped whitespace check and CheckPrDocumentation pass. No C++ changed, so
+native build and C++ formatting do not apply. Actual UI use and performance remain owner pending.
+
+Only the changed installed Blender5.2 addon files are replaced, with originals preserved in
+D:/Codex/SpaceSurvivalLink_20261028/AutoRefreshBackup. Source/installed file hashes match for those
+files, and the canonical enable flag remains absent. The earlier4.67GB package is immutable and
+contains0.5.0; SpaceSurvival-Link-0.5.1-AddonOnly.zip beside it is a small optional addon update,
+with no geometry payload. No saved Blender scene or user preference is overwritten.
