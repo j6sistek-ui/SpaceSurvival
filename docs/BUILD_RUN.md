@@ -269,6 +269,12 @@ In editor Python, `unreal.Rotator` positional order is (roll, pitch, yaw); pass 
 Added 2026-09-17. [PREFAB_LIVE_LINK.md](PREFAB_LIVE_LINK.md) describes the prefab library, the **SS Prefabs** editor menu and the Blender add-on; these are its headless entry points. Everything generated lands under `Artifacts/PrefabLibrary` or `Artifacts/VaultImport` (git-ignored). Imported listings are licensed content and stay out of git; see the `ImportVaultGlb.py` note below for its historical and current import locations, both git-ignored. Prefab recipes are tracked as `Prefabs/<Category>/<Name>.json`; none exist yet. The add-on under `Tools/SSLiveLink` is a package (`ss_live_link/`, v0.4.0) with Types, Send to Unreal, Edit Mesh and Open Scene / Apply; that document is its owner-facing guide, and says what was and was not tested. Install it with `Tools/SSLiveLink/Install Blender Add-on.cmd` (double-click; it runs `install.py` in every Blender under Program Files), then restart Blender; restart the Unreal editor once as well, because `bRemoteExecution` and `Content/Python/init_unreal.py` are read only at start-up.
 
 SS Link v0.4.0 adds **Pop Out Library**, **Prepare Large Library**, **Export Library** and **Import Library**.
+Current v0.5.2 adds **Rescan & Download Library** in Blender's Parts library: with the matching
+Unreal project open outside Play, one request exports installed meshes, prepares local Blender
+assets and refreshes the browser without enabling automatic scans. It does not fetch Fab packs
+or save levels. Cached-list/preparation controls remain available for offline work.
+Focused checks: `python Tests/TestCatalogRefresh.py` and isolated background Blender
+`Tools/SSLiveLink/test_library_sync.py` cover manual export, real preparation and project isolation.
 The native browser is prepared from actual GLB meshes into `Artifacts/PrefabLibrary/BlenderAssets`;
 a laptop needs Blender 5.2 and the exported private ZIP, not Unreal. Export checks for a current prepared
 catalog and free disk space; incomplete archives stay temporary and are removed on failure. Import
