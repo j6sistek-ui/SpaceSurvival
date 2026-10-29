@@ -91,6 +91,7 @@ class SSLINK_PT_panel(bpy.types.Panel):
         box.label(text=st.status)
         box = lay.box()
         box.label(text='Parts library', icon='ASSET_MANAGER')
+        box.operator('ss_link.sync_library', icon='FILE_REFRESH')
         box.operator('ss_link.popout_library', icon='WINDOW')
         box.operator('ss_link.prepare_library', icon='FILE_REFRESH')
         box.prop(st, 'auto_refresh_library')
