@@ -58,6 +58,26 @@ public:
      *  authority is reduced. The passage owns Begin/End, with phase changes and Duration as cleanup guards. */
     bool BeginWormholeTransit(FVector Forward, float Duration);
     void EndWormholeTransit();
+    bool IsInWaveCorridor() const
+    {
+        return bWaveCorridor;
+    }
+    /** Shared route for movement, encounter placement and the chase camera. */
+    FQuat GetFlightRouteFrame() const
+    {
+        return bWaveCorridor ? WaveRouteFrame : GetActorQuat();
+    }
+    FVector GetFlightRouteCenter() const;
+    FVector2D GetWaveCorridorHalfExtents() const;
+    /** Reserved before scenery is populated, and retained through station visits. */
+    FQuat GetReservedWaveRouteFrame() const
+    {
+        return bHasWaveRoute ? WaveRouteFrame : GetActorForwardVector().Rotation().Quaternion();
+    }
+    FVector GetReservedWaveRouteOrigin() const
+    {
+        return bHasWaveRoute ? WaveRouteOrigin : GetActorLocation();
+    }
     bool IsInWormholeTransit() const
     {
         return WormholeDuration > 0.f;
@@ -65,7 +85,7 @@ public:
     /** Camera-only input: never feeds steering, thrust or the flight body's transform. */
     void SetFreeLookInput(FVector2D Input)
     {
-        FreeLookInput = IsInWormholeTransit() ? FVector2D::ZeroVector : Input.GetClampedToMaxSize(1.f);
+        FreeLookInput = IsInWormholeTransit() || bWaveCorridor ? FVector2D::ZeroVector : Input.GetClampedToMaxSize(1.f);
     }
     /** Ordinary engine command, 0 = coast and 1 = full normal power; boost remains separate. */
     float GetThrottle() const
@@ -155,15 +175,25 @@ public:
 
 private:
     bool bBoardedPilot = false;
+    bool bWaveCorridor = false;
+    bool bHasWaveRoute = false, bAcquiringWaveRoute = false;
+    FVector WaveRouteOrigin = FVector::ZeroVector;
+    FQuat WaveRouteFrame = FQuat::Identity;
+    void UpdateWaveCorridor();
+    void ConstrainWaveCorridor();
+    FVector2D WaveDriftInput() const;
     bool bPilotFigureHidden = false;
     float WormholeDuration = 0.f, WormholeElapsed = 0.f, WormholeExitSpeed = 0.f;
     FVector WormholeOrigin = FVector::ZeroVector, WormholeForward = FVector::ForwardVector;
     FVector WormholeRight = FVector::RightVector, WormholeUp = FVector::UpVector;
     FVector2D WormholeInput = FVector2D::ZeroVector;
     float BumperHeldSeconds = 0.f, EvadeSeconds = 0.f, EvadeSide = 0.f;
+    float RollTapSeconds = 0.f, RollTapBank = 0.f, RollReturnBank = 0.f;
     bool bLevelAfterEvade = false;
     FVector EvadeVelocity = FVector::ZeroVector;
     float RollCommandDegrees() const;
+    FQuat FlightControlFrame() const;
+    float FlightBankDegrees() const;
 
     friend class FSSDirectorAsteroidReadability;
     friend class FSSDirectorTrajectoryFairness;

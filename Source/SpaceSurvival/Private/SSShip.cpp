@@ -137,6 +137,87 @@ FVector ASSShip::GyroInputFor(FVector2D Steer, float Turn)
     const float Lean = -FMath::Clamp(Steer.X, -1.f, 1.f) * .35f * Turn;
     return FVector(Lean, Pitch, Yaw);
 }
+FVector2D ASSShip::GetWaveCorridorHalfExtents() const
+{
+    return FVector2D(Tuning ? FMath::Max(2000.f, Tuning->WaveCorridorHalfWidth) : 6000.f,
+                     Tuning ? FMath::Max(2000.f, Tuning->WaveCorridorHalfHeight) : 4000.f);
+}
+
+FVector ASSShip::GetFlightRouteCenter() const
+{
+    if (!bWaveCorridor)
+        return GetActorLocation();
+    const FVector Forward = WaveRouteFrame.GetForwardVector();
+    return WaveRouteOrigin + Forward * FVector::DotProduct(GetActorLocation() - WaveRouteOrigin, Forward);
+}
+
+FVector2D ASSShip::WaveDriftInput() const
+{
+    return (Steer + StrafeInput).GetClampedToMaxSize(1.f);
+}
+
+void ASSShip::UpdateWaveCorridor()
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    const auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    const bool bTravelPhase =
+        GI && (GI->Session.run.phase == SS::Phase::Flight || GI->Session.run.phase == SS::Phase::Breathing ||
+               GI->Session.run.phase == SS::Phase::Climax);
+    const bool bEnabled = bTravelPhase && GI->Session.run.active && !GI->IsFreeFlight() && !Moored && !Docking &&
+                          !TakingOff && !IsInWormholeTransit() &&
+                          !(GM && (GM->IsDepartingStation() || GM->IsInStationZone()));
+    if (bEnabled == bWaveCorridor)
+        return;
+    bWaveCorridor = bEnabled;
+    if (bEnabled)
+    {
+        // Reserve at spawn before scenery is generated, and retain the same route
+        // across breathing, wormhole and station breaks. Test worlds may not BeginPlay.
+        if (!bHasWaveRoute)
+        {
+            WaveRouteOrigin = GetActorLocation();
+            WaveRouteFrame = GetActorForwardVector().Rotation().Quaternion();
+            bHasWaveRoute = true;
+        }
+        const FVector Offset = WaveRouteFrame.UnrotateVector(GetActorLocation() - WaveRouteOrigin);
+        const FVector2D Limits = GetWaveCorridorHalfExtents();
+        bAcquiringWaveRoute = FMath::Abs(Offset.Y) > Limits.X || FMath::Abs(Offset.Z) > Limits.Y;
+        FreeLookInput = FreeLookAngles = FVector2D::ZeroVector;
+        CameraBoom->SetRelativeRotation(BaseCameraBoomRotation);
+    }
+    CastChecked<USSChaseCameraArm>(CameraBoom)->SetRouteFrame(bEnabled, WaveRouteFrame);
+}
+
+void ASSShip::ConstrainWaveCorridor()
+{
+    if (!bWaveCorridor)
+        return;
+    const FVector2D Limits = GetWaveCorridorHalfExtents();
+    const FVector Local = WaveRouteFrame.UnrotateVector(GetActorLocation() - WaveRouteOrigin);
+    const FVector Bounded(Local.X, FMath::Clamp(Local.Y, -Limits.X, Limits.X),
+                          FMath::Clamp(Local.Z, -Limits.Y, Limits.Y));
+    if (bAcquiringWaveRoute && Local.Equals(Bounded, .01f))
+        bAcquiringWaveRoute = false;
+    if (!bAcquiringWaveRoute && !Local.Equals(Bounded, .01f))
+    {
+        // A collision impulse can exceed the braking margin. Recover with a sweep, so
+        // the corridor never teleports the hull through an authored obstacle.
+        SetActorLocation(WaveRouteOrigin + WaveRouteFrame.RotateVector(Bounded), true, nullptr,
+                         ETeleportType::TeleportPhysics);
+    }
+    FVector LocalVelocity = WaveRouteFrame.UnrotateVector(GetVelocity());
+    LocalVelocity.X = FMath::Max(0., LocalVelocity.X);
+    if (!bAcquiringWaveRoute &&
+        ((Local.Y >= Limits.X && LocalVelocity.Y > 0) || (Local.Y <= -Limits.X && LocalVelocity.Y < 0)))
+        LocalVelocity.Y = 0;
+    if (!bAcquiringWaveRoute &&
+        ((Local.Z >= Limits.Y && LocalVelocity.Z > 0) || (Local.Z <= -Limits.Y && LocalVelocity.Z < 0)))
+        LocalVelocity.Z = 0;
+    Velocity = WaveRouteFrame.RotateVector(LocalVelocity);
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        Collision->SetPhysicsLinearVelocity(Velocity);
+}
+
 FVector ASSShip::FlightVelocityTarget(float Speed, float Maneuver, const FVector &CurrentVelocity) const
 {
     if (IsInWormholeTransit())
@@ -148,21 +229,54 @@ FVector ASSShip::FlightVelocityTarget(float Speed, float Maneuver, const FVector
         const FVector Across = FVector::VectorPlaneProject(GetActorLocation() - WormholeOrigin, WormholeForward);
         return WormholeForward * WormholeTransitSpeed + ((Offset - Across) * 5.f).GetClampedToMaxSize(600.f);
     }
+    if (bWaveCorridor)
+    {
+        const FVector2D Input = WaveDriftInput();
+        const FVector2D Limits = GetWaveCorridorHalfExtents();
+        const FVector Offset = WaveRouteFrame.UnrotateVector(GetActorLocation() - WaveRouteOrigin);
+        if (bAcquiringWaveRoute)
+        {
+            // Leaving a station sideways joins its reserved route smoothly, never
+            // snapping a distant hull to the boundary or changing the prescribed heading.
+            const double Right = FMath::Clamp((FMath::Clamp(Offset.Y, -Limits.X * .95, Limits.X * .95) - Offset.Y) * 2.,
+                                              -double(Maneuver), double(Maneuver));
+            const double Up = FMath::Clamp((FMath::Clamp(Offset.Z, -Limits.Y * .95, Limits.Y * .95) - Offset.Z) * 2.,
+                                           -double(Maneuver), double(Maneuver));
+            return WaveRouteFrame.RotateVector(FVector(Speed, Right, Up));
+        }
+        const FVector Evade = WaveRouteFrame.UnrotateVector(EvadeVelocity) * FMath::Clamp(EvadeSeconds / .2f, 0.f, 1.f);
+        // Fade lateral speed near the edge. Released input damps lateral momentum
+        // without dragging the pilot back to the centre or changing the route.
+        const auto ResistOutward = [](double Command, double Position, double Limit)
+        {
+            if (Command * Position <= 0.)
+                return Command;
+            const double Edge = FMath::Clamp((FMath::Abs(Position) / Limit - .6) / .4, 0., 1.);
+            return Command * (1. - Edge * Edge * (3. - 2. * Edge));
+        };
+        const double Right =
+            FMath::Clamp(ResistOutward(Input.X * Maneuver + Evade.Y, Offset.Y, Limits.X),
+                         FMath::Min(0., (-Limits.X - Offset.Y) * 5.), FMath::Max(0., (Limits.X - Offset.Y) * 5.));
+        const double Up =
+            FMath::Clamp(ResistOutward(Input.Y * Maneuver + Evade.Z, Offset.Z, Limits.Y),
+                         FMath::Min(0., (-Limits.Y - Offset.Z) * 5.), FMath::Max(0., (Limits.Y - Offset.Z) * 5.));
+        return WaveRouteFrame.RotateVector(FVector(Speed, Right, Up));
+    }
     if (DrivePresentationBraking)
         return FVector::ZeroVector;
+    const FQuat ControlFrame = FlightControlFrame();
+    const FVector Right = ControlFrame.GetRightVector();
+    const FVector Up = ControlFrame.GetUpVector();
     if (ThrottleInput > .01f || DrivePresentationBoosting)
-        return GetActorForwardVector() * Speed +
-               (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * Maneuver +
+        return GetActorForwardVector() * Speed + (Right * StrafeInput.X + Up * StrafeInput.Y) * Maneuver +
                EvadeVelocity * FMath::Clamp(EvadeSeconds / .2f, 0.f, 1.f);
     // Engine off preserves world-space momentum even while the pilot turns the ship.
     // A deliberately commanded maneuvering axis still has its own small thrusters.
     FVector Desired = CurrentVelocity;
     if (FMath::Abs(StrafeInput.X) > .01f)
-        Desired += GetActorRightVector() *
-                   (StrafeInput.X * Maneuver - FVector::DotProduct(CurrentVelocity, GetActorRightVector()));
+        Desired += Right * (StrafeInput.X * Maneuver - FVector::DotProduct(CurrentVelocity, Right));
     if (FMath::Abs(StrafeInput.Y) > .01f)
-        Desired +=
-            GetActorUpVector() * (StrafeInput.Y * Maneuver - FVector::DotProduct(CurrentVelocity, GetActorUpVector()));
+        Desired += Up * (StrafeInput.Y * Maneuver - FVector::DotProduct(CurrentVelocity, Up));
     return Desired;
 }
 void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed,
@@ -210,7 +324,22 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     // ShipCore accepts angular acceleration, not a turn rate. Convert the same degrees/second used by
     // input into its rate-damped solver. Banking targets an attitude; a held turn must not roll forever.
     const float RollRate = -FMath::DegreesToRadians(RollCommandDegrees()) * Authority * Interference;
-    const FVector TargetRate(RollRate, -Steer.Y * TurnRate, Steer.X * TurnRate);
+    // The chase view excludes hull roll. Apply nose steering in that same frame,
+    // then convert to ShipCore's body axes; an inverted hull must not invert the stick.
+    FVector2D Steering = Steer;
+    if (bWaveCorridor)
+    {
+        // The stick translates within the route. The gyro only restores its fixed
+        // heading after impacts; it does not integrate stick input into a turn.
+        const FVector Direction = GetActorQuat().UnrotateVector(WaveRouteFrame.GetForwardVector());
+        Steering = FVector2D(FMath::Atan2(Direction.Y, Direction.X), FMath::Atan2(Direction.Z, Direction.X)) *
+                   (4.f / FMath::Max(.01f, TurnRate));
+        Steering = Steering.GetClampedToMaxSize(1.f);
+    }
+    const FQuat SteeringFrame = IsInWormholeTransit() || bWaveCorridor ? GetActorQuat() : FlightControlFrame();
+    const FVector SteeringRate = GetActorQuat().UnrotateVector(
+        SteeringFrame.RotateVector(FVector(0, -Steering.Y * TurnRate, Steering.X * TurnRate)));
+    const FVector TargetRate = SteeringRate + FVector(RollRate, 0, 0);
     Gyros->SetGyrosInput(TargetRate * float(Gyros->ProportionalGain / Gyros->MaxTotalTorque));
 
     // Gravity wells and the wormhole still push, but their numbers were accelerations integrated by hand.
@@ -218,14 +347,28 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     if (!Forces.IsNearlyZero())
         Collision->AddForce(Forces.GetClampedToMaxSize(4500.f) * Mass);
 }
+FQuat ASSShip::FlightControlFrame() const
+{
+    if (bWaveCorridor)
+        return WaveRouteFrame;
+    return ShipCoreDriven ? CastChecked<USSChaseCameraArm>(CameraBoom)->GetFlightFrame() : GetActorQuat();
+}
+float ASSShip::FlightBankDegrees() const
+{
+    if (!ShipCoreDriven && !bWaveCorridor)
+        return GetActorRotation().Roll;
+    const FVector Up = FlightControlFrame().UnrotateVector(GetActorUpVector());
+    return FMath::RadiansToDegrees(FMath::Atan2(Up.Y, Up.Z));
+}
 float ASSShip::RollCommandDegrees() const
 {
     if (BumperHeldSeconds >= .22f)
         return RollInput * Tuning->FlightRollDegrees();
     if (bLevelAfterEvade || !bManualRoll)
     {
-        const float TargetBank = EvadeSeconds > .12f ? EvadeSide * 45.f : (bManualRoll ? 0.f : Steer.X * 28.f);
-        return FMath::Clamp(FMath::FindDeltaAngleDegrees(GetActorRotation().Roll, TargetBank) * 8.f,
+        const float TargetBank = bLevelAfterEvade ? (RollTapSeconds > .12f ? RollTapBank : RollReturnBank)
+                                                  : (bWaveCorridor ? WaveDriftInput().X : Steer.X) * 28.f;
+        return FMath::Clamp(FMath::FindDeltaAngleDegrees(FlightBankDegrees(), TargetBank) * 8.f,
                             -Tuning->FlightRollDegrees(), Tuning->FlightRollDegrees());
     }
     return 0.f;
@@ -432,6 +575,9 @@ void ASSShip::SetPilotFigureHidden(bool bOutOfSight)
 void ASSShip::BeginPlay()
 {
     Super::BeginPlay();
+    WaveRouteOrigin = GetActorLocation();
+    WaveRouteFrame = GetActorForwardVector().Rotation().Quaternion();
+    bHasWaveRoute = true;
     if (!Tuning)
         Tuning = LoadObject<USSPhase1Data>(nullptr, TEXT("/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1"));
     if (!Tuning)
@@ -637,7 +783,25 @@ void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttl
         WormholeInput = (Steering + Strafe).GetClampedToMaxSize(1.f);
         return;
     }
-    RollInput = FMath::Clamp(Roll, -1.f, 1.f);
+    if (bManualRoll && !ManualRoll)
+    {
+        // Keyboard/mouse resumes automatic banking; a later device switch must
+        // not revive the previous gamepad tap's return attitude.
+        bLevelAfterEvade = false;
+        RollTapSeconds = RollTapBank = RollReturnBank = 0.f;
+    }
+    const float NextRoll = Moored || Docking || TakingOff ? 0.f : FMath::Clamp(Roll, -1.f, 1.f);
+    if (!FMath::IsNearlyZero(NextRoll) && FMath::Sign(NextRoll) != FMath::Sign(RollInput))
+    {
+        // A tap is relative to the chosen attitude, including an inverted hull.
+        // Roll remains available when the separate lateral dodge is on cooldown.
+        RollReturnBank = FlightBankDegrees();
+        RollTapBank = RollReturnBank + FMath::Sign(NextRoll) * 45.f;
+        RollTapSeconds = .45f;
+        BumperHeldSeconds = 0.f;
+        bLevelAfterEvade = true;
+    }
+    RollInput = NextRoll;
     bManualRoll = ManualRoll;
     if (FMath::IsNearlyZero(RollInput))
         BumperHeldSeconds = 0.f;
@@ -654,6 +818,8 @@ bool ASSShip::BeginWormholeTransit(FVector Forward, float Duration)
         !Tuning || Moored || Docking || TakingOff || Forward.ContainsNaN() || Forward.IsNearlyZero() ||
         !FMath::IsFinite(Duration) || Duration <= 0.f)
         return false;
+    bWaveCorridor = false;
+    CastChecked<USSChaseCameraArm>(CameraBoom)->SetRouteFrame(false, WaveRouteFrame);
     WormholeExitSpeed = FMath::Min(float(GetVelocity().Size()), float(GI->Session.Stats().speed));
     WormholeOrigin = GetActorLocation();
     WormholeForward = Forward.GetSafeNormal();
@@ -666,6 +832,7 @@ bool ASSShip::BeginWormholeTransit(FVector Forward, float Duration)
     ThrottleInput = 1.f;
     BoostInput = BrakeInput = false;
     RollInput = BumperHeldSeconds = EvadeSeconds = EvadeSide = 0.f;
+    RollTapSeconds = RollTapBank = RollReturnBank = 0.f;
     EvadeVelocity = Forces = FVector::ZeroVector;
     bManualRoll = bLevelAfterEvade = true;
     FreeLookInput = FreeLookAngles = FVector2D::ZeroVector;
@@ -711,6 +878,7 @@ void ASSShip::HoldBody(bool Hold)
     if (Hold)
     {
         BumperHeldSeconds = EvadeSeconds = EvadeSide = 0.f;
+        RollInput = RollTapSeconds = RollTapBank = RollReturnBank = 0.f;
         EvadeVelocity = FVector::ZeroVector;
         bLevelAfterEvade = false;
     }
@@ -867,6 +1035,7 @@ void ASSShip::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
         DockTarget += InOffset;
     TransitionStart += InOffset;
     WormholeOrigin += InOffset;
+    WaveRouteOrigin += InOffset;
 }
 void ASSShip::Tick(float Dt)
 {
@@ -878,6 +1047,8 @@ void ASSShip::Tick(float Dt)
         EndWormholeTransit();
     if (!GI || !Tuning)
         return;
+    UpdateWaveCorridor();
+    ConstrainWaveCorridor();
     auto &S = GI->Session;
     PrePhysicsVelocity = GetVelocity();
     FireCooldown = FMath::Max(0.f, FireCooldown - Dt);
@@ -966,12 +1137,15 @@ void ASSShip::Tick(float Dt)
         S.run.brakeOverheated = false;
     }
     BumperHeldSeconds = FMath::Abs(RollInput) > .01f ? BumperHeldSeconds + Dt : 0.f;
+    RollTapSeconds = FMath::Max(0.f, RollTapSeconds - Dt);
     EvadeSeconds = FMath::Max(0.f, EvadeSeconds - Dt);
     if (BumperHeldSeconds >= .22f)
         bLevelAfterEvade = false; // Holding chooses free roll; a short tap returns toward level.
     const auto Stats = S.Stats();
     const float BoostFactor = S.run.boosting ? Tuning->BoostMultiplier : 1.f;
-    const float EnginePower = S.run.boosting ? 1.f : ThrottleInput;
+    const float EnginePower = S.run.boosting  ? 1.f
+                              : bWaveCorridor ? (S.run.braking ? .45f : .85f + .15f * ThrottleInput)
+                                              : ThrottleInput;
     const float Speed = IsInWormholeTransit() ? WormholeTransitSpeed : float(Stats.speed) * EnginePower * BoostFactor;
     DrivePresentationPower = S.run.braking ? 0.f : EnginePower;
     DrivePresentationBoosting = S.run.boosting;
@@ -1000,7 +1174,12 @@ void ASSShip::Tick(float Dt)
         const float Step = Dt / Steps;
         for (int32 I = 0; I < Steps; ++I)
         {
-            if (bManualRoll)
+            if (bWaveCorridor)
+            {
+                const float Bank = FlightBankDegrees() + RollCommandDegrees() * Authority * Interference * Step;
+                SetActorRotation(WaveRouteFrame * FRotator(0, 0, Bank).Quaternion());
+            }
+            else if (bManualRoll)
                 AddActorLocalRotation(
                     FRotator(Steer.Y * Tuning->FlightSteeringDegrees() * Authority * Interference * Step,
                              Steer.X * Tuning->FlightSteeringDegrees() * Authority * Interference * Step,
@@ -1029,6 +1208,7 @@ void ASSShip::Tick(float Dt)
                 Velocity = FVector::VectorPlaneProject(Velocity, Hit.Normal) * .65f;
                 ResolveSceneryImpact(Hit, Incoming);
             }
+            ConstrainWaveCorridor();
         }
     }
     Forces = FVector::ZeroVector;
@@ -1037,18 +1217,18 @@ void ASSShip::Tick(float Dt)
         FMath::RInterpTo(HullMesh->GetRelativeRotation(), FRotator(-StrafeInput.Y * 5.f, 0, Bank), Dt, 6.f));
     CameraBoom->TargetArmLength =
         FMath::FInterpTo(CameraBoom->TargetArmLength,
-                         (FMath::Max(900.f, Tuning->ChaseDistance) + (IsInWormholeTransit() ? 180.f
-                                                                      : S.run.boosting      ? 110.f
-                                                                                            : 0.f)) *
-                             HullChaseScale,
+                         (FMath::Max(900.f, Tuning->ChaseDistance) + (IsInWormholeTransit()              ? 180.f
+                                                                      : S.run.boosting && !bWaveCorridor ? 110.f
+                                                                                                         : 0.f)) *
+                             HullChaseScale * (bWaveCorridor ? 1.5f : 1.f),
                          Dt, 3.f);
     // Relative to whatever this hull is framed at, rather than to the one hull the 80/86 pair was chosen
     // for - otherwise a wider hull snaps back to the narrow framing on its first frame of boost.
     const float BaseFov = FSSHullDefinition(SelectedHullIdentity()).ChaseFov;
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView,
-                                           BaseFov + (IsInWormholeTransit() ? 12.f
-                                                      : S.run.boosting      ? 6.f
-                                                                            : 0.f),
+                                           BaseFov + (IsInWormholeTransit()              ? 12.f
+                                                      : S.run.boosting && !bWaveCorridor ? 6.f
+                                                                                         : 0.f),
                                            Dt, 3.f);
     // Boost engaging is an event, but every drive effect in the game is a sustained level, so acceleration
     // reads as a state change rather than as a shove. This is the transient: full on the frame boost is pressed,
@@ -1058,7 +1238,7 @@ void ASSShip::Tick(float Dt)
     WasBoosting = S.run.boosting;
     BoostPunch = FMath::Max(0.f, BoostPunch - Dt * 2.8f);
     FVector CameraOffset = FVector::ZeroVector;
-    if (GI->Session.settings.cameraShake)
+    if (GI->Session.settings.cameraShake && !bWaveCorridor)
     {
         if (S.run.damageFeedback > 0)
         {
@@ -1149,14 +1329,14 @@ void ASSShip::RequestDodge(float Side)
     if (Direction.IsNearlyZero())
         Direction = FVector2D(1, 0);
     Direction.Normalize();
-    const FVector Dodge = (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) *
+    const FQuat ControlFrame = FlightControlFrame();
+    const FVector Dodge = (ControlFrame.GetRightVector() * Direction.X + ControlFrame.GetUpVector() * Direction.Y) *
                           Tuning->DodgeImpulse * (FMath::Abs(Side) > .01f ? 1.5f : 1.f);
-    if (FMath::Abs(Side) > .01f)
+    if (FMath::Abs(Side) > .01f || bWaveCorridor)
     {
         EvadeSeconds = .45f;
         EvadeSide = FMath::Sign(Side);
         EvadeVelocity = Dodge;
-        bLevelAfterEvade = true;
     }
     Velocity += Dodge;
     // The same member-versus-body gap that swallowed collision damage and hazard shoves, and the same fix:
@@ -1168,6 +1348,7 @@ void ASSShip::RequestDodge(float Side)
     // kinematic path has always done and what anything asking "did the dodge take" can actually observe.
     if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
         Collision->SetPhysicsLinearVelocity(Collision->GetPhysicsLinearVelocity() + Dodge);
+    ConstrainWaveCorridor();
     // No collision immunity is granted; every world body still applies damage.
 }
 void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)

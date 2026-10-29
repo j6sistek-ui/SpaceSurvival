@@ -38,6 +38,8 @@ private:
     float RefreshScale = 1.f;
     FVector2D RefreshOrigin = FVector2D::ZeroVector;
     void BeginRefreshLayout(bool FullViewport = false);
+    /** HUD anchors use the real viewport edges; menu artwork keeps its authored reference frame. */
+    FBox2D HudSafeBounds() const;
     UTexture2D *RefreshTexture(FName Name);
     FBox2D RefreshBounds(float X, float Y, float Width, float Height) const;
     void RefreshImage(FName Name, float X, float Y, float Width, float Height, FLinearColor Tint = FLinearColor::White);

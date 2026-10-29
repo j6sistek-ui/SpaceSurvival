@@ -1,5 +1,6 @@
 #include "SSSpaceScenery.h"
 #include "SSSpaceLookData.h"
+#include "SSShip.h"
 #include "SSAsteroidBurst.h"
 #include "SSAudio.h"
 #include "Algo/AllOf.h"
@@ -315,6 +316,25 @@ void ASSSpaceScenery::RefreshCells()
 void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int32 LandmarksPerCell)
 {
     FCell &Cell = Cells.Add(Id);
+    const auto *Ship = Cast<ASSShip>(Followed.Get());
+    const FTransform FieldTransform = GetActorTransform();
+    const FTransform Route =
+        Ship ? FTransform(Ship->GetReservedWaveRouteFrame(), Ship->GetReservedWaveRouteOrigin()) : FTransform::Identity;
+    const FVector2D Limits = Ship ? Ship->GetWaveCorridorHalfExtents() : FVector2D::ZeroVector;
+    const FBox Hull =
+        Ship ? Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()))
+             : FBox(FVector::ZeroVector, FVector::ZeroVector);
+    const double HullClearance = Hull.GetCenter().Size() + Hull.GetExtent().Size() + 1000.0;
+    auto HasRouteClearance = [&](const FVector &Position, double Radius)
+    {
+        if (!Ship)
+            return true;
+        const FVector Local = Route.InverseTransformPosition(FieldTransform.TransformPosition(Position));
+        const double Side = FMath::Max(0.0, FMath::Abs(Local.Y) - Limits.X);
+        const double Height = FMath::Max(0.0, FMath::Abs(Local.Z) - Limits.Y);
+        return FMath::Square(Side) + FMath::Square(Height) >=
+               FMath::Square(Radius * FieldTransform.GetScale3D().GetAbsMax() + HullClearance);
+    };
     const double Size = ValidCellSize(Look);
     const FVector Center = FVector(Id) * Size;
     const auto Blend = SampleAreaStyle(Look, Center, LastPreview, LastVariation);
@@ -362,6 +382,15 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
     // Some authored groups extended a full cell beyond their owner, so a new cell could materialize
     // a large rock nearby. Fit the complete composition, preserving its internal scale relationships.
     const double GroupScale = FMath::Min(1.0, Size * .45 / GroupExtent);
+    // A station visit or a new wave cannot reveal/remove nearby parts. Reserve the same infinite
+    // route at first admission and retain complete authored groups outside its rolled hull envelope.
+    const bool RouteClearGroup =
+        Algo::AllOf(Recipe.Landmarks,
+                    [&](const FSSSceneryPlacement &Placement)
+                    {
+                        return HasRouteClearance(Center + GroupRotation.RotateVector(Placement.Center * GroupScale),
+                                                 Placement.Radius * GroupScale);
+                    });
     auto RemainingHealth = [&](int32 Ordinal, double Radius)
     {
         const auto *PriorDamage = DamageByCell.Find(Id);
@@ -369,7 +398,7 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
                (PriorDamage ? PriorDamage->FindRef(Ordinal) : 0.f);
     };
     if ((Id.X % 2 == 0) && (Id.Y % 2 == 0) && (Id.Z % 2 == 0) && Recipe.Landmarks.Num() <= LandmarksPerCell &&
-        ValidGroup)
+        ValidGroup && RouteClearGroup)
     {
         for (int32 Ordinal = 0; Ordinal < Recipe.Landmarks.Num(); ++Ordinal)
         {
@@ -447,9 +476,9 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
         auto *Mesh = Selected->Mesh.Get();
         const bool bAsteroid = Mesh->GetName().Contains(TEXT("Asteroid"));
         const float Health = RemainingHealth(Index + 64, Radius);
-        // Consume the same pose RNG even for a previously destroyed identity.
+        // Consume the same pose RNG for destroyed or route-excluded identities; survivors keep their poses.
         const FQuat Rotation = Random.VRand().ToOrientationQuat();
-        if (bAsteroid && Health <= 0.f)
+        if ((bAsteroid && Health <= 0.f) || !HasRouteClearance(Center + GroupRotation.RotateVector(Offset), Radius))
             continue;
         auto *&Batch = Batches.FindOrAdd(Mesh);
         if (!Batch)

@@ -15,14 +15,23 @@ public:
     void EnableBankIndependentFollow();
     /** A completed dock starts a new chase shot without retaining the previous flight's bank. */
     void ResetFollowFrame();
+    /** Current nose-aligned chase frame, excluding hull bank and right-stick free-look. */
+    FQuat GetFlightFrame() const;
+    /** Wave travel has a prescribed heading; hull roll and impacts cannot steer the view. */
+    void SetRouteFrame(bool bEnabled, const FQuat &Frame);
     virtual void TickComponent(float DeltaTime, ELevelTick TickType,
                                FActorComponentTickFunction *ThisTickFunction) override;
     virtual FRotator GetDesiredRotation() const override;
 
 private:
+    FVector WaveFollowLocation(const class ASSShip *Ship, const USceneComponent *Parent, float DeltaTime);
     FQuat FollowFrame = FQuat::Identity;
     FVector AnchorOffset = FVector::ZeroVector;
     bool bBankIndependentFollow = false;
     bool bHasFollowFrame = false;
     bool bHasAnchorOffset = false;
+    bool bRouteFollow = false;
+    FQuat RouteFrame = FQuat::Identity;
+    FVector2D RouteCameraOffset = FVector2D::ZeroVector;
+    FVector RouteReleaseOffset = FVector::ZeroVector;
 };
