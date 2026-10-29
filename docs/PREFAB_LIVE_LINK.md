@@ -8,11 +8,11 @@ apply it back.
 This page is written for the person using the tools. Button names are in **bold** exactly as they appear.
 The last sections (pieces, transport, tests) are for whoever maintains them.
 
-## Current station workflow (SS Link 0.5.1)
+## Current station workflow (SS Link 0.5.2)
 
-**October28 update:** the desktop library contains3,857 static meshes, including1,056 Building
-pieces. Library auto-refresh is off; use the manual controls below. The verified geometry/layout
-package is on D; see [package identity and coverage](validation/2026-10-28-sslink-portable-library.md).
+**October29 update:** the desktop library contains4,049 static meshes, including191 SkyClub
+meshes. **Rescan & Download Library** runs the manual refresh from Blender. The earlier geometry/layout
+package on D remains an immutable October28 snapshot; see [package identity and coverage](validation/2026-10-28-sslink-portable-library.md).
 The October6 counts and paths below describe the earlier working-scene snapshot.
 
 Use the canonical `C:/Users/j6sis/SpaceSurvival` project for both gameplay and authoring.
@@ -102,10 +102,19 @@ Save your arrangement as `.blend` and open that file on the desktop: placed mesh
 references travel together. Opening it does not push changes into Unreal; use the existing explicit
 Push/Apply commands. Keep Live off until you want synchronization.
 
-**Manual refresh is the default.** In Blender use **Load Catalogue** to re-read the cached list and
-**Prepare Large Library** to update the pop-out browser from cached geometry. To include new or
-changed Unreal meshes, first use Unreal's **SS Prefabs > Rebuild Catalogue (with Blender proxies)**,
-then those Blender buttons. These manual operations do not enable automatic scanning.
+**Manual refresh is the default.** With this project open in Unreal outside Play, use Blender
+**SS Link > Parts library > Rescan & Download Library**. It scans assets already installed in
+the project, exports geometry/available thumbnails, prepares changed Blender library files and
+refreshes open asset browsers. Status shows export progress, preparation or an error. Repeat clicks
+reuse the running request; a stale editor connection is retried once against the same project.
+It does not enable automatic scanning, save levels, import placed rooms, or download packs from Fab.
+Install packs into Unreal first. A nested level instance can require its own scene export even
+after its individual meshes appear in the library.
+
+The lower-level buttons remain: **Load Catalogue** rereads the cached list, and **Prepare Large Library**
+updates the pop-out browser from cached geometry. Neither discovers new Unreal assets by itself.
+Alternatively, Unreal's **SS Prefabs > Rebuild Catalogue (with Blender proxies)** followed by those
+two Blender buttons performs the same manual data stages. An offline computer uses **Import Library**.
 
 To opt in later: Blender **N > SS Link > Parts library > Auto-refresh library**. This enables
 saved-mesh scanning in the desktop Unreal editor, about every

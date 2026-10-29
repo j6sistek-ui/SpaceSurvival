@@ -11,6 +11,91 @@ from . import core
 
 _job = {'process': None}
 _watch = {'attempted': None, 'root': None}
+_sync = {'id': None, 'stage': None}
+
+
+def sync_library_tick():
+    """Poll the one-shot editor job, then build/refresh the local Blender browser."""
+    from . import editor_link
+    try:
+        if _sync['stage'] == 'export':
+            status = editor_link.link.call("__import__('ss_catalog_refresh').manual_refresh_status(" + repr(_sync['id']) + ')')
+            if status['status'] == 'failed':
+                raise RuntimeError(status['error'])
+            if status['status'] != 'complete':
+                bpy.context.scene.ss_link.status = f"Rescanning Unreal: {status['processed']}/{status['total']} meshes"
+                return 1.0
+            bpy.ops.ss_link.load_catalog()
+            _watch['attempted'] = catalog_digest()
+            _sync['stage'] = 'prepare'
+            if _job['process'] is None:
+                if 'FINISHED' not in bpy.ops.ss_link.prepare_library():
+                    raise RuntimeError('Could not prepare the downloaded geometry')
+            return 1.0
+        if _job['process'] is not None:
+            return 1.0
+        manifest = asset_dir() / 'build.json'
+        built = json.loads(manifest.read_text()) if manifest.is_file() else {}
+        if built.get('catalog_digest') != catalog_digest():
+            raise RuntimeError('Library preparation failed or its catalogue changed; rescan again')
+        attach_library()
+        refresh_browser_windows()
+        bpy.context.scene.ss_link.status = f"Library ready: {built['assets']} parts. Automatic refresh setting unchanged."
+    except Exception as exc:
+        bpy.context.scene.ss_link.status = f'Library rescan failed: {exc}'
+    _sync.update(id=None, stage=None)
+    return None
+
+
+class SSLINK_OT_sync_library(bpy.types.Operator):
+    bl_idname = 'ss_link.sync_library'
+    bl_label = 'Rescan & Download Library'
+    bl_description = 'Scan installed Unreal assets, export local geometry previews and refresh Blender; no Fab downloads or automatic refresh'
+
+    def execute(self, context):
+        from . import editor_link
+        if _sync['stage'] is not None:
+            self.report({'INFO'}, 'A library rescan is already running')
+            return {'CANCELLED'}
+        try:
+            root = core.project_root()
+            if not root or not (root / 'SpaceSurvival.uproject').is_file():
+                raise RuntimeError('Rescanning needs the full Unreal project; use Import Library on an offline computer')
+            if not editor_link.link.connected:
+                editor_link.link.connect()
+            node = editor_link.link.node
+            if Path(node.get('project_root', '')).resolve() != root.resolve():
+                raise RuntimeError('Connected Unreal editor belongs to another project')
+            # A running editor can still have the previous helper in memory.
+            # Upgrade it only while idle; never abandon an in-progress export.
+            code = """import json, importlib, ss_catalog_refresh
+if not hasattr(ss_catalog_refresh, 'request_manual_refresh'):
+    if ss_catalog_refresh._state.get('busy') or ss_catalog_refresh._state.get('steps') is not None:
+        raise RuntimeError('The previous automatic export is still running; retry after it finishes')
+    ss_catalog_refresh.unregister()
+    importlib.reload(ss_catalog_refresh)
+    ss_catalog_refresh.register()
+print(json.dumps(ss_catalog_refresh.request_manual_refresh()))
+"""
+            try:
+                response = editor_link.link.run(code)
+            except RuntimeError:
+                if editor_link.link.connected:
+                    raise  # An editor-side failure, rather than a stale socket.
+                editor_link.link.connect()
+                if Path(editor_link.link.node.get('project_root', '')).resolve() != root.resolve():
+                    raise RuntimeError('Reconnected Unreal editor belongs to another project')
+                # The request is idempotent while running: a lost reply cannot
+                # start a second export when this one reconnects.
+                response = editor_link.link.run(code)
+            status = json.loads(response)
+            _sync.update(id=status['id'], stage='export')
+            context.scene.ss_link.status = 'Rescanning installed Unreal assets...'
+            bpy.app.timers.register(sync_library_tick, first_interval=1.0)
+        except Exception as exc:
+            self.report({'ERROR'}, str(exc))
+            return {'CANCELLED'}
+        return {'FINISHED'}
 
 
 def catalog_digest():
@@ -164,7 +249,7 @@ class SSLINK_OT_popout_library(bpy.types.Operator):
         return {'FINISHED'}
 
 
-classes = (SSLINK_OT_prepare_library, SSLINK_OT_popout_library)
+classes = (SSLINK_OT_sync_library, SSLINK_OT_prepare_library, SSLINK_OT_popout_library)
 
 
 def register():
@@ -174,6 +259,8 @@ def register():
 
 
 def unregister():
+    if bpy.app.timers.is_registered(sync_library_tick):
+        bpy.app.timers.unregister(sync_library_tick)
     if bpy.app.timers.is_registered(watch_catalog):
         bpy.app.timers.unregister(watch_catalog)
     if bpy.app.timers.is_registered(build_finished):
