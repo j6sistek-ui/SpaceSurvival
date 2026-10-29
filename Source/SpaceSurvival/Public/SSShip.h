@@ -161,9 +161,12 @@ private:
     FVector WormholeRight = FVector::RightVector, WormholeUp = FVector::UpVector;
     FVector2D WormholeInput = FVector2D::ZeroVector;
     float BumperHeldSeconds = 0.f, EvadeSeconds = 0.f, EvadeSide = 0.f;
+    float RollTapSeconds = 0.f, RollTapBank = 0.f, RollReturnBank = 0.f;
     bool bLevelAfterEvade = false;
     FVector EvadeVelocity = FVector::ZeroVector;
     float RollCommandDegrees() const;
+    FQuat FlightControlFrame() const;
+    float FlightBankDegrees() const;
 
     friend class FSSDirectorAsteroidReadability;
     friend class FSSDirectorTrajectoryFairness;

@@ -901,6 +901,115 @@ bool FSSControllerChaseRollIsolation::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerBankedNavigation, "SpaceSurvival.Flight.ControllerBankedNavigation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerBankedNavigation::RunTest(const FString &)
+{
+    for (const float Bank : {170.f, -170.f})
+        for (const float Side : {-1.f, 1.f})
+        {
+            FSSControllerFlightWorld F;
+            if (!F.Initialize(*this))
+                return false;
+            F.Ship->SetActorRotation(FRotator(0, 0, Bank), ETeleportType::TeleportPhysics);
+            F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+            F.Ship->Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+            F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+            const FVector DashRight = F.Ship->Camera->GetRightVector();
+            const FVector Start = F.Ship->GetActorLocation();
+            const FQuat Before = F.Ship->GetActorQuat();
+            const FKey Bumper = Side < 0 ? EKeys::Gamepad_LeftShoulder : EKeys::Gamepad_RightShoulder;
+            F.Button(Bumper, true);
+            F.Frames(4);
+            const FQuat Delta = Before.Inverse() * F.Ship->GetActorQuat();
+            const double SignedRoll = -FMath::RadiansToDegrees(2. * FMath::Atan2(Delta.X, Delta.W));
+            TestTrue(FString::Printf(TEXT("Bumper %.0f starts in its commanded direction from bank %.0f"), Side, Bank),
+                     SignedRoll * Side > 1.);
+            F.Button(Bumper, false);
+            F.Frames(12);
+            TestTrue(TEXT("Bumper dash travels toward its side of the chase view even when inverted"),
+                     FVector::DotProduct(F.Ship->GetActorLocation() - Start, DashRight) * Side > 100.);
+            F.Frames(120);
+            TestTrue(TEXT("A tap returns to the chosen pre-tap attitude instead of another world bank"),
+                     FMath::RadiansToDegrees(Before.AngularDistance(F.Ship->GetActorQuat())) < 3.);
+            F.Button(EKeys::W, true);
+            F.Step();
+            F.Button(EKeys::W, false);
+            F.Frames(120);
+            TestTrue(TEXT("Switching to keyboard restores its automatic level banking after a gamepad tap"),
+                     FMath::Abs(F.Ship->GetActorRotation().Roll) < 3.f);
+        }
+    for (const FRotator Pose :
+         {FRotator(0, 0, 90), FRotator(0, 0, 180), FRotator(0, 0, -90), FRotator(89, 30, 170), FRotator(91, 30, -170)})
+        for (const FKey Axis : {EKeys::Gamepad_LeftX, EKeys::Gamepad_LeftY})
+        {
+            FSSControllerFlightWorld F;
+            if (!F.Initialize(*this))
+                return false;
+            F.Ship->SetActorRotation(Pose, ETeleportType::TeleportPhysics);
+            F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+            F.Ship->Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+            F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+            const FVector Expected =
+                Axis == EKeys::Gamepad_LeftX ? F.Ship->Camera->GetRightVector() : F.Ship->Camera->GetUpVector();
+            const FVector Other =
+                Axis == EKeys::Gamepad_LeftX ? F.Ship->Camera->GetUpVector() : F.Ship->Camera->GetRightVector();
+            const FVector Before = F.Ship->GetActorForwardVector();
+            for (int32 Frame = 0; Frame < 12; ++Frame)
+            {
+                F.Axis(Axis, .65f);
+                F.Step();
+            }
+            const FVector Travel = F.Ship->GetActorForwardVector() - Before;
+            TestTrue(FString::Printf(TEXT("%s follows the chase-view axis at %s"), *Axis.ToString(), *Pose.ToString()),
+                     FVector::DotProduct(Travel, Expected) > .08 &&
+                         FMath::Abs(FVector::DotProduct(Travel, Other)) < .04);
+        }
+    for (const float Side : {-1.f, 1.f})
+    {
+        FSSControllerFlightWorld F;
+        if (!F.Initialize(*this))
+            return false;
+        F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+        const FKey Bumper = Side < 0 ? EKeys::Gamepad_LeftShoulder : EKeys::Gamepad_RightShoulder;
+        F.Button(Bumper, true);
+        FQuat Previous = F.Ship->GetActorQuat();
+        double SignedTravel = 0.;
+        for (int32 Frame = 0; Frame < 120; ++Frame)
+        {
+            F.Step();
+            const FQuat Current = F.Ship->GetActorQuat();
+            FQuat Delta = Previous.Inverse() * Current;
+            if (Delta.W < 0.)
+                Delta = Delta * -1.;
+            SignedTravel -= FMath::RadiansToDegrees(2. * FMath::Atan2(Delta.X, Delta.W));
+            Previous = Current;
+        }
+        AddInfo(FString::Printf(TEXT("BANKED NAV bumper %.0f signed travel %.2f"), Side, SignedTravel));
+        TestTrue(TEXT("Each held bumper rolls in its own signed direction through more than half a turn"),
+                 SignedTravel * Side > 180.);
+        F.Button(Bumper, false);
+        F.Frames(60);
+        const FQuat Rest = F.Ship->GetActorQuat();
+        F.Frames(30);
+        TestTrue(TEXT("Released sustained roll stops rotating while retaining its attitude"),
+                 FMath::RadiansToDegrees(Rest.AngularDistance(F.Ship->GetActorQuat())) < 1.);
+    }
+    FSSControllerFlightWorld Lift;
+    if (!Lift.Initialize(*this))
+        return false;
+    const FRotator Facing = Lift.Ship->GetActorRotation();
+    Lift.Ship->BeginTakeoff(Lift.Ship->GetActorLocation() + FVector(0, 0, 700), Facing, 1.f);
+    Lift.Button(EKeys::Gamepad_LeftShoulder, true);
+    Lift.Frames(20);
+    Lift.Button(EKeys::Gamepad_LeftShoulder, false);
+    Lift.Frames(70);
+    TestTrue(TEXT("A bumper released during scripted lift cannot queue a bank after takeoff"),
+             !Lift.Ship->IsTakingOff() &&
+                 FMath::RadiansToDegrees(Facing.Quaternion().AngularDistance(Lift.Ship->GetActorQuat())) < 1.);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSMenuBackBoostRelease, "SpaceSurvival.Flight.MenuBackBoostRelease",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSMenuBackBoostRelease::RunTest(const FString &)

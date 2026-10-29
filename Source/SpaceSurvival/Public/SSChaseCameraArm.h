@@ -15,6 +15,8 @@ public:
     void EnableBankIndependentFollow();
     /** A completed dock starts a new chase shot without retaining the previous flight's bank. */
     void ResetFollowFrame();
+    /** Current nose-aligned chase frame, excluding hull bank and right-stick free-look. */
+    FQuat GetFlightFrame() const;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType,
                                FActorComponentTickFunction *ThisTickFunction) override;
     virtual FRotator GetDesiredRotation() const override;

@@ -21,6 +21,23 @@ void USSChaseCameraArm::ResetFollowFrame()
     bHasFollowFrame = false;
 }
 
+FQuat USSChaseCameraArm::GetFlightFrame() const
+{
+    const USceneComponent *Parent = GetAttachParent();
+    if (!Parent)
+        return FQuat::Identity;
+    if (!bBankIndependentFollow)
+        return Parent->GetComponentQuat();
+    const FVector Forward = Parent->GetForwardVector();
+    if (!bHasFollowFrame)
+        return Forward.Rotation().Quaternion();
+    const FVector PreviousForward = FollowFrame.GetForwardVector();
+    const FQuat Turn = FVector::DotProduct(PreviousForward, Forward) < -.9999f
+                           ? FQuat(FollowFrame.GetUpVector(), PI)
+                           : FQuat::FindBetweenNormals(PreviousForward, Forward);
+    return (Turn * FollowFrame).GetNormalized();
+}
+
 void USSChaseCameraArm::TickComponent(float DeltaTime, ELevelTick TickType,
                                       FActorComponentTickFunction *ThisTickFunction)
 {
@@ -31,29 +48,15 @@ void USSChaseCameraArm::TickComponent(float DeltaTime, ELevelTick TickType,
     }
     if (const USceneComponent *Parent = GetAttachParent())
     {
-        const FVector Forward = Parent->GetForwardVector();
         if (!bHasAnchorOffset)
         {
             AnchorOffset = GetRelativeLocation();
             bHasAnchorOffset = true;
         }
-        if (!bHasFollowFrame)
-        {
-            FollowFrame = Forward.Rotation().Quaternion();
-            bHasFollowFrame = true;
-        }
-        else
-        {
-            // Transport the view by the change in nose direction, not the full body
-            // rotation. A complete barrel roll therefore leaves the chase view alone.
-            // This quaternion frame also remains continuous through pitch +/-90,
-            // where rebuilding zero-roll Euler angles flips camera yaw by 180 degrees.
-            const FVector PreviousForward = FollowFrame.GetForwardVector();
-            const FQuat Turn = FVector::DotProduct(PreviousForward, Forward) < -.9999f
-                                   ? FQuat(FollowFrame.GetUpVector(), PI)
-                                   : FQuat::FindBetweenNormals(PreviousForward, Forward);
-            FollowFrame = (Turn * FollowFrame).GetNormalized();
-        }
+        // Steering and the post-physics view share this pole-safe frame. Reading it
+        // before physics does not advance the camera or include deliberate free-look.
+        FollowFrame = GetFlightFrame();
+        bHasFollowFrame = true;
         // The elevated Phoenix anchor must not circle the nose when the body rolls.
         // Preserve its authored local offset in the same continuous chase frame.
         SetWorldLocation(Parent->GetComponentLocation() +
