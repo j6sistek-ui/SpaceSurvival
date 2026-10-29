@@ -7,17 +7,20 @@ the same motion again from rendered video. For video, verify person visibility,
 camera movement, occlusions, AI-generated discontinuities, FPS and the source interval.
 
 For Motion2MixamoRig, use its current `run --help`; `--rig` expects a Mixamo FBX.
-Start with the verified CPU backend or an explicitly available tested GPU backend.
-This machine's known short-test command shape is:
+Choose the verified backend for the current host and available VRAM. This machine
+now has a tested CUDA body+hand path; CPU remains a fallback in the same venv.
+The command shape is:
 
 ```powershell
 & 'M:/Local AI/Tools/Motion2MixamoRig/.venv/Scripts/python.exe' -m motion2mixamorig run `
   --video 'D:/path/short-reference.mp4' --rig 'M:/path/mixamo-reference.fbx' `
-  --device cpu --no-foot-lock --output-dir 'D:/path/new-run'
+  --device cuda --detect-hands --hand-smooth 0.08 --no-foot-lock --output-dir 'D:/path/new-run'
 ```
 
 The placeholder paths must be chosen for the task; do not overwrite the earlier
 validated run. Do not run install/setup again when the existing environment works.
+Use `--device cpu` when needed, and omit `--detect-hands` for body-only motion.
+Do not require a separate `hamer` package: this tool vendors its inference code.
 Reuse `--skeleton <previous/skeleton_motion.npz>` for another compatible target only
 when source/extraction identity is unchanged. Archive a run receipt with source hashes,
 trim/FPS, target identity, model/tool versions, settings and output locations.

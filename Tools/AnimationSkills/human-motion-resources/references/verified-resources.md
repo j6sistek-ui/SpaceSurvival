@@ -4,6 +4,37 @@ Verified October28,2026, America/New_York. This is a resource snapshot, not a
 task queue or permission to adopt any model/motion. Refresh paths/version/status
 before applying it. Licensed source data stays private; the skill contains no models.
 
+## CUDA and hand-capture update — later October28
+
+Supersedes the CPU-only/uninstalled-hand runtime status in the original study
+below. The same isolated venv now uses torch2.14.1+cu130 and torchvision0.29.1+cu130.
+An actual CUDA kernel passes on RTX5080/sm120. CPU remains available through the
+same CUDA-enabled build; there is no second runtime or global CUDA-toolkit install.
+
+MANO_RIGHT.pkl is extracted from the owner's ZIP and converted to MANO_RIGHT.npz.
+The finger inference code is vendored in Motion2MixamoRig; absence of a separate
+`hamer` import is not a missing dependency. Required smplx/timm/skimage checks pass.
+The official author's Hugging Face Space supplied the exact2,689,536,166-byte
+checkpoint and1,178-byte mean parameters, verified against published LFS SHA256.
+The original Texas URL failed certificate/connection checks; verification was
+not disabled. No6GB archive or duplicate full model bundle was retained.
+
+A fresh72-frame CUDA+hands CLI run exits0 in61.39seconds overall,39.4seconds
+inside the pipeline. Both hands are processed in72/72frames;30 finger tracks
+move, rotations are finite/orthonormal, and four72-frame MP4s decode. Native
+Blender5.2.2 confirms all30 moving finger bones and saves a local demo with CUDA,
+Detect Hands,0.08 smoothing and previews selected. This proves operation, not
+ground-truth finger accuracy, arbitrary target compatibility or pole contact.
+The earlier CPU run included initial downloads, so do not derive a speedup
+factor by dividing those unlike timings. The2D ONNX pose stage uses CPU in
+this environment; the heavier body and hand inference use CUDA.
+
+Current receipts: `D:/Motion2MixamoRig/SetupLogs/GpuHands_20261028`.
+Current sample: `D:/Motion2MixamoRig/outputs/Validation_CudaHands_20261028_01`;
+open Ready_To_Try_CUDA_Hands.blend or Review.html. Model/cache storage stays on M;
+generated output stays on D. GPU jobs exit after finishing rather than holding
+models resident. Source trajectory/grounding and native game adoption are still open.
+
 ## Actual local findings
 
 | Resource | Inspected contents | What the result proves / does not prove |

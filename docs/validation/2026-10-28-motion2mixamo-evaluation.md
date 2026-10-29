@@ -162,3 +162,62 @@ Portable archive: `D:/Motion2MixamoRig/ResourceStudy_20261028/human-motion-resou
 Invoke `$human-motion-resources` in a subsequent chat. The matrix recommends a
 small experiment appropriate to the objective; those recommendations do not
 authorize changing another chat's work or automatically resume the held backlog.
+
+## CUDA and hand detection ready
+
+Later October28 local time (2026-10-29T01:32Z), the owner reports liking the sample
+and explicitly requests optimization plus a fully working hand setup. The following
+supersedes the historical CPU-only, missing-finger and untested-CUDA status above;
+acceptance of the sample is not acceptance of a game-character animation.
+
+The existing isolated M venv was upgraded in place to torch2.14.1+cu130 and
+torchvision0.29.1+cu130. `pip check` passes and an actual CUDA kernel succeeds
+on RTX5080, compute capability12.0/sm120, driver621.01. CPU fallback remains
+available in the same environment; no second venv, global Python package or CUDA
+toolkit was installed. Cache/temp paths, including CUDA/TRITON caches, remain on M.
+
+The hand estimator is vendored in the tool; the absence of a top-level `hamer`
+import does not indicate missing code. MANO_RIGHT.pkl from the owner's original
+ZIP was converted with the bundled converter and installed in the expected
+`assets/body_models/mano` directory. The original archive is unchanged.
+
+The original Texas weight URL failed certificate/connection checks. Securely
+downloaded individual files from the author's [official HaMeR Space](https://huggingface.co/spaces/geopavlakos/HaMeR/tree/aabc78ee4fd1f1ccf1a55fdd4225bf84df0e680a)
+match its published LFS SHA256 values; TLS verification was never disabled:
+
+- hamer.ckpt:2,689,536,166bytes,
+  `e5cc06f294d88a92dee24e603480aab04de532b49f0e08200804ee7d90e16f53`.
+- mano_mean_params.npz:1,178bytes,
+  `efc0ec58e4a5cef78f3abfb4e8f91623b8950be9eff8b8e0dbb0d036ebc63988`.
+
+No duplicate6GB model archive was downloaded. The heavier body/hand stages use
+CUDA; the short2D ONNX pose stage uses CPU and is not a CUDA failure.
+
+A fresh run repeats the preserved3-second/72-frame video and Mixamo target,
+with `--device cuda --detect-hands --hand-smooth 0.08 --no-foot-lock` and explicit
+D output. It exits0 in61.39seconds overall; the pipeline reports39.4seconds.
+The initial CPU run included first-use downloads, so these are not a matched
+speedup benchmark. Both hands are processed on72/72frames; all30 finger tracks
+move, rotation matrices are finite/orthonormal, and four MP4s decode72frames
+at24fps. Hidden native Blender5.2.2 evaluates the exported GLB and confirms all
+30 moving finger bones. The task process exits and releases its GPU allocation.
+The owner's open scene/preferences and all Unreal editors remain untouched.
+
+Open `D:/Motion2MixamoRig/outputs/Validation_CudaHands_20261028_01/Review.html`
+or the adjacent `Ready_To_Try_CUDA_Hands.blend`. The blend contains the actual
+animation and populated source/rig fields, CUDA, Detect Hands,0.08 smoothing and
+previews enabled. For another input, change the source video and use a Mixamo-rigged
+FBX; the MANO/weight locations are already configured. Outputs remain on D.
+
+Receipts: `D:/Motion2MixamoRig/SetupLogs/GpuHands_20261028`, especially
+CudaInstallReceipt.json, AuthorHandWeightsReceipt.json, CudaHandsValidationReceipt.json,
+CudaHandsOutputValidation.json and NativeCudaHandsValidation.json.
+The installed skill, tracked mirror and new16,454-byte portable archive match:
+`D:/Motion2MixamoRig/ResourceStudy_20261028/human-motion-resources-20261028-cuda-hands.zip`.
+The original skill archive is preserved. Standalone matrix companion links on D
+now resolve to the updated procedures/findings.
+
+Still open under RPT-20261021-01: exact finger accuracy on new/occluded footage,
+unrelated target compatibility, pole contacts and native game adoption. Sole
+grounding still alters zero-G root travel; this setup does not fix that behavior.
+No production animation, native game plugin, character or release was changed.
