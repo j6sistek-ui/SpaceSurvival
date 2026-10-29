@@ -1,5 +1,7 @@
 # SpaceSurvival — Phase 1 Codex Execution Order
 
+**October 29 owner amendment:** Apply the [wave-flight amendment](docs/GAME_SCOPE.md#owner-amendment--october-29-2026-wave-flight) to flight acceptance: prescribed forward travel, invisible bounded drift, progressive outward resistance, screen-space movement with soft camera following, and readable obstacle escape space. Free Flight, station maneuvering, progression and station cadence retain their existing behavior. Earlier unrestricted-flight requirements below apply outside wave travel. Native, rendered, physical-input and packaged evidence remain separate.
+
 This file is the execution contract for the first implementation pass.
 
 The authoritative game design is [`docs/GAME_SCOPE.md`](docs/GAME_SCOPE.md). Read it in full before making implementation decisions. If this file and `docs/GAME_SCOPE.md` ever conflict, `docs/GAME_SCOPE.md` wins unless a later explicit owner decision says otherwise.

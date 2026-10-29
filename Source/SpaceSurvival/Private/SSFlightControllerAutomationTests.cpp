@@ -50,7 +50,7 @@ struct FSSControllerFlightWorld
     TSharedPtr<FSceneViewport> SceneViewport;
     static constexpr float StepSeconds = 1.f / 60.f;
 
-    bool Initialize(FAutomationTestBase &Test)
+    bool Initialize(FAutomationTestBase &Test, bool WaveCorridor = false)
     {
         World = UWorld::CreateWorld(EWorldType::Game, false);
         if (!Test.TestNotNull(TEXT("Create isolated controller/physics world"), World))
@@ -90,6 +90,10 @@ struct FSSControllerFlightWorld
         Tuning.baseWeaponDamage = Content->BaseWeaponDamage;
         if (!Test.TestTrue(TEXT("Start an isolated in-memory run"), Instance->Session.StartRun("raw-input-fixture")))
             return false;
+        // Unrestricted-flight regressions must keep testing that control mode now that waves own
+        // a prescribed route. The corridor cases opt into the normal Flight phase explicitly.
+        if (!WaveCorridor)
+            Instance->Session.run.phase = SS::Phase::Approach;
         World->InitializeActorsForPlay(FURL());
         // Start only the actors under test. Calling the production mode's BeginPlay would create
         // a hangar, possess a walker and run unrelated account/menu orchestration.
@@ -1007,6 +1011,248 @@ bool FSSControllerBankedNavigation::RunTest(const FString &)
     TestTrue(TEXT("A bumper released during scripted lift cannot queue a bank after takeoff"),
              !Lift.Ship->IsTakingOff() &&
                  FMath::RadiansToDegrees(Facing.Quaternion().AngularDistance(Lift.Ship->GetActorQuat())) < 1.);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerWaveCorridor, "SpaceSurvival.Flight.ControllerWaveCorridor",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerWaveCorridor::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this, true))
+        return false;
+    F.Frames(120);
+    if (!TestTrue(TEXT("An ordinary survival wave acquires its prescribed route"), F.Ship->IsInWaveCorridor()))
+        return false;
+    const FQuat Route = F.Ship->GetFlightRouteFrame();
+    const FVector2D Limits = F.Ship->GetWaveCorridorHalfExtents();
+    const FQuat View = F.Ship->Camera->GetComponentQuat();
+    const USkeletalMeshComponent *DrawnHull = F.Ship->SkeletalHull;
+    const USkeletalMesh *HullAsset = DrawnHull ? DrawnHull->GetSkeletalMeshAsset() : nullptr;
+    if (!TestNotNull(TEXT("Wave camera frames the actual visible Phoenix hull"), HullAsset))
+        return false;
+    const FBox HullBounds = HullAsset->GetBounds().GetBox();
+    const double RequiredMargin = FSSHullDefinition(ASSShip::SelectedHullIdentity()).FrameMarginShare;
+    auto ProjectHull = [&](double &Margin)
+    {
+        const FTransform Eye = F.Ship->Camera->GetComponentTransform();
+        const double Horizontal = FMath::Tan(FMath::DegreesToRadians(F.Ship->Camera->FieldOfView * .5));
+        const double Vertical = Horizontal / (16. / 9.);
+        FVector2D ScreenCentre = FVector2D::ZeroVector;
+        Margin = 1.;
+        for (int32 Corner = 0; Corner < 8; ++Corner)
+        {
+            const FVector Local(Corner & 1 ? HullBounds.Max.X : HullBounds.Min.X,
+                                Corner & 2 ? HullBounds.Max.Y : HullBounds.Min.Y,
+                                Corner & 4 ? HullBounds.Max.Z : HullBounds.Min.Z);
+            const FVector Point =
+                Eye.InverseTransformPosition(DrawnHull->GetComponentTransform().TransformPosition(Local));
+            if (Point.X <= 0.)
+            {
+                Margin = -1.;
+                return FVector2D::ZeroVector;
+            }
+            const FVector2D Screen(.5 + Point.Y / (2. * Point.X * Horizontal),
+                                   .5 - Point.Z / (2. * Point.X * Vertical));
+            ScreenCentre += Screen / 8.;
+            Margin = FMath::Min3(Margin, FMath::Min(Screen.X, 1. - Screen.X), FMath::Min(Screen.Y, 1. - Screen.Y));
+        }
+        return ScreenCentre;
+    };
+    double MinimumMargin = 1.;
+    const FVector2D ScreenStart = ProjectHull(MinimumMargin);
+    double ScreenTravel = 0.;
+    auto Offset = [&]() { return Route.UnrotateVector(F.Ship->GetActorLocation() - F.Ship->GetFlightRouteCenter()); };
+    auto ForwardSpeed = [&]() { return FVector::DotProduct(F.Ship->GetVelocity(), Route.GetForwardVector()); };
+    const double Cruise = ForwardSpeed();
+    TestTrue(TEXT("Releasing the throttle during waves still advances along the route"), Cruise > 1000.);
+    for (int32 Frame = 0; Frame < 90; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightTriggerAxis, 1.f);
+        F.Step();
+    }
+    TestTrue(TEXT("RT adds ordinary speed within the same forward route"), ForwardSpeed() > Cruise * 1.1);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    for (int32 Frame = 0; Frame < 90; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_LeftTriggerAxis, 1.f);
+        F.Step();
+    }
+    TestTrue(TEXT("Wave braking reduces speed without stopping or reversing"),
+             ForwardSpeed() > 100. && ForwardSpeed() < Cruise * .8);
+    F.Axis(EKeys::Gamepad_LeftTriggerAxis, 0.f);
+    double WorstExcess = 0., WorstViewTurn = 0., WorstNoseTurn = 0.;
+    auto Observe = [&]()
+    {
+        const FVector Across = Offset();
+        WorstExcess = FMath::Max3(WorstExcess, FMath::Abs(Across.Y) - Limits.X, FMath::Abs(Across.Z) - Limits.Y);
+        WorstViewTurn = FMath::Max(WorstViewTurn,
+                                   FMath::RadiansToDegrees(View.AngularDistance(F.Ship->Camera->GetComponentQuat())));
+        WorstNoseTurn =
+            FMath::Max(WorstNoseTurn,
+                       FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(
+                           FVector::DotProduct(Route.GetForwardVector(), F.Ship->GetActorForwardVector()), -1., 1.))));
+        double Margin;
+        const FVector2D Screen = ProjectHull(Margin);
+        MinimumMargin = FMath::Min(MinimumMargin, Margin);
+        ScreenTravel = FMath::Max(ScreenTravel, FVector2D::Distance(Screen, ScreenStart));
+    };
+    const FVector CameraStart = F.Ship->Camera->GetComponentLocation();
+    const FVector ShipStart = F.Ship->GetActorLocation();
+    FVector CentreMotionStart = FVector::ZeroVector, CentreMotionEnd = FVector::ZeroVector;
+    FVector EdgeMotionStart = FVector::ZeroVector;
+    for (int32 Frame = 0; Frame < 720; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_LeftX, 1.f);
+        F.Axis(EKeys::Gamepad_LeftY, 1.f);
+        F.Step();
+        Observe();
+        if (Frame == 29)
+        {
+            const double CameraAcross =
+                FVector::VectorPlaneProject(F.Ship->Camera->GetComponentLocation() - CameraStart,
+                                            Route.GetForwardVector())
+                    .Size();
+            const double ShipAcross =
+                FVector::VectorPlaneProject(F.Ship->GetActorLocation() - ShipStart, Route.GetForwardVector()).Size();
+            TestTrue(TEXT("The ship crosses the middle of the screen before the camera starts following"),
+                     ShipAcross > 100. && CameraAcross < ShipAcross * .35);
+            CentreMotionStart = Offset();
+        }
+        if (Frame == 89)
+            CentreMotionEnd = Offset();
+        if (Frame == 659)
+            EdgeMotionStart = Offset();
+    }
+    TestTrue(TEXT("Diagonal stick reaches the right and upper edges of a finite corridor"),
+             Offset().Y > Limits.X * .85 && Offset().Z > Limits.Y * .85);
+    TestTrue(TEXT("Holding outward input near the edge moves progressively slower than in the centre"),
+             FVector::Dist(Offset(), EdgeMotionStart) < FVector::Dist(CentreMotionEnd, CentreMotionStart) * .4);
+    F.Axis(EKeys::Gamepad_LeftX, 0.f);
+    F.Axis(EKeys::Gamepad_LeftY, 0.f);
+    // A dodge at the boundary cannot escape it, nor can rolling rotate the route or the chase shot.
+    for (const float Side : {1.f, -1.f})
+    {
+        const FKey Bumper = Side > 0.f ? EKeys::Gamepad_RightShoulder : EKeys::Gamepad_LeftShoulder;
+        F.Button(Bumper, true);
+        FQuat Previous = F.Ship->GetActorQuat();
+        double SignedRoll = 0.;
+        for (int32 Frame = 0; Frame < 120; ++Frame)
+        {
+            F.Step();
+            FQuat Delta = Previous.Inverse() * F.Ship->GetActorQuat();
+            if (Delta.W < 0.)
+                Delta = Delta * -1.;
+            SignedRoll -= FMath::RadiansToDegrees(2. * FMath::Atan2(Delta.X, Delta.W));
+            Previous = F.Ship->GetActorQuat();
+            Observe();
+        }
+        TestTrue(TEXT("Each bumper retains its own signed full-roll control within the wave route"),
+                 SignedRoll * Side > 180.);
+        F.Button(Bumper, false);
+        F.Frames(90);
+    }
+    F.Frames(60);
+    const FVector Released = Offset();
+    F.Frames(120);
+    TestTrue(TEXT("Released lateral input holds the chosen offset instead of drifting indefinitely"),
+             FVector::Dist(Offset(), Released) < 30.);
+    // Keyboard translation uses the same screen directions even after arbitrary held barrel rolls.
+    F.Button(EKeys::A, true);
+    F.Button(EKeys::F, true);
+    for (int32 Frame = 0; Frame < 1080; ++Frame)
+    {
+        F.Step();
+        Observe();
+    }
+    F.Button(EKeys::A, false);
+    F.Button(EKeys::F, false);
+    TestTrue(TEXT("Keyboard can reverse away from the boundary and reach the opposite two edges"),
+             Offset().Y < -Limits.X * .85 && Offset().Z < -Limits.Y * .85);
+    const FVector BeforeMouse = Offset();
+    for (int32 Frame = 0; Frame < 60; ++Frame)
+    {
+        F.Axis(EKeys::MouseX, 5.f);
+        F.Axis(EKeys::MouseY, 5.f);
+        F.Step();
+        Observe();
+    }
+    TestTrue(TEXT("Mouse steering also translates right and up in the route frame"),
+             Offset().Y > BeforeMouse.Y + 100. && Offset().Z > BeforeMouse.Z + 100.);
+    for (int32 Frame = 0; Frame < 30; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightX, 1.f);
+        F.Axis(EKeys::Gamepad_RightY, 1.f);
+        F.Step();
+        Observe();
+    }
+    AddInfo(FString::Printf(TEXT("CORRIDOR edge excess=%.2f cm; chase turn=%.3f deg; nose turn=%.3f deg"), WorstExcess,
+                            WorstViewTurn, WorstNoseTurn));
+    AddInfo(FString::Printf(TEXT("WAVE CAMERA screen travel=%.3f; minimum whole-hull margin=%.4f; required=%.4f"),
+                            ScreenTravel, MinimumMargin, RequiredMargin));
+    TestTrue(TEXT("The ship visibly moves across the screen instead of staying pinned to its centre"),
+             ScreenTravel > .08);
+    TestTrue(TEXT("Every visible hull corner remains framed through screen movement, edge dodges and both full rolls"),
+             MinimumMargin >= RequiredMargin);
+    TestTrue(TEXT("Held diagonal steering and bumper dodges remain within the corridor"), WorstExcess < 100.);
+    TestTrue(TEXT("Lateral movement and full rolls keep the camera aligned with the route"), WorstViewTurn < 1.);
+    TestTrue(TEXT("Steering translates the ship without changing its forward heading"), WorstNoseTurn < 3.);
+    TestTrue(TEXT("The prescribed route frame never turns with the player's input"),
+             Route.AngularDistance(F.Ship->GetFlightRouteFrame()) < .001f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerWaveCorridorLifecycle,
+                                 "SpaceSurvival.Flight.ControllerWaveCorridorLifecycle",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerWaveCorridorLifecycle::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this, true))
+        return false;
+    F.Frames(30);
+    const FQuat Route = F.Ship->GetFlightRouteFrame();
+    for (int32 Frame = 0; Frame < 60; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_LeftX, .6f);
+        F.Step();
+    }
+    F.Axis(EKeys::Gamepad_LeftX, 0.f);
+    F.Frames(60);
+    const FVector BeforeBreathing = F.Ship->GetFlightRouteCenter();
+    F.Instance->Session.run.phase = SS::Phase::Breathing;
+    F.Frames(60);
+    TestTrue(TEXT("Breathing preserves the same corridor rather than recentering on the drifting ship"),
+             F.Ship->IsInWaveCorridor() && Route.AngularDistance(F.Ship->GetFlightRouteFrame()) < .001f &&
+                 FVector::VectorPlaneProject(F.Ship->GetFlightRouteCenter() - BeforeBreathing, Route.GetForwardVector())
+                         .Size() < 1.);
+    const FVector BeforeShift = F.Ship->GetActorLocation() - F.Ship->GetFlightRouteCenter();
+    F.Ship->ApplyWorldOffset(FVector(-1000000, 230000, -54000), true);
+    F.Frames(30);
+    TestTrue(TEXT("Origin rebasing preserves the ship's offset in the corridor"),
+             FVector::Dist(F.Ship->GetActorLocation() - F.Ship->GetFlightRouteCenter(), BeforeShift) < 30.);
+    F.Instance->Session.run.phase = SS::Phase::Wormhole;
+    TestTrue(TEXT("The existing wormhole controller accepts the wave ship"),
+             F.Ship->BeginWormholeTransit(Route.GetForwardVector(), 2.f));
+    F.Frames(30);
+    TestTrue(TEXT("Wormhole transit exclusively owns movement during its phase"),
+             F.Ship->IsInWormholeTransit() && !F.Ship->IsInWaveCorridor());
+    F.Instance->Session.run.phase = SS::Phase::Climax;
+    F.Frames(60);
+    TestTrue(TEXT("Wormhole exit restores the wave corridor for the climax"),
+             !F.Ship->IsInWormholeTransit() && F.Ship->IsInWaveCorridor());
+    F.Instance->Session.run.phase = SS::Phase::Approach;
+    F.Frames(30);
+    TestFalse(TEXT("Station approach releases the corridor for ordinary docking navigation"),
+              F.Ship->IsInWaveCorridor());
+    const FVector NoseBefore = F.Ship->GetActorForwardVector();
+    for (int32 Frame = 0; Frame < 30; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_LeftX, .5f);
+        F.Step();
+    }
+    TestTrue(TEXT("The same left stick returns to nose steering outside the wave corridor"),
+             FVector::DotProduct(NoseBefore, F.Ship->GetActorForwardVector()) < .98);
     return true;
 }
 

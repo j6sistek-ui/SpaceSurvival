@@ -112,9 +112,10 @@ FVector ASSDirectorVillain::DesiredLocation(const ASSShip *Ship) const
 {
     const FSSVillainDefinition &Data = VillainData(this);
     const float Phase = 2.f * PI * Age / FMath::Max(1.f, Data.SwayPeriod);
-    return Ship->GetActorLocation() + Ship->GetActorForwardVector() * Data.LeadDistance +
-           Ship->GetActorUpVector() * (Data.HeightOffset + FMath::Cos(Phase * .7f) * Data.SwayAmplitude * .35f) +
-           Ship->GetActorRightVector() * FMath::Sin(Phase) * Data.SwayAmplitude;
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    return Ship->GetFlightRouteCenter() + RouteFrame.GetForwardVector() * Data.LeadDistance +
+           RouteFrame.GetUpVector() * (Data.HeightOffset + FMath::Cos(Phase * .7f) * Data.SwayAmplitude * .35f) +
+           RouteFrame.GetRightVector() * FMath::Sin(Phase) * Data.SwayAmplitude;
 }
 
 void ASSDirectorVillain::SetPresent(bool bValue)
@@ -178,7 +179,7 @@ void ASSDirectorVillain::Tick(float DeltaSeconds)
     }
     else
         SetActorLocation(FMath::VInterpTo(GetActorLocation(), Desired, DeltaSeconds, Data.FollowResponse));
-    FRotator Facing = Ship->GetActorForwardVector().Rotation();
+    FRotator Facing = Ship->GetFlightRouteFrame().GetForwardVector().Rotation();
     Facing.Roll = FMath::Sin(2.f * PI * Age / FMath::Max(1.f, Data.SwayPeriod)) * 18.f;
     SetActorRotation(FMath::RInterpTo(GetActorRotation(), Facing, DeltaSeconds, 2.f));
     FlareSeconds = FMath::Max(0.f, FlareSeconds - DeltaSeconds);

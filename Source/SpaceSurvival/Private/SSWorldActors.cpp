@@ -839,10 +839,11 @@ void ASSEnemy::Tick(float DeltaSeconds)
         if (Age == 0.f)
             ShotCooldown = Definition.InitialShotDelay;
         SteeringPhase += DeltaSeconds * (Definition.OrbitRate + Wave * Definition.OrbitRatePerWave);
-        const FVector Forward = Ship->GetActorForwardVector();
-        const FVector Right = Ship->GetActorRightVector();
-        const FVector Up = Ship->GetActorUpVector();
-        FVector Desired = Ship->GetActorLocation() + Forward * Definition.ForwardOffset;
+        const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+        const FVector Forward = RouteFrame.GetForwardVector();
+        const FVector Right = RouteFrame.GetRightVector();
+        const FVector Up = RouteFrame.GetUpVector();
+        FVector Desired = Ship->GetFlightRouteCenter() + Forward * Definition.ForwardOffset;
         Desired +=
             Right * FMath::Sin(SteeringPhase) * Definition.LateralAmplitude +
             Up * FMath::Cos(SteeringPhase * .65f) * Definition.VerticalAmplitude +
@@ -1203,7 +1204,9 @@ ASSWormholePassage::ASSWormholePassage()
 
 void ASSWormholePassage::BeginPassage(ASSShip *Ship, float Duration)
 {
-    if (!Ship || !Ship->BeginWormholeTransit(Ship->GetActorForwardVector(), Duration))
+    // A last-frame collision may tip the nose. The passage continues the prescribed journey,
+    // rather than multiplying that transient heading error by its much faster transport speed.
+    if (!Ship || !Ship->BeginWormholeTransit(Ship->GetReservedWaveRouteFrame().GetForwardVector(), Duration))
     {
         Destroy();
         return;
@@ -1512,10 +1515,11 @@ bool ASSEncounterBeacon::TryAccept()
         Announce(this, TEXT("SIGNAL ON HOLD · Clear nearby threats before accepting"));
         return false;
     }
-    const FVector Forward = Ship->GetActorForwardVector();
-    const FVector Right = Ship->GetActorRightVector();
-    const FVector Up = Ship->GetActorUpVector();
-    const FVector ShipOrigin = Ship->GetActorLocation();
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    const FVector Forward = RouteFrame.GetForwardVector();
+    const FVector Right = RouteFrame.GetRightVector();
+    const FVector Up = RouteFrame.GetUpVector();
+    const FVector ShipOrigin = Ship->GetFlightRouteCenter();
     const float Lead =
         FMath::Max(Definition.ObjectiveLeadDistance,
                    static_cast<float>(Ship->GetVelocity().Size()) *
@@ -1537,6 +1541,16 @@ bool ASSEncounterBeacon::TryAccept()
                 const FVector Centre =
                     CandidateOrigin + Forward * (Lead + Index * Definition.CacheSpacing) +
                     Right * (Index % 2 ? -Definition.CacheLateralOffset : Definition.CacheLateralOffset);
+                if (Ship->IsInWaveCorridor())
+                {
+                    const FVector Across = RouteFrame.UnrotateVector(Centre - ShipOrigin);
+                    const FVector2D Limits = Ship->GetWaveCorridorHalfExtents();
+                    if (FMath::Abs(Across.Y) > Limits.X || FMath::Abs(Across.Z) > Limits.Y)
+                    {
+                        bClear = false;
+                        break;
+                    }
+                }
                 bClear = HasSpatialClearance(this, PreviousCache, Centre, ShipRadius());
                 for (int32 Side : {-1, 1})
                 {
@@ -1800,16 +1814,117 @@ float ShipHullRadius(const ASSShip *Ship)
                                  : Ship->Collision->GetScaledSphereRadius();
 }
 
-/** How far from the ship a body must be admitted so the player has the whole reaction floor to see it,
- *  closing at the ship's own speed plus the fastest authored drift, rather than judged by distance alone. */
-float ReactionLead(const UObject *Context, const ASSShip *Ship, float Radius, float ReactionSeconds, float Clearance)
+float MaximumHazardDrift(const UObject *Context)
 {
     float MaximumDrift = 450.f;
     for (const auto &Hazard : Content(Context)->Hazards)
         MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
-    MaximumDrift *= HazardSpeedScale();
-    const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
+    return MaximumDrift * HazardSpeedScale();
+}
+float CorridorAdmissionSpeed(const ASSShip *Ship)
+{
+    const float Actual = FMath::Max(
+        0.f, float(FVector::DotProduct(Ship->GetVelocity(), Ship->GetFlightRouteFrame().GetForwardVector())));
+    const auto *Instance = Ship->GetGameInstance<USSGameInstance>();
+    // A rock admitted while braking must still give time to dodge if the pilot immediately boosts.
+    return Ship->IsInWaveCorridor() && Instance
+               ? FMath::Max(Actual, float(Instance->Session.Stats().speed) *
+                                        (Ship->Tuning ? FMath::Max(1.f, Ship->Tuning->BoostMultiplier) : 1.85f))
+               : Actual;
+}
+/** How far from the ship a body must be admitted so the player has the whole reaction floor to see it,
+ *  closing at the ship's own speed plus the fastest authored drift, rather than judged by distance alone. */
+float ReactionLead(const UObject *Context, const ASSShip *Ship, float Radius, float ReactionSeconds, float Clearance)
+{
+    const float ClosingSpeed = (Ship->IsInWaveCorridor() ? CorridorAdmissionSpeed(Ship) : Ship->GetVelocity().Size()) +
+                               MaximumHazardDrift(Context);
     return FMath::Max(9000.f, ClosingSpeed * ReactionSeconds + Radius + Clearance);
+}
+
+struct FCorridorHazard
+{
+    FVector Location;
+    FVector Velocity;
+    float Radius;
+};
+
+/** A bounded route cannot escape an enclosing formation by turning around. Admit a candidate only when
+ *  there is a reachable lane through its arrival, including the other live solid hazards. This is an
+ *  admission check, not a guarantee after the pilot changes speed or deliberately steers into a rock. */
+bool HasCorridorEscape(const ASSShip *Ship, float Arrival, TConstArrayView<FCorridorHazard> Proposed)
+{
+    if (!Ship->IsInWaveCorridor())
+        return true;
+    const FQuat Frame = Ship->GetFlightRouteFrame();
+    const FVector Center = Ship->GetFlightRouteCenter();
+    const FVector Across = Frame.UnrotateVector(Ship->GetActorLocation() - Center);
+    const FVector2D Current(Across.Y, Across.Z);
+    const FVector2D Limits = Ship->GetWaveCorridorHalfExtents();
+    const auto *Instance = Ship->GetGameInstance<USSGameInstance>();
+    const float Maneuver = Instance ? float(Instance->Session.Stats().maneuver) : 1700.f;
+    // Reserve time for the acceleration into a lane and the stop there, rather than assuming instant thrust.
+    const float Reach = FMath::Max(0.f, Arrival - .75f) * Maneuver / 1.5f;
+    const float ForwardSpeed = CorridorAdmissionSpeed(Ship);
+    const float Hull = ShipHullRadius(Ship) + 150.f;
+    TArray<FCorridorHazard, TInlineAllocator<32>> Obstacles;
+    Obstacles.Append(Proposed.GetData(), Proposed.Num());
+    for (TActorIterator<ASSWorldBody> It(Ship->GetWorld()); It; ++It)
+        if (!It->IsActorBeingDestroyed() && It->IsSolidHazard())
+            Obstacles.Add({It->GetActorLocation(), It->GetVelocity(), It->GetBodyRadius()});
+    TArray<FVector2D, TInlineAllocator<26>> Lanes;
+    Lanes.Add(Current);
+    for (int32 Y = -2; Y <= 2; ++Y)
+        for (int32 Z = -2; Z <= 2; ++Z)
+            Lanes.Add(FVector2D(Limits.X * Y * .5f, Limits.Y * Z * .5f));
+    for (const FVector2D &Lane : Lanes)
+    {
+        const FVector2D Travel = Lane - Current;
+        const auto OutwardAuthority = [](double From, double To, double Limit)
+        {
+            if ((To - From) * To <= 0.)
+                return 1.;
+            const double Edge = FMath::Clamp((FMath::Abs(To) / Limit - .6) / .4, 0., 1.);
+            return 1. - Edge * Edge * (3. - 2. * Edge);
+        };
+        const double RightAuthority = OutwardAuthority(Current.X, Lane.X, Limits.X);
+        const double UpAuthority = OutwardAuthority(Current.Y, Lane.Y, Limits.Y);
+        if ((RightAuthority <= 0. && FMath::Abs(Travel.X) > .01) || (UpAuthority <= 0. && FMath::Abs(Travel.Y) > .01))
+            continue;
+        // Charge the entire outward path at its lowest edge authority. The controller fades
+        // outward drift beyond 60%; a lane on the absolute limit is not reachable in finite time.
+        const FVector2D EffectiveTravel(Travel.X / FMath::Max(.001, RightAuthority),
+                                        Travel.Y / FMath::Max(.001, UpAuthority));
+        if (EffectiveTravel.Size() > Reach)
+            continue;
+        bool bClear = true;
+        FVector PreviousPosition = Ship->GetActorLocation();
+        // Swept relative segments cover the movement into the lane and the stop there. Checking
+        // just its endpoint would miss a fast rock crossing the escape path between samples.
+        for (int32 Step = 1; Step <= 6 && bClear; ++Step)
+        {
+            const float Alpha = Step / 6.f;
+            const float Time = Arrival * Alpha;
+            const float PreviousTime = Arrival * (Step - 1) / 6.f;
+            const FVector2D Offset = FMath::Lerp(Current, Lane, FMath::Min(1.f, Alpha * 1.5f));
+            const FVector Position = Center + Frame.RotateVector(FVector(ForwardSpeed * Time, Offset.X, Offset.Y));
+            for (const FCorridorHazard &Obstacle : Obstacles)
+            {
+                const FVector From = PreviousPosition - Obstacle.Location - Obstacle.Velocity * PreviousTime;
+                const FVector Delta = Position - Obstacle.Location - Obstacle.Velocity * Time - From;
+                const double Closest =
+                    FMath::Clamp(-FVector::DotProduct(From, Delta) / FMath::Max(1.e-8, Delta.SizeSquared()), 0., 1.);
+                if ((From + Delta * Closest).SizeSquared() < FMath::Square(Hull + Obstacle.Radius))
+                {
+                    bClear = false;
+                    break;
+                }
+            }
+            PreviousPosition = Position;
+        }
+        if (bClear)
+            return true;
+    }
+    return false;
 }
 } // namespace
 
@@ -1818,21 +1933,41 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     ASSShip *Ship = FindShip();
     if (!Ship)
         return false;
-    const FVector Forward = Ship->GetActorForwardVector();
-    const FVector Right = Ship->GetActorRightVector();
-    const FVector Up = Ship->GetActorUpVector();
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    const FVector Forward = RouteFrame.GetForwardVector();
+    const FVector Right = RouteFrame.GetRightVector();
+    const FVector Up = RouteFrame.GetUpVector();
     const float Lead = ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
         // Larger rocks need room beside the protected corridor, not only a longer approach lead.
         const float Spread = bField ? 1.f : FMath::Max(1.f, (Radius + PlayerClearanceRadius + 320.f) / 1800.f);
-        const FVector2D Offset(Random.FRandRange(-2600.f, 2600.f) * Spread,
-                               Random.FRandRange(-1700.f, 1700.f) * Spread);
-        if (!bField && FVector2D::Distance(Offset, SafeLane) < Radius + PlayerClearanceRadius + 320.f)
+        const FVector2D Limits =
+            Ship->IsInWaveCorridor() ? Ship->GetWaveCorridorHalfExtents() : FVector2D(2600.f, 1700.f) * Spread;
+        FVector2D Offset(Random.FRandRange(-Limits.X, Limits.X), Random.FRandRange(-Limits.Y, Limits.Y));
+        if (Ship->IsInWaveCorridor() && !bField && Random.FRand() < .7f)
+        {
+            // Most ordinary clutter frames the sides. Direct shots still use the separate fair
+            // trajectory admission below, so a quieter middle does not remove survival pressure.
+            const bool Horizontal = Random.RandRange(0, 1) == 0;
+            const float Side = Random.RandRange(0, 1) == 0 ? -1.f : 1.f;
+            if (Horizontal)
+                Offset.X = Side * Random.FRandRange(.65f, 1.f) * Limits.X;
+            else
+                Offset.Y = Side * Random.FRandRange(.65f, 1.f) * Limits.Y;
+        }
+        const float Clearance =
+            Ship->IsInWaveCorridor() ? FMath::Max(PlayerClearanceRadius, ShipHullRadius(Ship)) : PlayerClearanceRadius;
+        if (!bField && FVector2D::Distance(Offset, SafeLane) < Radius + Clearance + 320.f)
             continue;
-        const FVector Candidate = Ship->GetActorLocation() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) +
+        const FVector Candidate = Ship->GetFlightRouteCenter() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) +
                                   Right * Offset.X + Up * Offset.Y;
-        if (HasSpatialClearance(this, Candidate, Candidate, Radius, bField))
+        const float Drift = MaximumHazardDrift(this);
+        const FCorridorHazard Proposed{Candidate, -Forward * Drift, Radius};
+        const float Arrival = float(FVector::DotProduct(Candidate - Ship->GetActorLocation(), Forward)) /
+                              FMath::Max(1.f, CorridorAdmissionSpeed(Ship) + Drift);
+        if (HasSpatialClearance(this, Candidate, Candidate, Radius, bField) &&
+            (bField || HasCorridorEscape(Ship, Arrival, MakeArrayView(&Proposed, 1))))
         {
             Location = Candidate;
             return true;
@@ -1851,7 +1986,7 @@ bool USSSurvivalDirectorComponent::FindVillainLaunch(float Radius, FVector &Loca
     // candidate. A hard turn that swings him wide, a tuning that brings him close or a try beside his craft must
     // never start a hunter off to the side or inside the player's reaction time; the ordinary placer takes over.
     const FVector ShipLocation = Ship->GetActorLocation();
-    const FVector Heading = Ship->GetActorForwardVector();
+    const FVector Heading = Ship->GetFlightRouteFrame().GetForwardVector();
     const float Lead = ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius);
     if (FVector::DotProduct(Origin - ShipLocation, Heading) < Lead)
         return false;
@@ -1885,10 +2020,12 @@ bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed
     ASSShip *Ship = FindShip();
     if (!Ship)
         return false;
-    const FVector Forward = Ship->GetActorForwardVector();
-    const FVector Right = Ship->GetActorRightVector();
-    const FVector Up = Ship->GetActorUpVector();
-    const FVector ShipVelocity = Ship->GetVelocity();
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    const FVector Forward = RouteFrame.GetForwardVector();
+    const FVector Right = RouteFrame.GetRightVector();
+    const FVector Up = RouteFrame.GetUpVector();
+    const FVector ShipVelocity =
+        Ship->IsInWaveCorridor() ? Forward * CorridorAdmissionSpeed(Ship) : Ship->GetVelocity();
     const float HullRadius = ShipHullRadius(Ship);
     const float Contact = Radius + HullRadius;
     const float Now = GetWorld()->GetTimeSeconds();
@@ -1901,7 +2038,10 @@ bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
         const FVector Incoming =
-            (-Forward + Right * Random.FRandRange(-.35f, .35f) + Up * Random.FRandRange(-.25f, .25f)).GetSafeNormal();
+            Ship->IsInWaveCorridor()
+                ? -Forward
+                : (-Forward + Right * Random.FRandRange(-.35f, .35f) + Up * Random.FRandRange(-.25f, .25f))
+                      .GetSafeNormal();
         const FVector RockVelocity = Incoming * Speed;
         const FVector RelativeVelocity = RockVelocity - ShipVelocity;
         const double Closing = RelativeVelocity.Size();
@@ -1933,7 +2073,9 @@ bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed
         const float Angle = Random.FRandRange(0.f, 2.f * PI);
         const FVector Offset = (MissAxis * FMath::Cos(Angle) + OtherMissAxis * FMath::Sin(Angle)) * Miss;
         const FVector Candidate = Ship->GetActorLocation() - RelativeVelocity * Arrival + Offset;
-        if (HasSpatialClearance(this, Candidate, Candidate, Radius, false))
+        const FCorridorHazard Proposed{Candidate, RockVelocity, Radius};
+        if (HasSpatialClearance(this, Candidate, Candidate, Radius, false) &&
+            HasCorridorEscape(Ship, float(Arrival), MakeArrayView(&Proposed, 1)))
         {
             Location = Candidate;
             Velocity = RockVelocity;
@@ -1985,6 +2127,11 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
             // 1.85 of cruise and the climax share is .65, so a field admitted during a boost travelled at 1.2
             // of cruise, could never be reached once the boost ran out, and retired unseen a few seconds later.
             FVector Carried = Ship->GetVelocity();
+            if (Ship->IsInWaveCorridor())
+            {
+                const FVector Forward = Ship->GetFlightRouteFrame().GetForwardVector();
+                Carried = Forward * FVector::DotProduct(Carried, Forward);
+            }
             if (const USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
                 Carried = Carried.GetClampedToMaxSize(FMath::Max(1.f, float(Instance->Session.Stats().speed)));
             Body->SetLinearVelocity(Carried *
@@ -2001,8 +2148,8 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
             // sailing past, which is what made them read as scenery drifting by. Leading the ship instead
             // makes a hazard something to dodge. Partial by default: a field where everything intercepts
             // is not harder, it is unavoidable, and the owner asked for danger rather than for a tax.
-            FVector Direction = -Ship->GetActorForwardVector();
-            const float Aim = FMath::Clamp(HazardAim.GetValueOnGameThread(), 0.f, 1.f);
+            FVector Direction = -Ship->GetFlightRouteFrame().GetForwardVector();
+            const float Aim = Ship->IsInWaveCorridor() ? 0.f : FMath::Clamp(HazardAim.GetValueOnGameThread(), 0.f, 1.f);
             const FVector ToShip = Ship->GetActorLocation() - Location;
             if (Aim > 0.f && Speed > 1.f && !ToShip.IsNearlyZero())
             {
@@ -2044,12 +2191,16 @@ int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count, float Budget, float
     const float Speed =
         Random.FRandRange(Centre.DriftSpeedMin, FMath::Max(Centre.DriftSpeedMin, Centre.DriftSpeedMax)) *
         HazardSpeedScale();
-    const FVector Incoming =
-        (-Ship->GetActorForwardVector() + Ship->GetActorRightVector() * Random.FRandRange(-.35f, .35f) +
-         Ship->GetActorUpVector() * Random.FRandRange(-.25f, .25f))
-            .GetSafeNormal();
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    const FVector Incoming = Ship->IsInWaveCorridor() ? -RouteFrame.GetForwardVector()
+                                                      : (-RouteFrame.GetForwardVector() +
+                                                         RouteFrame.GetRightVector() * Random.FRandRange(-.35f, .35f) +
+                                                         RouteFrame.GetUpVector() * Random.FRandRange(-.25f, .25f))
+                                                            .GetSafeNormal();
     const FVector RockVelocity = Incoming * Speed;
-    const FVector RelativeVelocity = RockVelocity - Ship->GetVelocity();
+    const FVector ShipVelocity =
+        Ship->IsInWaveCorridor() ? RouteFrame.GetForwardVector() * CorridorAdmissionSpeed(Ship) : Ship->GetVelocity();
+    const FVector RelativeVelocity = RockVelocity - ShipVelocity;
     const double Closing = RelativeVelocity.Size();
     if (Closing < 1.)
         return 0;
@@ -2127,6 +2278,11 @@ int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count, float Budget, float
     }
     if (FormationCost > Budget)
         return 0;
+    TArray<FCorridorHazard, TInlineAllocator<8>> Proposed;
+    for (const FVolleyMember &Member : Formation)
+        Proposed.Add({Member.Location, RockVelocity, Member.Radius});
+    if (!HasCorridorEscape(Ship, float(Arrival), Proposed))
+        return 0;
     int32 Admitted = 0;
     for (int32 Index = 0; Index < Formation.Num(); ++Index)
     {
@@ -2198,13 +2354,28 @@ bool USSSurvivalDirectorComponent::SpawnWreckagePassage()
     FVector Centre;
     if (!FindSafeSpawn(350.f, Centre))
         return false;
-    // Authored four-piece frame: an unobstructed 1,400 cm aperture with varied orientation.
-    const FVector Axes[] = {Ship->GetActorRightVector(), -Ship->GetActorRightVector(), Ship->GetActorUpVector(),
-                            -Ship->GetActorUpVector()};
+    // Keep the aperture in the route frame. A full Phoenix must fit through it without rolling the
+    // frame with the ship, and its centre must be somewhere the bounded controls can actually reach.
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    const FVector Axes[] = {RouteFrame.GetRightVector(), -RouteFrame.GetRightVector(), RouteFrame.GetUpVector(),
+                            -RouteFrame.GetUpVector()};
+    const float Spacing =
+        Ship->IsInWaveCorridor()
+            ? FMath::Max(Definition.PassageHalfSpacing,
+                         ShipHullRadius(Ship) + FMath::Max(Definition.Radius, Definition.BreakableChunkRadius) + 320.f)
+            : Definition.PassageHalfSpacing;
+    TArray<FCorridorHazard, TInlineAllocator<4>> Passage;
+    for (int32 Index = 0; Index < 4; ++Index)
+        Passage.Add({Centre + Axes[Index] * Spacing, -RouteFrame.GetForwardVector() * Definition.DriftSpeedMin,
+                     Index == 0 ? Definition.BreakableChunkRadius : Definition.Radius});
+    const float Arrival = float(FVector::DotProduct(Centre - Ship->GetActorLocation(), RouteFrame.GetForwardVector())) /
+                          FMath::Max(1.f, CorridorAdmissionSpeed(Ship) + Definition.DriftSpeedMin);
+    if (!HasCorridorEscape(Ship, Arrival, Passage))
+        return false;
     bool SpawnedAny = false;
     for (int32 Index = 0; Index < 4; ++Index)
     {
-        const FVector Position = Centre + Axes[Index] * Definition.PassageHalfSpacing;
+        const FVector Position = Centre + Axes[Index] * Spacing;
         bool bClear = true;
         for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
             if (It->IsSolidHazard() &&
@@ -2215,11 +2386,11 @@ bool USSSurvivalDirectorComponent::SpawnWreckagePassage()
             }
         if (!bClear)
             continue;
-        if (ASSWorldBody *Chunk = GetWorld()->SpawnActor<ASSWorldBody>(Position, Ship->GetActorRotation()))
+        if (ASSWorldBody *Chunk = GetWorld()->SpawnActor<ASSWorldBody>(Position, RouteFrame.Rotator()))
         {
             Chunk->Configure(ESSWorldKind::Wreckage, Index == 0 ? Definition.BreakableChunkRadius : Definition.Radius,
                              Definition.DamageBase + Wave * Definition.DamagePerWave, Wave);
-            Chunk->SetLinearVelocity(-Ship->GetActorForwardVector() * Definition.DriftSpeedMin);
+            Chunk->SetLinearVelocity(-RouteFrame.GetForwardVector() * Definition.DriftSpeedMin);
             Spawned.Add(Chunk);
             SpawnedAny = true;
         }
@@ -2235,9 +2406,15 @@ void USSSurvivalDirectorComponent::OfferEncounter(ESSEncounterKind Kind)
     const auto Definition = Content(this)->Encounter(Kind);
     const float Lead = FMath::Max(Definition.OfferLeadDistance,
                                   static_cast<float>(Ship->GetVelocity().Size()) * Definition.OfferLeadSeconds);
-    const FVector Location = Ship->GetActorLocation() + Ship->GetActorForwardVector() * Lead +
-                             Ship->GetActorRightVector() * Definition.OfferLateralOffset;
-    if (ASSEncounterBeacon *Beacon = GetWorld()->SpawnActor<ASSEncounterBeacon>(Location, Ship->GetActorRotation()))
+    const FQuat RouteFrame = Ship->GetFlightRouteFrame();
+    const float Lateral =
+        Ship->IsInWaveCorridor()
+            ? float(FMath::Clamp(double(Definition.OfferLateralOffset), -Ship->GetWaveCorridorHalfExtents().X,
+                                 Ship->GetWaveCorridorHalfExtents().X))
+            : Definition.OfferLateralOffset;
+    const FVector Location =
+        Ship->GetFlightRouteCenter() + RouteFrame.GetForwardVector() * Lead + RouteFrame.GetRightVector() * Lateral;
+    if (ASSEncounterBeacon *Beacon = GetWorld()->SpawnActor<ASSEncounterBeacon>(Location, RouteFrame.Rotator()))
     {
         Beacon->ConfigureEncounter(Kind, Wave);
         Spawned.Add(Beacon);

@@ -1,5 +1,11 @@
 # SpaceSurvival
 
+## Owner amendment — October 29, 2026: wave flight
+
+Wave travel follows a prescribed forward route. The player drifts horizontally and vertically within an invisible play area; outward movement progressively slows near its edges, while inward movement remains responsive. Use a rail-shooter camera with a central dead zone and gentle following near the screen edges, so the ship moves across the screen without steering the whole view. Asteroids and debris can be denser toward the sides. Do not add a visible tunnel, corridor walls or boundary markers.
+
+Normal waves, breathing periods and climaxes share this route. Forward cruise is automatic; power/boost changes speed and braking slows travel without reversing the route. Bumper dash/roll keeps its left/right meaning and cannot rotate the route. Free Flight and station approach retain unrestricted flight, coasting and free-look; the existing wormhole owns its transit. This supersedes earlier open-navigation/coasting rules for wave travel only. Wave counts, progression and station cadence are unchanged.
+
 **Historical September 22 control proposal — superseded by the later owner-approved arcade preset:** Retained for provenance only; current controls are in [Build and run](BUILD_RUN.md) and the acceptance record in [Known issues](KNOWN_ISSUES.md). The later preset uses left-stick nose steering and bumper tap dash/bank with hold-to-roll. Earlier temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
 
 ## Owner amendment — September 21, 2026 evening

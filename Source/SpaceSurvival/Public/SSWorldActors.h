@@ -355,6 +355,7 @@ private:
     friend class FSSDirectorVillainLaunch;
     friend class FSSDirectorVolley;
     friend class FSSDirectorVolleyAdmission;
+    friend class FSSDirectorWaveCorridor;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
     /** Where the villain can throw an enemy from: his craft, while it is ahead of the ship by at least the
      *  reaction lead along the heading and has clear room. False sends the enemy to FindSafeSpawn as before. */

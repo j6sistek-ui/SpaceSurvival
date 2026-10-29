@@ -179,11 +179,11 @@ void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Co
 {
     if (Value.IsEmpty())
         return;
-    const float Padding = 14.f * Scale, KeyW = HasUseKey ? 30.f * Scale : 0.f;
+    const float Padding = 10.f * Scale, KeyW = HasUseKey ? 30.f * Scale : 0.f;
     const FVector2D Size = MeasureStationText(Value, 1.f);
     const float Width = FMath::Min(Size.X + KeyW + Padding * 2.f, Canvas->ClipX - 32.f * Scale);
     const float Height = FMath::Max(Size.Y, 24.f * Scale) + Padding * 2.f;
-    const float X = (Canvas->ClipX - Width) * .5f, Y = Canvas->ClipY - Height - 28.f * Scale;
+    const float X = (Canvas->ClipX - Width) * .5f, Y = Canvas->ClipY - Height - 20.f * Scale;
     DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X, Y, Width, Height);
     if (HasUseKey)
         Glyph(Key, PadKey, X + Padding, Y + Padding, 1.f, Color);
@@ -375,18 +375,20 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
     const float W = Canvas->SizeX, H = Canvas->SizeY;
     const FVector2D Centre(W * .5f, H * .5f);
     BeginRefreshLayout();
-    const FVector2D Radar = RefreshOrigin + FVector2D(1672.f, 266.f) * RefreshScale;
-    const float RadarRadius = 142.f * RefreshScale, RadarRange = 10000.f;
+    const FBox2D Safe = HudSafeBounds();
+    const FVector2D RadarAnchor(Safe.Max.X - 135.f, Safe.Min.Y + 169.f);
+    const FVector2D Radar = RefreshOrigin + RadarAnchor * RefreshScale;
+    const float RadarRadius = 106.f * RefreshScale, RadarRange = 10000.f;
     const FLinearColor Grid(.18f, .33f, .4f, .65f);
     const FRotator ViewRotation = PlayerOwner->PlayerCameraManager->GetCameraRotation();
     const FVector ViewRight = FRotationMatrix(ViewRotation).GetUnitAxis(EAxis::Y);
     if (ShowRadar)
     {
         for (const TCHAR *Layer : {TEXT("RadarBack"), TEXT("RadarRings"), TEXT("RadarTicks"), TEXT("RadarRim")})
-            RefreshImage(Layer, 1510, 104, 324, 324);
-        RefreshImage(TEXT("RadarBezel"), 1492, 86, 361, 361);
-        RefreshImage(TEXT("You"), 1653, 247, 38, 38);
-        RefreshText(TEXT("CONTACTS / 100 m"), 1585, 59, 20, FLinearColor(.65f, .83f, .9f));
+            RefreshImage(Layer, RadarAnchor.X - 121, RadarAnchor.Y - 121, 242, 242);
+        RefreshImage(TEXT("RadarBezel"), RadarAnchor.X - 135, RadarAnchor.Y - 135, 270, 270);
+        RefreshImage(TEXT("You"), RadarAnchor.X - 15, RadarAnchor.Y - 15, 30, 30);
+        RefreshText(TEXT("CONTACTS / 100 m"), RadarAnchor.X - 122, Safe.Min.Y, 18, FLinearColor(.65f, .83f, .9f));
     }
     for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
     {
@@ -403,7 +405,7 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
             const FVector2D Offset =
                 FVector2D(Local.Y, -Local.X).GetClampedToMaxSize(RadarRange) / RadarRange * RadarRadius;
             const FVector2D At = (Radar + Offset - RefreshOrigin) / RefreshScale;
-            RefreshImage(TEXT("Enemy"), At.X - 15, At.Y - 15, 30, 30);
+            RefreshImage(TEXT("Enemy"), At.X - 12, At.Y - 12, 24, 24);
         }
         FVector2D Screen;
         const bool InFront = PlayerOwner->ProjectWorldLocationToScreen(Position, Screen);
@@ -785,11 +787,21 @@ void ASSHUD::DrawHUD()
              W * .22f, 130 * Scale, .85f, FLinearColor(.45f, .9f, 1));
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying() && GM->ThreatWarningSeconds > 0.f)
     {
-        const float AlertW = FMath::Min(620.f * Scale, W - 2.f * Margin);
-        const float AlertX = (W - AlertW) * .5f, AlertY = H * .22f;
-        DrawRect(FLinearColor(.04f, .025f, .02f, .94f), AlertX, AlertY, AlertW, 42.f * Scale);
-        Text(TEXT("!  ") + GM->ThreatWarning, AlertX + 12.f * Scale, AlertY + 11.f * Scale, .8f,
-             FLinearColor(1.f, .83f, .52f));
+        // Keep the flight sightline clear. Alerts stack below the measured top-edge
+        // guidance, so larger text cannot push the two messages into one another.
+        const FBox2D Safe = HudSafeBounds();
+        const float GuidanceW = FMath::Min(880.f, float(Safe.GetSize().X) - 650.f);
+        const float GuidanceH = GM->IsAnnouncementVisible()
+                                    ? RefreshText(GM->Announcement, 0, 0, 20, FLinearColor::White, GuidanceW, false)
+                                    : 0.f;
+        const float AlertW = FMath::Min(620.f, float(Safe.GetSize().X));
+        const float AlertX = (Safe.Min.X + Safe.Max.X - AlertW) * .5f;
+        const float AlertY = Safe.Min.Y + GuidanceH + 12.f;
+        const FString Warning = TEXT("!  ") + GM->ThreatWarning;
+        const float AlertH = RefreshText(Warning, 0, 0, 20, FLinearColor::White, AlertW - 24.f, false) + 16.f;
+        const FBox2D Alert = RefreshBounds(AlertX, AlertY, AlertW, AlertH);
+        DrawRect(FLinearColor(.04f, .025f, .02f, .94f), Alert.Min.X, Alert.Min.Y, Alert.GetSize().X, Alert.GetSize().Y);
+        RefreshText(Warning, AlertX + 12.f, AlertY + 8.f, 20, FLinearColor(1.f, .83f, .52f), AlertW - 24.f);
         if (FVector::DistSquared(GM->ThreatPosition, Ship->GetActorLocation()) > 1.f)
         {
             const FVector2D Centre(W * .5f, H * .5f);
@@ -1013,7 +1025,10 @@ void ASSHUD::DrawHUD()
         // Keep transient messages in their own column, clear of the wave/location
         // heading on the left and the station radar on the right. Use the same
         // reference layout as those widgets instead of a full-width legacy bar.
-        RefreshText(GM->Announcement, 600, 52, 23, FLinearColor(.8f, .94f, 1.f), 820);
+        const FBox2D Safe = HudSafeBounds();
+        const float GuidanceW = FMath::Min(880.f, float(Safe.GetSize().X) - 650.f);
+        RefreshText(GM->Announcement, (Safe.Min.X + Safe.Max.X - GuidanceW) * .5f, Safe.Min.Y, 20,
+                    FLinearColor(.8f, .94f, 1.f), GuidanceW);
     }
     if (GM->IsMenuOpen())
         DrawRefreshMenu(*GM);

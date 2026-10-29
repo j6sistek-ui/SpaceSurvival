@@ -1362,8 +1362,9 @@ void ASSGameMode::Tick(float Dt)
                 Hub = nullptr;
             }
             Director->SetActive(!GI->IsFreeFlight());
-            Announce(GI->IsFreeFlight() ? TEXT("FREE FLIGHT / No waves. Esc / Menu to return to the hangar.")
-                                        : FString::Printf(TEXT("STATION ZONE CLEAR  |  WAVE %d"), S.run.wave));
+            Announce(GI->IsFreeFlight()
+                         ? TEXT("FREE FLIGHT / No waves. Esc / Menu to return to the hangar.")
+                         : FString::Printf(TEXT("WAVE %d  |  Forward cruise engaged. Drift to dodge."), S.run.wave));
             // A new run's Wave 1 began silently on the pad, so he greets the pilot here. A relaunch changes the
             // wave in this frame instead, and the wave-change block below speaks for it.
             if (S.run.wave == PreviousWave)
@@ -1494,9 +1495,8 @@ void ASSGameMode::Tick(float Dt)
                 bWormholeArrived = true;
             Director->Configure(S.run.wave, true);
             Director->SetActive(true);
-            Announce(S.run.wave == 5
-                         ? TEXT("WORMHOLE EXIT / Unknown space. Recover your heading; hostile contacts ahead.")
-                         : TEXT("COMPOUND FRONT  |  Gravity, asteroids and enemy pressure."));
+            Announce(S.run.wave == 5 ? TEXT("WORMHOLE EXIT / Forward route acquired. Drift around hostile contacts.")
+                                     : TEXT("COMPOUND FRONT  |  Gravity, asteroids and enemy pressure."));
             VillainSpeak(S.run.wave == 5 ? ESSVillainCue::Climax : ESSVillainCue::Compound);
         }
         if (S.run.phase == SS::Phase::Approach && Ship)
@@ -1548,9 +1548,10 @@ void ASSGameMode::Tick(float Dt)
     if (S.IsFlying() && S.run.wave <= 3 && AnnouncementSeconds <= 0)
     {
         const TCHAR *Prompts[] = {
-            TEXT("FLIGHT: left stick nose steering. LB/RB dash and bank; hold to roll. Right stick is camera-only "
-                 "free-look."),
-            TEXT("THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. A/D moves sideways."),
+            TEXT("WAVES: left stick / mouse drifts across the route. A/D moves sideways; R/F moves up/down. "
+                 "The ship cruises forward automatically."),
+            TEXT("ROUTE EDGES: outward drift slows gradually. Steer inward for full response. RT / W/S adds cruise "
+                 "power."),
             TEXT("BOOST: Shift / B. Separate from normal throttle; release to recharge."),
             TEXT("BRAKE: Space / left trigger. Partial braking builds heat; give it time to cool."),
             TEXT("DODGE: Q, or tap LB/RB to dash left/right. Hold a bumper to roll. Obstacles still hurt."),
@@ -2033,9 +2034,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Controls:
         PanelTitle = TEXT("FLIGHT / WALK CONTROLS");
         PanelDetail =
-            TEXT("FLIGHT: Left stick: nose steering | LB/RB: dash / hold roll | Right stick: free-look.\nMouse: steer "
-                 "| A D / R F: lateral / vertical thrust.\n"
-                 "RT / W S: throttle. Zero power coasts.\n"
+            TEXT("WAVES: automatic forward cruise. Left stick / mouse: sideways and vertical drift.\n"
+                 "Camera follows gently near the edges; outward drift gets slower.\n"
+                 "FREE FLIGHT / STATION: left stick / mouse steers; right stick: free-look. Zero power coasts.\n"
+                 "A D / R F: lateral / vertical thrust | LB/RB: dash / hold roll.\n"
+                 "RT / W S: power. During waves, brake slows forward travel.\n"
                  "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
                  "E / X: flight interaction / landing.\n"
                  "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"

@@ -203,6 +203,25 @@ void ASSDistantAsteroids::BuildField(int32 Count)
 void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
 {
     auto &Instances = Cells.Add(Cell);
+    const auto *Ship = Cast<ASSShip>(Viewer.Get());
+    const FTransform FieldTransform = GetActorTransform();
+    const FTransform Route =
+        Ship ? FTransform(Ship->GetReservedWaveRouteFrame(), Ship->GetReservedWaveRouteOrigin()) : FTransform::Identity;
+    const FVector2D Limits = Ship ? Ship->GetWaveCorridorHalfExtents() : FVector2D::ZeroVector;
+    const FBox Hull =
+        Ship ? Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()))
+             : FBox(FVector::ZeroVector, FVector::ZeroVector);
+    const double HullClearance = Hull.GetCenter().Size() + Hull.GetExtent().Size() + 1000.0;
+    auto HasRouteClearance = [&](const FVector &Center, double Radius)
+    {
+        if (!Ship)
+            return true;
+        const FVector Local = Route.InverseTransformPosition(FieldTransform.TransformPosition(Center));
+        const double Side = FMath::Max(0.0, FMath::Abs(Local.Y) - Limits.X);
+        const double Height = FMath::Max(0.0, FMath::Abs(Local.Z) - Limits.Y);
+        return FMath::Square(Side) + FMath::Square(Height) >=
+               FMath::Square(Radius * FieldTransform.GetScale3D().GetAbsMax() + HullClearance);
+    };
     // Placement history includes destroyed ordinals: returning to a cell must not rearrange
     // its survivors because a previous neighbour was shot away.
     struct FCompositionRock
@@ -329,7 +348,9 @@ void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
         const float Health = FMath::Clamp(12.f + float(Radius) * .02f, 24.f, 600.f);
         const auto *PriorDamage = DamageByCell.Find(Cell);
         const float Applied = PriorDamage ? PriorDamage->FindRef(Index) : 0.f;
-        if (bAsteroid && Applied >= Health)
+        // Reserve the entire persistent route before admission, even while the pilot is on foot.
+        // Keep composition history and pose RNG intact so surviving ordinals never move on a revisit.
+        if ((bAsteroid && Applied >= Health) || !HasRouteClearance(Center, Radius))
             continue;
         Instances.Add({BatchIndex, Batch->AddInstanceById(FTransform(Rotation, Pivot, FVector(Scale))), Index, Center,
                        float(Radius), Health - Applied, bAsteroid});

@@ -282,6 +282,11 @@ public:
     float BoostMultiplier = 1.85f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float LateralSpeed = 1700.f;
+    /** Allowed ship-centre displacement from the prescribed wave route (cm). */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Wave corridor", meta = (ClampMin = "2000.0"))
+    float WaveCorridorHalfWidth = 6000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Wave corridor", meta = (ClampMin = "2000.0"))
+    float WaveCorridorHalfHeight = 4000.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float SteeringDegrees = 65.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")

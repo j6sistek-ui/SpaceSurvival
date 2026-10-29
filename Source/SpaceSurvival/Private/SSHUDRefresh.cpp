@@ -51,6 +51,12 @@ UTexture2D *ASSHUD::RefreshTexture(FName Name)
     return Texture;
 }
 
+FBox2D ASSHUD::HudSafeBounds() const
+{
+    return FBox2D(-RefreshOrigin / RefreshScale + FVector2D(24, 24),
+                  (FVector2D(Canvas->SizeX, Canvas->SizeY) - RefreshOrigin) / RefreshScale - FVector2D(24, 24));
+}
+
 FBox2D ASSHUD::RefreshBounds(float X, float Y, float Width, float Height) const
 {
     return FBox2D(RefreshOrigin + FVector2D(X, Y) * RefreshScale,
@@ -479,6 +485,9 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
 void ASSHUD::DrawRefreshVitals(const ASSGameMode &Mode, bool Walking)
 {
     BeginRefreshLayout();
+    const FBox2D Safe = HudSafeBounds();
+    const float Left = Safe.Min.X, Right = Safe.Max.X, Top = Safe.Min.Y, Bottom = Safe.Max.Y;
+    const float Centre = (Left + Right) * .5f;
     auto *GI = GetGameInstance<USSGameInstance>();
     const auto &S = GI->Session;
     const auto Stats = S.Stats();
@@ -487,14 +496,14 @@ void ASSHUD::DrawRefreshVitals(const ASSGameMode &Mode, bool Walking)
         : Walking          ? (Mode.InHangar() ? TEXT("HOME HANGAR")
                                               : FString::Printf(TEXT("STATION %02d"), FMath::Max(1, S.run.wave / 5)))
                            : FString::Printf(TEXT("WAVE %02d / 10"), bReviewFlightHUD ? 6 : S.run.wave);
-    RefreshText(Location, 64, 52, Walking ? 48.f : 29.f, UIWhite);
+    RefreshText(Location, Left, Top, Walking ? 34.f : 26.f, UIWhite);
     RefreshText(Walking              ? TEXT("PREPARE / SERVICES / DEPARTURE")
                 : GI->IsFreeFlight() ? TEXT("EXPLORE THE SECTOR")
                                      : TEXT("SURVIVE THE SECTOR"),
-                64, Walking ? 115.f : 96.f, 18, UICyan);
+                Left, Top + (Walking ? 50.f : 39.f), 17, UICyan);
     if (Walking)
     {
-        RefreshText(FString::Printf(TEXT("%d CR"), S.run.credits), 64, 160, 30, UIAmber);
+        RefreshText(FString::Printf(TEXT("%d CR"), S.run.credits), Left, Top + 84, 24, UIAmber);
         DrawStationRadar();
         return;
     }
@@ -507,31 +516,35 @@ void ASSHUD::DrawRefreshVitals(const ASSGameMode &Mode, bool Walking)
     const TCHAR *Pips[] = {TEXT("PipRed"), TEXT("PipBlue"), TEXT("PipAmber")};
     for (int32 Row = 0; Row < 3; ++Row)
     {
-        const float Y = 762.f + Row * 77.f;
-        RefreshText(Names[Row], 87, Y, 20, Row == 2 ? UIAmber : UIWhite);
+        const float Y = Bottom - 202.f + Row * 62.f;
+        RefreshText(Names[Row], Left, Y, 18, Row == 2 ? UIAmber : UIWhite);
         for (int32 Pip = 0; Pip < 13; ++Pip)
             RefreshImage(Pip < FMath::CeilToInt(FMath::Clamp(Values[Row], 0., 1.) * 13.) ? Pips[Row] : TEXT("PipOff"),
-                         87.f + Pip * 31.f, Y + 29, 53, 39);
+                         Left + Pip * 24.f, Y + 27, 41, 30);
     }
-    RefreshImage(TEXT("WideFrame"), 668, 880, 620, 180);
-    RefreshText(S.run.weapon == SS::Weapon::RapidLaser ? TEXT("RAPID LASER") : TEXT("HEAVY CANNON"), 745, 932, 27,
-                UIWhite);
-    RefreshText(UsingGamepad() ? TEXT("A / FIRE") : TEXT("LEFT CLICK / FIRE"), 745, 971, 19, UICyan);
+    RefreshImage(TEXT("WideFrame"), Centre - 230, Bottom - 120, 460, 120);
+    RefreshText(S.run.weapon == SS::Weapon::RapidLaser ? TEXT("RAPID LASER") : TEXT("HEAVY CANNON"), Centre - 182,
+                Bottom - 92, 24, UIWhite);
+    RefreshText(UsingGamepad() ? TEXT("A / FIRE") : TEXT("LEFT CLICK / FIRE"), Centre - 182, Bottom - 55, 18, UICyan);
     if (auto *Ship = Mode.GetPlayerShip())
     {
-        RefreshText(FString::Printf(TEXT("%.0f m/s"), Ship->GetVelocity().Size() / 100.f), 1460, 894, 34, UIAmber);
-        RefreshText(Ship->GetThrottle() > .01f ? FString::Printf(TEXT("THROTTLE %.0f"), Ship->GetThrottle() * 100)
-                                               : TEXT("ENGINE OFF / COAST"),
-                    1460, 939, 20, UICyan);
-        RefreshText(S.run.boosting ? TEXT("BOOST ACTIVE") : TEXT("BOOST"), 1460, 974, 19, UICyan);
+        RefreshText(FString::Printf(TEXT("%.0f m/s"), Ship->GetVelocity().Size() / 100.f), Right - 260, Bottom - 134,
+                    30, UIAmber);
+        RefreshText(Ship->IsInWaveCorridor()     ? (S.run.braking ? TEXT("CRUISE / BRAKING") : TEXT("FORWARD CRUISE"))
+                    : Ship->GetThrottle() > .01f ? FString::Printf(TEXT("THROTTLE %.0f"), Ship->GetThrottle() * 100)
+                                                 : TEXT("ENGINE OFF / COAST"),
+                    Right - 260, Bottom - 93, 18, UICyan);
+        RefreshText(S.run.boosting ? TEXT("BOOST ACTIVE") : TEXT("BOOST"), Right - 260, Bottom - 62, 17, UICyan);
         for (int32 Pip = 0; Pip < 10; ++Pip)
             RefreshImage(Pip < FMath::CeilToInt(S.run.boost / 10.) ? TEXT("PipBlue") : TEXT("PipOff"),
-                         1450.f + Pip * 29.f, 1000, 47, 32);
+                         Right - 266.f + Pip * 24.f, Bottom - 34, 38, 27);
     }
 }
 
 void ASSHUD::DrawStationRadar()
 {
+    const FBox2D Safe = HudSafeBounds();
+    const FVector2D Radar(Safe.Max.X - 135.f, Safe.Min.Y + 169.f);
     const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
     if (!Walker)
         return;
@@ -549,33 +562,31 @@ void ASSHUD::DrawStationRadar()
     if (!Station)
         return;
     for (const TCHAR *Layer : {TEXT("RadarBack"), TEXT("RadarRings"), TEXT("RadarTicks"), TEXT("RadarRim")})
-        RefreshImage(Layer, 1510, 104, 324, 324);
-    RefreshImage(TEXT("RadarBezel"), 1492, 86, 361, 361);
-    RefreshText(TEXT("STATION / 60 m"), 1520, 54, 22, UICyan);
+        RefreshImage(Layer, Radar.X - 121, Radar.Y - 121, 242, 242);
+    RefreshImage(TEXT("RadarBezel"), Radar.X - 135, Radar.Y - 135, 270, 270);
+    RefreshText(TEXT("STATION / 60 m"), Radar.X - 122, Safe.Min.Y, 18, UICyan);
     const FRotator Heading(0, Walker->GetActorRotation().Yaw, 0);
     auto Marker = [&](FName Symbol, FVector World, float Size)
     {
         const FVector Local = Heading.UnrotateVector(World - Walker->GetActorLocation());
         FVector2D Offset(Local.Y, -Local.X);
-        Offset *= 142.f / 6000.f;
-        if (Offset.SizeSquared() > 142.f * 142.f)
-            Offset = Offset.GetSafeNormal() * 142.f;
-        RefreshImage(Symbol, 1672.f + Offset.X - Size * .5f, 266.f + Offset.Y - Size * .5f, Size, Size);
+        Offset = (Offset * (106.f / 6000.f)).GetClampedToMaxSize(106.f);
+        RefreshImage(Symbol, Radar.X + Offset.X - Size * .5f, Radar.Y + Offset.Y - Size * .5f, Size, Size);
     };
     TArray<FVector> Services, Crew;
     Station->RadarContacts(Services, Crew);
     for (const FVector &Position : Services)
-        Marker(TEXT("POI"), Position, 34);
+        Marker(TEXT("POI"), Position, 28);
     for (const FVector &Position : Crew)
-        Marker(TEXT("Ally"), Position, 26);
-    Marker(TEXT("Station"), Station->PadDockPosition(), 42);
-    RefreshImage(TEXT("You"), 1653, 247, 38, 38);
+        Marker(TEXT("Ally"), Position, 22);
+    Marker(TEXT("Station"), Station->PadDockPosition(), 34);
+    RefreshImage(TEXT("You"), Radar.X - 15, Radar.Y - 15, 30, 30);
     const TCHAR *Symbols[] = {TEXT("Ally"), TEXT("POI"), TEXT("Station")};
     const TCHAR *Labels[] = {TEXT("CREW"), TEXT("SERVICES"), TEXT("LANDING PAD")};
     for (int32 I = 0; I < 3; ++I)
     {
-        RefreshImage(Symbols[I], 1520, 452.f + I * 32.f, 28, 28);
-        RefreshText(Labels[I], 1560, 456.f + I * 32.f, 19, UIWhite);
+        RefreshImage(Symbols[I], Radar.X - 121, Radar.Y + 150.f + I * 28.f, 24, 24);
+        RefreshText(Labels[I], Radar.X - 89, Radar.Y + 152.f + I * 28.f, 17, UIWhite);
     }
 }
 
