@@ -113,3 +113,52 @@ Open: comparison MP4 and editable blend in the D run folder. Check: whether reco
 gesture/limb timing is useful enough for a second targeted test. Still open: AI
 free-flight preservation and target-character/contact evaluation before any reusable
 production workflow; James motion acceptance. The broader backlog remains held.
+
+## Deeper resource study and reusable skill
+
+Later October28 the owner explicitly requests a deeper resource/use-case study,
+a skill and an application matrix. This supersedes the earlier skill deferral
+for a resource-selection workflow; it does not accept the recovered animation.
+
+Installed: `C:/Users/j6sis/.codex/skills/human-motion-resources`. Versioned source:
+[skill](../../Tools/AnimationSkills/human-motion-resources/SKILL.md),
+[application matrix](../../Tools/AnimationSkills/human-motion-resources/references/application-matrix.md),
+[application procedures](../../Tools/AnimationSkills/human-motion-resources/references/application-workflows.md)
+and [verified findings/sources](../../Tools/AnimationSkills/human-motion-resources/references/verified-resources.md).
+The entrypoint routes between motion, retargeting, contact, deformation and secondary
+motion; it preserves current owner scope and requires target-specific evidence.
+
+New actual inspections, with no Unreal launch or game changes:
+
+- Both legacy SMPL-H FBXs load in isolated hidden Blender5.2.2:6,890vertices,
+  53bones including root,459 pose correctives and no animation actions. The old
+  SMPL-X bodies have486 pose correctives and10 expressions; the newer DLC has
+  the same486 pose correctives and100 expressions. DLC is data, not a second add-on.
+- MANO numeric fields contain778vertices/16 joints/135 pose bases. The SMPL-H
+  model has52 weighted joints/459 pose bases; SMPL-X has55/486. Some donor
+  weights use more than four influences; pruning can change native deformation.
+  Legacy Chumpy objects were treated as inert metadata, not executed.
+- All38 hand-pose lists contain18,947 finite78-value samples. One sample expands
+  to156 values under the bundled wrapper's66-body-plus12-hand-PCA default.
+  Semantic profile, FPS, world travel and animated quality are still unverified.
+- Source review of smpl-unreal87cea30d confirms fixed canonical bone names,
+  Pose### morph counts and coordinate conversion. The old FBX bone names differ;
+  a compatible export or derived name/bind-axis adapter can reuse this existing
+  driver, subject to a one-joint parity test. No plugin installation/build occurred.
+- Native PBIK headers confirm preferred angles, per-axis limits and stretch settings.
+  These guide a configured solver; they are not automatically applied anatomical
+  guarantees on every animation. No target rig was changed.
+
+Private receipts are under `D:/Motion2MixamoRig/ResourceStudy_20261028`.
+Two temporary extracted .blend files were removed after inspection; original
+downloads/models/preferences remain. The brief D disconnection interrupted only
+ZIP creation; the drive returned and the final15,411-byte skill archive was written.
+The five-file30,905-byte installed/repository copies match, all relative reference
+links resolve, and the skill-creator validator passes. This validates the skill's
+structure and inspected facts, not an end-to-end game repair or an independent
+behavioral acceptance test. No global dependencies, model downloads or GPU work.
+
+Portable archive: `D:/Motion2MixamoRig/ResourceStudy_20261028/human-motion-resources-20261028.zip`.
+Invoke `$human-motion-resources` in a subsequent chat. The matrix recommends a
+small experiment appropriate to the objective; those recommendations do not
+authorize changing another chat's work or automatically resume the held backlog.
