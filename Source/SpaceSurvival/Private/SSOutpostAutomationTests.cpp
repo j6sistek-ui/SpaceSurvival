@@ -246,4 +246,57 @@ bool FSSOutpostCrewSupport::RunTest(const FString &)
              MaxUnsupportedTravel < .1f);
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSOutpostClubCoverGate, "SpaceSurvival.Outpost.ClubCoverGate",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSOutpostClubCoverGate::RunTest(const FString &)
+{
+    FSSOutpostTestWorld Rig;
+    if (!Rig.Initialize(*this))
+        return false;
+    // Local X is the climb direction; the default gate stands on the deck when its centre is at half-height.
+    auto *Gate = Rig.World->SpawnActor<ASSClubCoverGate>(FVector(0, 0, 170), FRotator::ZeroRotator);
+    auto *Visitor = Rig.Pawn(FVector(-300, 0, 98));
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(OutpostCoverGateTest), false, Visitor);
+    const auto StairBlocked = [&]()
+    {
+        FHitResult Hit;
+        return Rig.World->SweepSingleByChannel(Hit, FVector(-170, 0, 98), FVector(170, 0, 98), FQuat::Identity,
+                                               ECC_Pawn, FCollisionShape::MakeCapsule(42, 96), Query);
+    };
+    TestTrue(TEXT("A fresh cover gate physically blocks the walking capsule"), StairBlocked());
+
+    // The rope sits in the same mouth: admission must clear its collision as well as hide it.
+    auto *Rope = Rig.Box(FVector(0, 0, 85), FVector(2, 125, 2), ECC_WorldStatic);
+    Gate->RopeActors = {Rope};
+    auto *Bouncer = Rig.World->SpawnActor<ASSOutpostTerminal>(FVector(-200, 150, 100), FRotator::ZeroRotator);
+    Bouncer->Action = ESSOutpostAction::PayCover;
+    Bouncer->PresentationTarget = Gate;
+    auto *Controller = Rig.World->SpawnActor<APlayerController>();
+    Controller->Possess(Visitor);
+    Visitor->SetActorLocation(FVector(-1200, 150, 98));
+    TestTrue(TEXT("Out-of-range talk is refused"), Bouncer->Use(Controller).StartsWith(TEXT("Move closer")));
+    TestFalse(TEXT("Range is rechecked by talking to the bouncer"), Bouncer->CanUse(Visitor));
+    TestFalse(TEXT("Out-of-range talk does not admit"), Gate->IsAdmitted());
+    TestTrue(TEXT("Out-of-range talk leaves the stair blocked"), StairBlocked());
+
+    Visitor->SetActorLocation(FVector(-300, 150, 98));
+    TestTrue(TEXT("A visitor beside the bouncer can talk to him"), Bouncer->CanUse(Visitor));
+    TestTrue(TEXT("Talking in range asks for cover"), Bouncer->Use(Controller).StartsWith(TEXT("Cover first")));
+    TestFalse(TEXT("Talking never admits by itself"), Gate->IsAdmitted());
+    TestTrue(TEXT("The stair stays blocked until cover is paid"), StairBlocked());
+
+    Gate->AdmitWithDemoPayment();
+    TestTrue(TEXT("Demo payment admits"), Gate->IsAdmitted());
+    TestFalse(TEXT("Admission clears the gate and the rope from the walking capsule"), StairBlocked());
+    TestTrue(TEXT("Admission hides the rope"), Rope->IsHidden());
+
+    auto *Wardrobe = Rig.World->SpawnActor<ASSOutpostTerminal>(FVector(-400, 300, 100), FRotator::ZeroRotator);
+    Wardrobe->Action = ESSOutpostAction::CycleWardrobe;
+    TestTrue(TEXT("The visitor can reach the wardrobe console"), Wardrobe->CanUse(Visitor));
+    TestFalse(TEXT("A fresh wardrobe has no live preview"), Wardrobe->HasWardrobePreview());
+    TestTrue(TEXT("Wearing with no live preview is refused"),
+             Wardrobe->WearPreviewedHero(Controller).StartsWith(TEXT("Preview a character first")));
+    return true;
+}
 #endif

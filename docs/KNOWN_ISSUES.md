@@ -1,5 +1,12 @@
 # Open work and owner review
 
+## RPT-20261030-01 — club bouncer cover gate and wardrobe wear
+
+- **Owner request, October30:** the deck-1 bouncer at the club stair blocks the club until the player pays cover through a menu; the payment confirmation is a demo (no credits are taken) and the final access rule is undecided. The deck-1 wardrobe must be a real character selection: equip and save, not only preview a hologram.
+- **Current:** `ASSClubCoverGate` puts a `BlockAllDynamic` box across a stair mouth; `AdmitWithDemoPayment` clears it, hides the rope actors and turns their collision off for this play session only, and never touches credits or the account save. A `PayCover` terminal opens a Canvas cover menu (E/A pay, Esc/B decline) and talking alone never admits. Wardrobe terminals add F/Y "Wear this character": the previewed body is equipped and `account.hero` is saved through `PersistAccount`; the sandbox game mode now re-dresses the walker from that saved choice after every actor's `BeginPlay`, so `PreferredHeroId` and the saved choice actually take effect. `SpaceSurvival.Outpost` passes 4/4 with no warnings, including the new `ClubCoverGate`. The club builder wires it into the side-design map `L_FullVexaChamber` (untracked); capsule sweeps found no way around the 40 cm gate even for a capsule 12 cm thinner than the walker. A PIE capture session confirms the demo admission hides all four rope actors, turns their collision off and opens the stair.
+- **Open/check:** owner Play in `L_FullVexaChamber`: E at the bouncer opens the cover menu, E pays, the rope disappears and the stair climbs; at the crew wardrobe E previews, F wears, and the worn character is still worn after stopping and starting Play.
+- **Still open:** the final access rule (real cost, how long admission lasts) is the owner's decision; the HUD modal and the saved-hero restore on map load are checked only in code and headless tests, not yet in a live play session; the club moves into the station map later (lead).
+
 ## RPT-20261029-02 — flight and station HUD spacing
 
 - **Owner request, October29:** move HUD elements toward the screen edges to clear the middle, using the annotated flight screenshot as reference; apply the same treatment to station HUD.
