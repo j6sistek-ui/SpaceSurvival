@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SSOutpostSandbox.generated.h"
 
+class ASSClubCoverGate;
 class UAnimSequence;
 class UBoxComponent;
 class UCapsuleComponent;
@@ -24,11 +25,16 @@ class SPACESURVIVAL_API ASSOutpostSandboxGameMode : public AGameModeBase
 public:
     ASSOutpostSandboxGameMode();
     virtual void BeginPlay() override;
+    virtual void StartPlay() override;
     virtual void HandleStartingNewPlayer_Implementation(APlayerController *NewPlayer) override;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Outpost")
     FName PreferredHeroId = TEXT("Squirrel");
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Outpost")
     FName GameplayMap = TEXT("/Game/SpaceSurvival/Maps/Survival");
+
+private:
+    /** The saved wardrobe choice when this build carries it, otherwise PreferredHeroId. */
+    FName StartingHeroId() const;
 };
 
 UENUM(BlueprintType)
@@ -39,7 +45,8 @@ enum class ESSOutpostAction : uint8
     CycleWardrobe,
     SurvivalBoarding,
     FreeFlight,
-    CryoChill
+    CryoChill,
+    PayCover
 };
 
 /** Place at a console's use point. All transactions recheck range and sight. */
@@ -79,6 +86,9 @@ public:
     bool PreviewWardrobe(const FSSHeroDefinition &Hero);
     void EndWardrobePreview();
     FVector WardrobePreviewCenter() const;
+    bool HasWardrobePreview() const;
+    /** Equips the hologram on show and saves it to the account. Rechecks range and sight like Use. */
+    FString WearPreviewedHero(APlayerController *User);
 
 protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -111,10 +121,18 @@ public:
     {
         return bReviewPaused;
     }
+    /** The gate whose cover menu is open, or null. The menu consumes input while it is open. */
+    ASSClubCoverGate *CoverMenu() const
+    {
+        return CoverMenuGate.Get();
+    }
 
 private:
     bool bReviewPaused = false;
     FVector SafeSpawn = FVector::ZeroVector;
+    TWeakObjectPtr<ASSClubCoverGate> CoverMenuGate;
+    TWeakObjectPtr<ASSOutpostTerminal> CoverMenuTerminal;
+    void CloseCoverMenu();
 };
 
 UCLASS()
@@ -172,6 +190,39 @@ public:
 private:
     float HoldRemaining = 0.f;
     void PositionLeaves();
+};
+
+/** Bouncer's rope at a stair mouth. Local X is the climb direction and the gate spans the mouth on Y.
+ *  Admission is a demo: it never charges credits or writes the account, and lasts for this play session. */
+UCLASS(Blueprintable)
+class SPACESURVIVAL_API ASSClubCoverGate : public AActor
+{
+    GENERATED_BODY()
+public:
+    ASSClubCoverGate();
+    virtual void OnConstruction(const FTransform &Transform) override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cover")
+    TObjectPtr<UBoxComponent> Gate;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover")
+    FVector GateHalfExtent = FVector(20, 140, 170);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover")
+    FString VenueName = TEXT("THE CLUB");
+    /** Shown on the menu only; nothing is deducted. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover", meta = (ClampMin = "0"))
+    int32 DisplayedCover = 50;
+    /** Rope and post meshes; hidden, with collision off, once admitted. */
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Cover")
+    TArray<TObjectPtr<AActor>> RopeActors;
+    UFUNCTION(BlueprintCallable, Category = "Cover")
+    FString AdmitWithDemoPayment();
+    UFUNCTION(BlueprintPure, Category = "Cover")
+    bool IsAdmitted() const
+    {
+        return bAdmitted;
+    }
+
+private:
+    bool bAdmitted = false;
 };
 
 /** One thing a crew member can be asked to do, by a spoken word or a key: a clip, and a line said as it starts

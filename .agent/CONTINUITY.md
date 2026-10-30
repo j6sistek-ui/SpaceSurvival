@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-30T17:45Z [CODE] [TOOL] RPT-20261030-01: club cover gate (`ASSClubCoverGate`, `PayCover` menu, demo admission only) and wardrobe F/Y wear-and-save; sandbox game mode now applies the saved/preferred hero in `StartPlay`, after walker `BeginPlay`. Outpost 4/4 clean; club map wired by the external club builder with a 40 cm gate after capsule sweeps.
+
 - 2026-10-29T11:40Z [OUTCOMES] [TOOL] Flight/station HUD now peripheral; final canonical Editor module39180dfc builds31.54s. Final1920x1080 captures de0d5c29(fourflightframes) and aebfdef0(sixstation/UIframes) pass save/binary/no-test-save guards; Turn/Brake and stationWalking/Controls inspected. Gameplay unchanged after24passing native cases on precedingwavebinary. Physicalfeel/naturalplay/otherUIscales/performance/package/owneracceptance remain open. PR102 updatepending, draft/unmerged; RPT-20261029-01/-02 own handoff.
 
 ## [PLANS] 2026-10-29 wave-flight continuation

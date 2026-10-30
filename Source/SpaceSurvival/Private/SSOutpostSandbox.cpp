@@ -2,6 +2,7 @@
 #include "SSCryoChamber.h"
 #include "SSNPCHeadFillComponent.h"
 #include "SSStation.h"
+#include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
 #include "Animation/AnimSequence.h"
@@ -32,6 +33,17 @@ bool CompatibleClip(USkeletalMeshComponent *Mesh, UAnimSequence *Clip)
     return Mesh && Clip && Mesh->GetSkeletalMeshAsset() &&
            Mesh->GetSkeletalMeshAsset()->GetSkeleton() == Clip->GetSkeleton();
 }
+const USSPhase1Data *Phase1Data()
+{
+    return LoadObject<USSPhase1Data>(nullptr, TEXT("/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1"));
+}
+/** What the wardrobe cycles through: every installed walker body except the Acornaut. */
+TArray<FSSHeroDefinition> WardrobeHeroes(const USSPhase1Data &Data)
+{
+    auto Heroes = Data.InstalledHeroes(ESSHeroSlot::Walker);
+    Heroes.RemoveAll([](const FSSHeroDefinition &Hero) { return Hero.Identity == ESSHeroIdentity::Acornaut; });
+    return Heroes;
+}
 } // namespace
 
 ASSOutpostSandboxGameMode::ASSOutpostSandboxGameMode()
@@ -51,8 +63,33 @@ void ASSOutpostSandboxGameMode::BeginPlay()
 void ASSOutpostSandboxGameMode::HandleStartingNewPlayer_Implementation(APlayerController *NewPlayer)
 {
     Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-    if (auto *Walker = NewPlayer ? Cast<ASSWalker>(NewPlayer->GetPawn()) : nullptr)
-        Walker->ApplyHero(PreferredHeroId);
+    // A walker that has not begun play has no hero tuning yet, and its own BeginPlay would put the roster
+    // default back on; StartPlay dresses those. This covers a player arriving after the world began play.
+    auto *Walker = NewPlayer ? Cast<ASSWalker>(NewPlayer->GetPawn()) : nullptr;
+    if (Walker && Walker->HasActorBegunPlay())
+        Walker->ApplyHero(StartingHeroId());
+}
+void ASSOutpostSandboxGameMode::StartPlay()
+{
+    Super::StartPlay(); // every actor's BeginPlay has run
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        if (auto *Walker = It->IsValid() ? Cast<ASSWalker>(It->Get()->GetPawn()) : nullptr)
+            Walker->ApplyHero(StartingHeroId());
+}
+FName ASSOutpostSandboxGameMode::StartingHeroId() const
+{
+    // A character worn at the wardrobe outranks the map's default, resolved as ASSGameMode::WornHeroId does.
+    // A saved body this build does not carry falls back to the map's default, not to roster order.
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    const auto *Data = Phase1Data();
+    if (GI && Data && GI->Session.account.hero >= 0 &&
+        GI->Session.account.hero != static_cast<int32>(ESSHeroIdentity::Acornaut))
+    {
+        const FSSHeroDefinition Chosen = Data->Hero(static_cast<ESSHeroIdentity>(GI->Session.account.hero));
+        if (Data->SelectHero(ESSHeroSlot::Walker, Chosen.Id).Id == Chosen.Id)
+            return Chosen.Id;
+    }
+    return PreferredHeroId;
 }
 
 ASSOutpostTerminal::ASSOutpostTerminal()
@@ -120,12 +157,11 @@ FString ASSOutpostTerminal::CyclePaint()
 }
 FString ASSOutpostTerminal::CycleWardrobe()
 {
-    auto *Data = LoadObject<USSPhase1Data>(nullptr, TEXT("/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1"));
+    const auto *Data = Phase1Data();
     auto *Mesh = PresentationTarget ? PresentationTarget->FindComponentByClass<USkeletalMeshComponent>() : nullptr;
     if (!Data || !Mesh)
         return TEXT("Wardrobe projector is not connected.");
-    auto Heroes = Data->InstalledHeroes(ESSHeroSlot::Walker);
-    Heroes.RemoveAll([](const FSSHeroDefinition &Hero) { return Hero.Identity == ESSHeroIdentity::Acornaut; });
+    const auto Heroes = WardrobeHeroes(*Data);
     if (Heroes.IsEmpty())
         return TEXT("No installed crew appearances are available.");
     const int32 Next = (PreviewIndex + 1) % Heroes.Num();
@@ -240,6 +276,33 @@ FVector ASSOutpostTerminal::WardrobePreviewCenter() const
         return WardrobePreviewMesh->Bounds.Origin;
     return IsValid(PresentationTarget) ? PresentationTarget->GetActorLocation() : GetActorLocation();
 }
+bool ASSOutpostTerminal::HasWardrobePreview() const
+{
+    return PreviewIndex >= 0 && IsValid(WardrobePreviewMesh);
+}
+FString ASSOutpostTerminal::WearPreviewedHero(APlayerController *User)
+{
+    if (!User || !CanUse(User->GetPawn()))
+        return TEXT("Move closer to the console and keep the access point in view.");
+    if (Action != ESSOutpostAction::CycleWardrobe || !HasWardrobePreview())
+        return TEXT("Preview a character first, then wear it.");
+    const auto *Data = Phase1Data();
+    const auto Heroes = Data ? WardrobeHeroes(*Data) : TArray<FSSHeroDefinition>();
+    auto *Walker = Cast<ASSWalker>(User->GetPawn());
+    if (!Heroes.IsValidIndex(PreviewIndex) || !Walker)
+        return TEXT("That crew appearance cannot be worn here.");
+    // Mirrors the station wardrobe's wear action (ASSGameMode, Wardrobe panel): equip, then save the identity.
+    const auto &Hero = Heroes[PreviewIndex];
+    Walker->ApplyHero(Hero.Id);
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI)
+        return FString::Printf(TEXT("Now wearing %s for this visit. No account is loaded to save it."),
+                               *Hero.Id.ToString());
+    GI->Session.account.hero = static_cast<int32>(Hero.Identity);
+    if (!GI->PersistAccount())
+        return GI->LastSaveError;
+    return FString::Printf(TEXT("Now wearing %s. Saved as your character."), *Hero.Id.ToString());
+}
 void ASSOutpostTerminal::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     EndWardrobePreview();
@@ -254,6 +317,16 @@ FString ASSOutpostTerminal::Use(APlayerController *User)
         if (auto *Chamber = Cast<ASSCryoChamber>(PresentationTarget))
             return Chamber->Interact(User->GetPawn());
         return TEXT("No cryogenic chamber is connected to this console.");
+    }
+    if (Action == ESSOutpostAction::PayCover)
+    {
+        // Talking never admits; only the cover menu's demo payment opens the rope.
+        const auto *Gate = Cast<ASSClubCoverGate>(PresentationTarget);
+        if (!Gate)
+            return TEXT("No rope connected to this bouncer.");
+        if (Gate->IsAdmitted())
+            return TEXT("You're on the list. Head on up.");
+        return FString::Printf(TEXT("Cover first: %d CR to get past the rope."), Gate->DisplayedCover);
     }
     if (auto *Game = GetWorld()->GetAuthGameMode<ASSGameMode>();
         Game && Game->GetStation() && Game->GetStation()->IsUsingOutpost())
@@ -338,13 +411,49 @@ void ASSOutpostSandboxController::Interact()
         return;
     if (auto *Terminal = FocusedTerminal())
     {
+        if (Terminal->Action == ESSOutpostAction::PayCover)
+            if (auto *Gate = Cast<ASSClubCoverGate>(Terminal->PresentationTarget); Gate && !Gate->IsAdmitted())
+            {
+                CoverMenuGate = Gate;
+                CoverMenuTerminal = Terminal;
+                NoticeSeconds = 0.f; // an older notice must not sit frozen under the menu
+                return;
+            }
         Notice = Terminal->Use(this);
         NoticeSeconds = 8.f;
     }
 }
+void ASSOutpostSandboxController::CloseCoverMenu()
+{
+    CoverMenuGate.Reset();
+    CoverMenuTerminal.Reset();
+}
 void ASSOutpostSandboxController::PlayerTick(float Dt)
 {
     Super::PlayerTick(Dt);
+    // The cover menu owns this frame's input: no pause toggle, walking, jumping or interacting underneath it.
+    if (auto *Gate = CoverMenu())
+    {
+        const auto *Terminal = CoverMenuTerminal.Get();
+        if (!Terminal || !Terminal->CanUse(GetPawn()) || Gate->IsAdmitted())
+            CloseCoverMenu();
+        else if (WasInputKeyJustPressed(EKeys::Escape) || WasInputKeyJustPressed(EKeys::Gamepad_Special_Right) ||
+                 WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Right))
+        {
+            CloseCoverMenu();
+            Notice = TEXT("Maybe next time.");
+            NoticeSeconds = 4.f;
+        }
+        else if (WasInputKeyJustPressed(EKeys::E) || WasInputKeyJustPressed(EKeys::Enter) ||
+                 WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Bottom) ||
+                 WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Left))
+        {
+            Notice = Gate->AdmitWithDemoPayment();
+            NoticeSeconds = 8.f;
+            CloseCoverMenu();
+        }
+        return;
+    }
     if (WasInputKeyJustPressed(EKeys::Escape) || WasInputKeyJustPressed(EKeys::Gamepad_Special_Right))
     {
         bReviewPaused = !bReviewPaused;
@@ -384,6 +493,13 @@ void ASSOutpostSandboxController::PlayerTick(float Dt)
         Walker->StopJumping();
     if (WasInputKeyJustPressed(EKeys::E) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Left))
         Interact();
+    if (WasInputKeyJustPressed(EKeys::F) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Top))
+        if (auto *Terminal = FocusedTerminal();
+            Terminal && Terminal->Action == ESSOutpostAction::CycleWardrobe && Terminal->HasWardrobePreview())
+        {
+            Notice = Terminal->WearPreviewedHero(this);
+            NoticeSeconds = 8.f;
+        }
 }
 void ASSOutpostSandboxHUD::DrawHUD()
 {
@@ -414,7 +530,41 @@ void ASSOutpostSandboxHUD::DrawHUD()
             NoticeHeight += FMath::Max(float(Line.LineExtent.Y), 14.f * Scale) + 4.f * Scale;
     }
     float NoticeY = Canvas->ClipY - 58.f * Scale - NoticeHeight;
-    if (auto *Terminal = Controller->FocusedTerminal())
+    if (const auto *Gate = Controller->CoverMenu())
+    {
+        // Canvas modal (the game has no UMG). The payment is a demo and the menu says so.
+        struct FModalLine
+        {
+            FString Value;
+            FLinearColor Colour;
+            float Size, Gap, Width = 0.f, Height = 0.f;
+        };
+        TArray<FModalLine> Lines = {
+            {Gate->VenueName + TEXT("  /  COVER CHARGE"), FLinearColor(1.f, .45f, .8f), 1.3f, 18.f},
+            {FString::Printf(TEXT("%d CR"), Gate->DisplayedCover), FLinearColor::White, 2.4f, 22.f},
+            {TEXT("[E / A]  Pay cover"), FLinearColor(.75f, .95f, 1.f), 1.15f, 10.f},
+            {TEXT("[Esc / B]  Not tonight"), FLinearColor(.7f, .74f, .8f), 1.15f, 22.f},
+            {TEXT("Demo payment - no credits are deducted."), FLinearColor(.55f, .58f, .64f), .85f, 0.f}};
+        float Width = 0.f, Height = 0.f;
+        for (auto &Line : Lines)
+        {
+            GetTextSize(Line.Value, Line.Width, Line.Height, GEngine->GetSmallFont(), Line.Size * Scale);
+            Width = FMath::Max(Width, Line.Width);
+            Height += Line.Height + Line.Gap * Scale;
+        }
+        const float Pad = 30.f * Scale, BoxW = Width + 2.f * Pad, BoxH = Height + 2.f * Pad;
+        const float BoxX = (Canvas->ClipX - BoxW) * .5f, BoxY = (Canvas->ClipY - BoxH) * .5f;
+        DrawRect(FLinearColor(0.f, .008f, .015f, .5f), 0, 0, Canvas->ClipX, Canvas->ClipY);
+        DrawRect(FLinearColor(.025f, .01f, .035f, .95f), BoxX, BoxY, BoxW, BoxH);
+        DrawRect(FLinearColor(1.f, .16f, .63f), BoxX, BoxY, BoxW, 4.f * Scale);
+        float LineY = BoxY + Pad;
+        for (const auto &Line : Lines)
+        {
+            Text(Line.Value, (Canvas->ClipX - Line.Width) * .5f, LineY, Line.Colour, Line.Size);
+            LineY += Line.Height + Line.Gap * Scale;
+        }
+    }
+    else if (auto *Terminal = Controller->FocusedTerminal())
     {
         // The preview's Information action is not a working purchase. Keep its
         // access/identity intact while describing what this action really does.
@@ -436,6 +586,9 @@ void ASSOutpostSandboxHUD::DrawHUD()
         case ESSOutpostAction::FreeFlight:
             Action = TEXT("Open free flight");
             break;
+        case ESSOutpostAction::PayCover:
+            Action = TEXT("Talk to the bouncer");
+            break;
         default:
             if (Terminal->DisplayName.Contains(TEXT("FLIGHT UPGRADES")))
                 Action = TEXT("Read upgrade overview");
@@ -449,14 +602,26 @@ void ASSOutpostSandboxHUD::DrawHUD()
                 Action = TEXT("Read trade information");
             break;
         }
-        const FString Prompt = TEXT("E / X   ") + Action;
-        float Width = 0.f, Height = 0.f;
-        GetTextSize(Prompt, Width, Height, GEngine->GetSmallFont(), 1.3f * Scale);
+        TArray<FString> Prompts = {TEXT("E / X   ") + Action};
+        if (Terminal->Action == ESSOutpostAction::CycleWardrobe && Terminal->HasWardrobePreview())
+            Prompts.Add(TEXT("F / Y   Wear this character"));
+        float Width = 0.f, Height = 0.f, LineHeight = 0.f;
+        for (const FString &Prompt : Prompts)
+        {
+            float LineWidth = 0.f;
+            GetTextSize(Prompt, LineWidth, LineHeight, GEngine->GetSmallFont(), 1.3f * Scale);
+            Width = FMath::Max(Width, LineWidth);
+            Height += LineHeight;
+        }
+        const float Spacing = 6.f * Scale;
+        Height += Spacing * (Prompts.Num() - 1);
         const float X = FMath::Max(Margin, (Canvas->ClipX - Width) * .5f);
-        const float Y = FMath::Min(Canvas->ClipY - 74.f * Scale, NoticeY - Height - 22.f * Scale);
+        const float Y =
+            FMath::Min(Canvas->ClipY - 74.f * Scale - (Height - LineHeight), NoticeY - Height - 22.f * Scale);
         DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X - 12.f * Scale, Y - 10.f * Scale, Width + 24.f * Scale,
                  Height + 20.f * Scale);
-        Text(Prompt, X, Y, FLinearColor(.75f, .95f, 1.f), 1.3f);
+        for (int32 Index = 0; Index < Prompts.Num(); ++Index)
+            Text(Prompts[Index], X, Y + Index * (LineHeight + Spacing), FLinearColor(.75f, .95f, 1.f), 1.3f);
     }
     for (const auto &Line : NoticeLines)
     {
@@ -554,6 +719,40 @@ void ASSOutpostDoor::Tick(float Dt)
     const float Target = HoldRemaining > 0.f ? 1.f : 0.f;
     OpenFraction = FMath::FInterpConstantTo(OpenFraction, Target, Dt, 1.f / FMath::Max(.2f, SlideSeconds));
     PositionLeaves();
+}
+
+ASSClubCoverGate::ASSClubCoverGate()
+{
+    PrimaryActorTick.bCanEverTick = false;
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RopeLine"));
+    Gate = CreateDefaultSubobject<UBoxComponent>(TEXT("Gate"));
+    Gate->SetupAttachment(RootComponent);
+    Gate->SetMobility(EComponentMobility::Movable);
+    Gate->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+    Gate->SetCanEverAffectNavigation(false);
+    Gate->InitBoxExtent(GateHalfExtent.GetAbs());
+}
+void ASSClubCoverGate::OnConstruction(const FTransform &Transform)
+{
+    Super::OnConstruction(Transform);
+    Gate->SetBoxExtent(GateHalfExtent.GetAbs());
+}
+FString ASSClubCoverGate::AdmitWithDemoPayment()
+{
+    // Never touches credits or the account save: admission lasts for this play session only.
+    Gate->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    for (AActor *Rope : RopeActors)
+        if (IsValid(Rope))
+        {
+            Rope->SetActorHiddenInGame(true);
+            Rope->SetActorEnableCollision(false);
+#if WITH_EDITOR
+            Rope->SetIsTemporarilyHiddenInEditor(true);
+#endif
+        }
+    bAdmitted = true;
+    return FString::Printf(TEXT("%s / Cover paid: %d CR. Demo payment - no credits were charged. Head on up."),
+                           *VenueName, DisplayedCover);
 }
 
 ASSOutpostAmbientActor::ASSOutpostAmbientActor()
