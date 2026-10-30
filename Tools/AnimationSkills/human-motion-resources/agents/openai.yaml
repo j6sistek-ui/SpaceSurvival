@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Motion Resources"
+  short_description: "Choose motion, rig, hand and corrective resources"
+  default_prompt: "Use $human-motion-resources to choose a suitable animation resource, explain its benefit, and validate a small sample before adapting it to my character."
