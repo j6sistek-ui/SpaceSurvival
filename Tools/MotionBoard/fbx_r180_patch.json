@@ -1,0 +1,33 @@
+{
+  "revision": "r180",
+  "upstreamUrl": "https://raw.githubusercontent.com/mrdoob/three.js/r180/examples/jsm/loaders/FBXLoader.js",
+  "license": "MIT",
+  "licenseNotice": "The MIT License\n\nCopyright \u00c2\u00a9 2010-2025 three.js authors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
+  "upstreamSha256": "d97724a6bea228003e02c64651d969a9a62003a00be314ef6995c390116f547d",
+  "patchedSha256": "dd1efb67ac04f1a741cb90d87ef44735be113f3ee30ea35d3f3b32aa3c2218cd",
+  "patches": [
+    {
+      "name": "canonical-model-transform",
+      "old": "if ( child.ID === rawModel.id ) {",
+      "new": "if ( child.ID === rawModel.id && child.userData.transformData ) {\n\n\t\t\t\t\t\t\t\t\t\t\tif ( node.transform !== undefined ) throw new Error( 'Ambiguous canonical FBX model transform' );"
+    },
+    {
+      "name": "align-rotation-axes",
+      "old": "const result = this.interpolateRotations( curves.x, curves.y, curves.z, eulerOrder );",
+      "new": "// Sparse FBX axes are keyed independently. Match time, not key index.\n\t\t\tconst axisTimes = this.getTimesForAllAxes( curves );\n\t\t\tconst aligned = [ 'x', 'y', 'z' ].map( axis => ( {\n\t\t\t\ttimes: axisTimes,\n\t\t\t\tvalues: axisTimes.map( time => this.sampleAnimationCurve( curves[ axis ], time, 0 ) )\n\t\t\t} ) );\n\t\t\tconst result = this.interpolateRotations( aligned[ 0 ], aligned[ 1 ], aligned[ 2 ], eulerOrder );"
+    },
+    {
+      "name": "sample-sparse-vector-axes",
+      "old": "\tgetKeyframeTrackValues( times, curves, initialValue ) {\n\n\t\tconst prevValue = initialValue;\n\n\t\tconst values = [];\n\n\t\tlet xIndex = - 1;\n\t\tlet yIndex = - 1;\n\t\tlet zIndex = - 1;\n\n\t\ttimes.forEach( function ( time ) {\n\n\t\t\tif ( curves.x ) xIndex = curves.x.times.indexOf( time );\n\t\t\tif ( curves.y ) yIndex = curves.y.times.indexOf( time );\n\t\t\tif ( curves.z ) zIndex = curves.z.times.indexOf( time );\n\n\t\t\t// if there is an x value defined for this frame, use that\n\t\t\tif ( xIndex !== - 1 ) {\n\n\t\t\t\tconst xValue = curves.x.values[ xIndex ];\n\t\t\t\tvalues.push( xValue );\n\t\t\t\tprevValue[ 0 ] = xValue;\n\n\t\t\t} else {\n\n\t\t\t\t// otherwise use the x value from the previous frame\n\t\t\t\tvalues.push( prevValue[ 0 ] );\n\n\t\t\t}\n\n\t\t\tif ( yIndex !== - 1 ) {\n\n\t\t\t\tconst yValue = curves.y.values[ yIndex ];\n\t\t\t\tvalues.push( yValue );\n\t\t\t\tprevValue[ 1 ] = yValue;\n\n\t\t\t} else {\n\n\t\t\t\tvalues.push( prevValue[ 1 ] );\n\n\t\t\t}\n\n\t\t\tif ( zIndex !== - 1 ) {\n\n\t\t\t\tconst zValue = curves.z.values[ zIndex ];\n\t\t\t\tvalues.push( zValue );\n\t\t\t\tprevValue[ 2 ] = zValue;\n\n\t\t\t} else {\n\n\t\t\t\tvalues.push( prevValue[ 2 ] );\n\n\t\t\t}\n\n\t\t} );\n\n\t\treturn values;\n\n\t}\n",
+      "new": "\tsampleAnimationCurve( curve, time, fallback ) {\n\n\t\tif ( ! curve || curve.times.length === 0 ) return fallback;\n\t\tconst times = curve.times, values = curve.values;\n\t\tif ( time <= times[ 0 ] ) return values[ 0 ];\n\t\tconst last = times.length - 1;\n\t\tif ( time >= times[ last ] ) return values[ last ];\n\t\tlet lo = 0, hi = last;\n\t\twhile ( hi - lo > 1 ) {\n\t\t\tconst mid = ( lo + hi ) >> 1;\n\t\t\tif ( times[ mid ] <= time ) lo = mid;\n\t\t\telse hi = mid;\n\t\t}\n\t\tconst alpha = ( time - times[ lo ] ) / ( times[ hi ] - times[ lo ] );\n\t\t// Preview approximation: raw FBX auto/cubic tangents are not evaluated here.\n\t\treturn values[ lo ] + alpha * ( values[ hi ] - values[ lo ] );\n\n\t}\n\n\tgetKeyframeTrackValues( times, curves, initialValue ) {\n\n\t\tconst values = [];\n\t\tfor ( const time of times ) {\n\t\t\tfor ( const [ index, axis ] of [ 'x', 'y', 'z' ].entries() ) {\n\t\t\t\tvalues.push( this.sampleAnimationCurve( curves[ axis ], time, initialValue[ index ] ) );\n\t\t\t}\n\t\t}\n\t\treturn values;\n\n\t}\n"
+    }
+  ],
+  "idempotence": "Return unchanged if all new blocks present and no old blocks; otherwise demand exact upstream SHA and each old block exactly once.",
+  "limitations": [
+    "Sparse cubic/auto axes are linearly approximated between retained source knots.",
+    "No native evaluator parity or skin quality claim.",
+    "Only unique transformData-bearing same-ID model is eligible; ambiguity fails closed.",
+    "The unchanged r180 large-angle quaternion branch can lose a single 0-to-360-degree Euler span without intermediate union keys; the regression is an explicit expected failure, not universal turn support.",
+    "Missing rotation-axis support is unchanged; the compatibility patch covers all-three-axis rotation tracks and sparse or missing translation/scale axes."
+  ]
+}

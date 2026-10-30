@@ -31,8 +31,66 @@
 **October26 folded-arm shoulder follow-up — RPT-20261021-01, OPEN / AI:** Owner reports an ordinary forward-reaching shoulder defect despite earlier raised-arm improvement. Preserved/current torso weights match; the same-pose bare baseline also folds. New G1 actioncc652d79 retains signed grip and continuous release. Candidate51c25e24 adds a local shoulder-cap corrective without changing bones, skin weights, neck or opposite shoulder. Native local-normal maske434f671 improves residual shading; global recomputation is rejected for unrelated seams. Eight native poses agree within0.153mm bones/0.162mm surfaces;48 stills and two660-frame videos decode, with selected opposing/motion views showing the reduced fold. Earlier raised-arm approval is not all-pose acceptance. Review: private SourceAssets/DanceRefinement_20261025/G1ShoulderReview.html. AI next: remaining hand/joint/garment quality and routine joins before Joy/Astra. No production adoption, owner checkpoint or ClickUp write. [Reproduction and limits](../Scripts/AnimationRecipes/DancerDiagnostics/DEFORMATION_RECIPE.md#g1-signed-grip-and-folded-arm-shoulder-coverage--october26).
 
 **October26 signed-grip supersession — RPT-20261021-01, OPEN / AI:** Right-palm/thumb-up identification is confirmed, but the old finger calibration bends dorsally; old G1/G2 fitted grips are rejected for adoption despite earlier clearance/parity. Separate calibration3deea08d plus arm-only reach, thumb-first release and free-wrist following clears2595 limited control samples. Saved action409a79ad preserves source key breakpoints and runs51.167s; fresh12281-sample95-bone replay is within0.0808mm,6141 saved hand/pole samples clear, and two615-frame opposing videos decode. Rejected controls include whole-body collisions,96degree wrist direction and1.198mm uniform-bake drift. Static thumb gap3.314mm, complete hand/anatomy/garment/artistic quality and complete native/runtime acceptance remain AI-owned before Joy/Astra. Fresh eight-pose native parity is within0.116mm bones/0.195mm surfaces;38 stills and1229 decoded frames retained. No whole-routine owner acceptance or production/DLL/save/ClickUp change. [Exact controls and remaining limits](../Scripts/AnimationRecipes/DancerDiagnostics/DEFORMATION_RECIPE.md#signed-finger-curl-supersedes-radial-only-grip-confidence-october26).
+**2026-10-27T14:25Z AnimGen evaluation / Joy result lookup - RPT-20261021-01 / RPT-20261015-01 / RPT-20261020-06, OPEN / AI:** Owner asks to run native AnimGen, suggests upside-down pole alignment/missed reaches, and asks whether Joy's earlier fixes are live. An isolated UE5.8.4 NullRHI preflight loads both native AnimGen modules and accepts an owned FlipsAndTricks clip in a transient AnimDatabase. No pretrained assets ship in the inspected plugin; new models report untrained and PyTorch is not discoverable in this isolated interpreter. The attempted headless settings access fails (`training_settings` is not exposed on the instantiated object); installed public training entry is editor C++, not a Python train/bake call. No training, generated motion, package installation or chamber change occurred. TrajectoryInteraction supplies a target bone/location/direction, but has not been trained or tested on pole contact; it does not establish exact support or repair the current reach. **AI next:** select the lowest-cost supported native contact repair or explicitly scoped training setup before any quality claim. Joy's latest six-track Candidate04 pour correction is **private/offline, not adopted live**: `.agent/local/AnimationReview_20261025/JoyAssessment_20261026/VisualProof_Candidate04/Review.html` and `Joy_Baseline_vs_Candidate04.mp4`; recipe `Scripts/AnimationRecipes/DancerDiagnostics/JoyPour/README.md`. The continuation prompt now preserves these locations. Historical Oct16 counter/handoff saves do not verify today's bindings or resolve the later hunch/story/prop feedback. Native scene assignment, actual props/bar clearance and story continuation remain open. [Joy evidence](validation/2026-10-26-dancer-source-followup-and-service-audit.md). Private AnimGen receipt: `.agent/local/AnimGenEvaluation_20261027/NativeProbe.json`; owned commandlet exited.
+
+**2026-10-27T13:57Z shared-body correction clarification - RPT-20261021-01, OPEN / AI:** Owner says the four girls share the body and wants the correction reusable, with Vexa validated first. Bounded inspection identifies source-time keyed PCA morph families: G1 left axilla96 shapes, balanced hips and zero-G hips; no pose-driver variables/expressions exist in the inspected sources, and the G1 rest FBX has no activation curves. A shape transfer alone cannot reproduce those fixes on the current88s routine or arbitrary animations. **Next:** confirm shared geometry and derive/validate pose-dependent activation or a pose-evaluated bake; preserve AFS joined geometry and each girl's appearance. This inventory did not modify assets or finish the corrective transfer. Private evidence: `AppearanceRestore_20261027/SharedBodyCorrectives/CorrectiveInventory.json` and `Recommendation.md`.
+
+
+**2026-10-27T13:10Z full AFS appearance copy - RPT-20261021-01, OPEN / AI:** Owner requests the corrected AFS joined body/clothing/chain rig, original skin/hair, approximately20% stronger jiggle and no leather gun holster. Separate editable `/Game/SpaceSurvival/Licensed/FullVexaChamber_20261027/L_FullVexaChamber` now contains the current88s routine on the AFS97-bone rig plus imported root, with native skin/hair/outfit, hands and feet. Geometry/UVs/garment-chain weights are preserved;6,027 exposed-skin vertices receive a bounded donor-weight blend. The adapted four-node engine SpringBone graph renders measurable chest/glute movement;37 samples compare rendered bones with native input pose (pelvis max0.004cm, chest4.20cm/glute7.74cm within the stronger caps). Renderer defaults now enable full influences and virtual textures. Original AFS and production characters remain unchanged; all runtime assets are copied into C. **Next:** owner review in this map; then narrow motion/contact fixes. Donor corrective shapes are not transferred, chain secondary motion is not ported, and full-cycle/artistic/clothing-contact acceptance remains open. Private receipt: `AppearanceRestore_20261027/AppearanceVerified.json`; updated edit/game launchers and continuation prompt are beside the routine review.
+
+
+**2026-10-27T11:16Z chamber review - RPT-20261021-01, OPEN / AI:** Current 88s motion `e2afa234` is saved in the canonical project's separate `/Game/SpaceSurvival/Licensed/RoutineChamberReview_20261027_Final/L_RoutineChamberReview`, cloned from the actual observatory. Native PIE plays 96 imported bones; front/back inversion captures exist. A bounded 7.65-8.5s moving connector reduces the abrupt 8s brake; all other source samples are exact. The direct local launcher is `SourceAssets/PerformancePlan_20261027/RoutineCausalityReview/Review in Game.cmd`, and `CONTINUE_IN_NEW_CHAT.txt` beside it preserves the handoff. Full existing skin influences require the launch's unlimited-influence override; original textures/UVs/correctives are absent from this neutral motion draft. Original station/source assets are untouched. **Next:** owner timestamped native motion/contact feedback, then narrow AI corrections. Early/late pole cuts, closing support loss, exact grip, appearance/physics and standalone owner acceptance remain open; not final AAA acceptance.
+
+
+**2026-10-27T09:40Z native motion / owner feedback — RPT-20261021-01, OPEN / AI:** The 88s BodyFlow draft `7e958903` played in a private Unreal motion map; 233 samples over two wraps match three source bone positions within0.466cm. This supersedes native playback being untested, not contact/skin/material acceptance. Owner says “10x better” but sees unsupported entry into inversion and some tractor-beam departures/returns. **AI next:** preserve the strong sections and repair visible reach/catch/support and motivated travel before exact grip or skin work; then actual lit chamber review when GPU is available. No main station/native production adoption. The 09:25UTC GPU window ended and the owned editor closed. Original textures/correctives, pole clipping, physics, chamber presentation and complete artistic acceptance remain open. [Feedback](production/DANCE_OWNER_FEEDBACK.md#native-motion-feedback--2026-10-27t0940z) / [evidence](validation/2026-10-27-motionboard.md#native-replay-and-routine-feedback--2026-10-27t0940z).
+
+**2026-10-27T10:30Z routine causality candidate — RPT-20261021-01, OPEN / AI:** Separate [88s CPU review](../SourceAssets/PerformancePlan_20261027/RoutineCausalityReview/Review.html), motion `8c1f8026` / movie `0eecf848`, replaces the uncaused early/late travel with visible wall redirects and adds actual-rig support through inversion. The outboard knee takeover and moving arm release preserve geometry, weights and rig proportions. All2113 sampled poses fit the side-wall envelope and both cameras; loop/outside-window matrices stay exact. Independent join checks find no new isolated limb flip/reset, but inherited wrist/toe snaps and contact cadence remain. **AI next:** assess the complete flow, then validate this exact candidate in the lit native chamber when GPU is authorized; exact grip, skin and physics remain deferred. Prior native evidence validates the older BodyFlow only. No new owner acceptance or production adoption. [Recipe](production/G1_G2_PERFORMANCE_STUDY.md#source-backed-causal-routes-and-support--2026-10-27t1030z).
+
+**2026-10-27T09:00Z full-mesh motion review — RPT-20261021-01, OPEN / AI:** [FullMeshMotionReview_Framed](../SourceAssets/PerformancePlan_20261027/FullMeshMotionReview_Framed/Review.html) plays the complete88-second Vexa draft at24fps using preserved full-weight geometry (movie9fd319e7/motion7e958903). Moving body-frame overlaps repair introduced hip/calf collapse at15.5–16.5s and20.5–22s; exactly58interior samples change, all other matrices and source assets remain unchanged. Both full-mesh views pass every-frame bounds checks after correcting the first render's side crop. Private GLB c6d04df7 passes CPU round-trip/convention checks; native import and original corrective/material replay are untested. AI next: whole-performance flow before detailed grip/skin/physics, then Joy/Astra; wrist/source speed, support, chamber and artistic acceptance remain open. No new game build, GPU/native/owner-board change. [Recipe](production/G1_G2_PERFORMANCE_STUDY.md#full-mesh-performance-playback--2026-10-27t0900z) / [evidence](validation/2026-10-27-motionboard.md#full-mesh-performance-playback--2026-10-27t0900z).
+
+**2026-10-27T08:26Z whole-rig motion draft — RPT-20261021-01, OPEN / AI:** [FullRigFlowReview](../SourceAssets/PerformancePlan_20261027/FullRigFlowReview/Review.html) now shows the complete88-second performance on Vexa's preserved95-bone hierarchy:24fps motion with simplified anatomy, plus2fps original-mesh/full-weight preview. Motion ce090dd2 / movies c7423376 and2cf27fb1. Two transfer-created arm pops are reduced by one coherent20.8–21.8s local-arm connector and a68.75–70s stable roll frame; body/legs and original sources remain unchanged. This is an offline draft, not a native action or restored clip-specific corrective pass. AI next: assess whole-performance flow first; wrist/speed watchpoints at15.83,16.25,44.25s and other rapid-source sections remain unaccepted, then detailed contact/skin/physics and Joy/Astra. No whole-routine acceptance or new game build. CPU-only; no Unreal/Blender/owner-board changes. [Recipe](production/G1_G2_PERFORMANCE_STUDY.md#whole-rig-cpu-motion--2026-10-27t0826z) / [evidence](validation/2026-10-27-motionboard.md#whole-rig-cpu-motion--2026-10-27t0826z).
+
+**2026-10-27T07:42Z whole-performance flow — RPT-20261021-01, OPEN / AI:** A separate [88-second full-flow candidate](../SourceAssets/PerformancePlan_20261027/FullFlowReview/Review.html) replaces the return pause with overlapping moving sources and connects the finish to the opening (movie12860736,24fps/2112frames). This supersedes the earlier unconnected-loop statement for this CPU proxy only. Exact loop positions and sampled velocities agree; normal-speed artistic acceptance and actual character continuity remain open. The86s G1 source-key speed corner remains a playback watchpoint. No native rig, source motion or owner board changed; rejected finger candidates stay rejected. AI next: transfer the complete motion to the preserved Vexa rig without reducing the choreography, then fine-tune contact/skin/physics. Current work remains CPU-only. [Recipe](production/G1_G2_PERFORMANCE_STUDY.md#full-flow-candidate--2026-10-27t0742z) / [evidence](validation/2026-10-27-motionboard.md#full-flow-candidate--2026-10-27t0742z).
+
+**2026-10-27T07:19Z motion-first priority — RPT-20261021-01, OPEN / AI:** The owner explicitly defers micro contact, skin and physics until the complete performance works as intended; this supersedes the contact-first next action below. A separate [continuous88-second review](../SourceAssets/PerformancePlan_20261027/FullMotionReview/Review.html) now plays at24fps (2112 decoded frames, movie529a65e7), with revised moving-source catch timing. It is a CPU choreography proxy, not final Vexa or a game build. Prior studies/source clips and owner boards remain unchanged; no finger candidate is adopted. AI next: review the complete flow and address macro transitions/finish-to-start connection before detail. Exact88→0 worst-joint reset is0.934m; return71.0–71.5s is a playback watchpoint. Owner has not approved this new full-rate proposal; skin, contact, physics and native acceptance remain later gates. [Evidence](validation/2026-10-27-motionboard.md#full-motion-before-detail--2026-10-27t0719z).
+
+**2026-10-27T06:38Z source screening and catch follow-up — RPT-20261021-01, OPEN / AI:** Five exact excerpts from the new packs are retained as CPU joint-data screening leads; none replaces current choreography. The earlier wrist-to-middle-finger capsule overstates hand bulk, but the catch defect is real: an articulated thumb joint enters the pole envelope. A bounded wrist-offset trial preserves torso/legs and clears the tested hand proxies, yet loses convincing contact, so it remains rejected for adoption. A source-clock-only trial preserves clip endpoints but does not resolve the independent stage-yaw change or moving-donor join. Next: author hand orientation/contact and approach timing together, preserving whole-body motion; full native skin/grip and owner acceptance remain open. Current movie, source clips and owner boards are unchanged. [Evidence and excerpt list](validation/2026-10-27-motionboard.md#source-screening-and-catch-follow-up--2026-10-27t0638z).
+
+**2026-10-27T06:20Z FBX preview correction — RPT-20261016-03 / RPT-20261021-01, OPEN / AI:** Supersedes the initial Sensual26 preview and shared-parser parity claim below: independent raw-key and fixed-segment checks exposed delayed translation defaults and mismatched rotation-axis times in the browser reader. The corrected26-clip GLB is now served on both existing endpoints (SHA-256 ad1b8ea2c6bc); the other28 new clips and all original FBXs/UASSETs are unchanged. All54 new clips remain available,48 libraries/1374 clips total. Independent1,750,276 source knots and106,379 structural samples pass; these do not prove native cubic interpolation or skin/target quality. Pinned Three r180 compatibility patch is deployed with29 passing Node checks,7 bootstrap tests and one explicit expected-failure for an unsplit0→360-degree span. Missing rotation axes, native tangents and influence reduction remain preview limits. Refresh the browser page to replace an already loaded old preview; Reload libraries preserves loaded versions. No owner-board write, portal restart or GPU launch. AI next: screen source excerpts for the current routine and retain full native/owner checks. [Evidence](validation/2026-10-27-motionboard.md#sparse-fbx-preview-repair--2026-10-27t0620z).
+
+**2026-10-27T05:50Z CPU catch assessment — RPT-20261021-01, OPEN / AI:** A private constant-scale candidate clears the inherited 43–44s proxy overlap, but earlier finger/pole overlap and a 38s velocity discontinuity still fail; it was not adopted. The large wrist-to-fingertip length variation is a composite marker affected by finger articulation, not evidence of stretched native bones. Actual proxy segment scaling also varied in the prior normalized poses. Preserve the published study and source clips; next isolate the earlier hand contact and transition timing before accepting this candidate. Evidence: `.agent/local/PerformancePlan_20261027/S09Replacement/Entry43Assessment/Proposal.md` and `AssessmentReceipt.json`.
+
+**October 27 Awesome Dog library follow-up — RPT-20261021-01 / RPT-20261016-03, OPEN / AI:** All three owner-added packs are available as 54 new MotionBoard previews: Pro Club Girl14, Goddess14, Sensual Dancer26. All54 matching UE30fps source FBXs were found on D; the earlier imported-folder-only source limitation is superseded. Both existing portal endpoints read back48 libraries/1374 clips, with the prior45 records preserved. Three private GLBs total109,555,976 bytes; 52,105 sampled frames match parsed FBX joint motion, and independent fractional/key/target checks pass. Source files remain unchanged. These checks do not establish native continuous-curve fidelity, skin quality, retarget fit, contact, join quality or owner acceptance. AI next: screen useful excerpts against the current routine and preserve the current-first/later-grounded priority; owner can use Reload libraries without changing the proposal. No Unreal/Blender/GPU launch, owner-state write or portal restart. Evidence: `.agent/local/MotionBoardNewPacks_20261027/Adopted.json` and `.agent/local/OwnedDancePacks_20261027/IndependentSummary.json`.
 
 **October25 owner-authorized PR consolidation:** The 21 open source PRs are consolidated for merge over main's already-merged PR86. [Review and ClickUp action matrix](validation/2026-10-25-pr-backlog-consolidation.md) maps every PR to retained AI work and James checks. This supersedes historical unmerged/merge-permission wording only; no gameplay, native appearance or performance acceptance is closed. Owner checkout, maps and installed binary are unchanged.
+
+**2026-10-27T04:22Z owner-feedback preservation — RPT-20261021-01 / RPT-20261016-03:**
+The [consolidated feedback guide](production/DANCE_OWNER_FEEDBACK.md) retains
+owner comments, private video/image locations and partial approvals alongside
+rejections and later clarifications. Use it to evaluate future changes without
+repeating resolved misunderstandings. This log still owns open work; the guide
+is not another task queue or evidence of a new animation/rig validation pass.
+
+**2026-10-27T05:19Z S09 CPU study — RPT-20261021-01, PARTIAL / lead:**
+The separate 88-second/176-frame proposal passes the source-bound new-route CPU
+checks: fitted views, unchanged samples before 43s, fixed segment lengths,
+sampled proxy clearance and checked joins. Independent 240 Hz transfer review
+confirms the finger-direction snap repair; it does not certify a native grip.
+The inherited **43–44s contact/proportion defects remain open** and excluded
+from the new-route pass. The hand release still needs full-rate actual-rig review.
+**Next:** lead review with the owner, then separate native deformation/contact,
+chamber and loop checks before adoption. Prior approval covered the 80-second
+concept except S09. No source clip, native asset or owner-board changes; planner
+follow-ups remain under RPT-20261016-03. [Study and limits](production/G1_G2_PERFORMANCE_STUDY.md).
+
+**2026-10-27T02:55Z CPU performance-planning follow-up — RPT-20261021-01, OPEN / lead:**
+The full80-second articulated proxy study now has160 frames at2Hz and a private
+Review.html. Recorded CPU checks preserve source hashes, fit both camera views,
+keep section positions continuous and reproduce accepted S04 departure samples
+exactly at displayed times. The study restores varied source phrases for review;
+it does not replace the native routine or prove skin, hands/contact, full-speed
+transitions or looping. **Next:** owner phrase/pacing review, then separately
+authorized character/contact implementation. [Plan and limits](production/G1_G2_PERFORMANCE_STUDY.md).
 
 **October25 dancer feedback and new choreography — RPT-20261021-01: FAILED OWNER MOTION REVIEW / lead active.** James tried Vexa: G1/G2 and B1/B2 look much worse than generation and cannot grip the pole. Earlier finite-pose/source checks do not establish motion fidelity or contacts. Inspect source-to-F3 transfer and runtime behavior, repair contact/joins and review continuous cycles on multiple dancers before owner retest. The owner also authorizes 4–5 slow, calculated/artistic zero-G segments combining the newly installed Hammerhead Flips and Tricks pack in AFS with the prior zero-G clips. Require multiple tested orders/loops, vertical and horizontal travel within the existing Observatory chamber, multi-angle motion and two-dancer separation. Preserve source clips and owner edits. [Contact repair](https://app.clickup.com/t/86bcpw7dy), [new routine](https://app.clickup.com/t/86bcqyvca), [later owner review](https://app.clickup.com/t/86bcqyvcb). No repaired choreography or AAA-quality acceptance is claimed.
 
@@ -305,6 +363,108 @@ Owner supplied this list without a fixed order. Lead owns implementation and ver
 - **RPT-20261016-01 — Figma key map and prompt readability: OPEN / lead.** Locate the owner's updated frames and reconcile actual KBM/controller actions with existing kit glyphs. Next: one small live prompt comparison; acceptance requires correct bindings, readable scales and device switching, preserving the approved menu.
 - **RPT-20261016-02 — Drunk bar patrons and one always passed out: OPEN / lead.** Inventory owned drunk/idle/recovery clips and choose suitable patrons/locations. Verify coherent loops, interactions and clear paths; exact patron choices remain open. Existing staff shots do not implement intoxication.
 - **RPT-20261016-03 — Interaction inventory and simple animation sequencing: OPEN / lead.** Reconcile the existing animation inventory and show one useful sequence with simple click-by-click authoring steps. Verify compatible rigs, prop contacts, transitions and interruption; do not claim all clips tested.
+
+  **2026-10-27T02:55Z deployment and coverage update:** the repeat backend is deployed
+  on8769/8770. Read-only served/disk revisions22/23 retain identical owner items;
+  normalized library metadata explains the nonidentical whole response on8770.
+  The owner continues editing; no claim is made that an older board hash is unchanged.
+  Lead's final import snapshot contains1304 clips in22 logical packs (43 preview
+  GLBs contain1285 clips, plus19 Meshy; about490.5MB). Source guards cover1307
+  unchanged originals and6345 pose probes within0.235mm; this is export evidence,
+  not all-clip visual acceptance. **Next — lead:** repeat/FBX browser usability and
+  actual drag gesture, source-time offsets and remaining Flight/AFS glider-zombie,
+  large Paragon weapon, ambiguous FBX and seven unlocated-title coverage.
+  **Owner:** rough-order workflow acceptance remains open. [Evidence](validation/2026-10-27-motionboard.md).
+
+  **October27 repeat/FBX follow-up (2026-10-27T02:35Z):** independent slot stretch,
+  repeat-for-seconds and repeat-count controls are implemented; a 0.5-second source
+  repeats ten times in five seconds at1×. Old boards keep legacy behavior and exact
+  trims; reverse/partial cycles and loop boundaries survive save/export. 22 JS and
+  20 isolated backend tests pass. Actual private FBX fixtures parse, but the loader
+  reduces influences beyond four; this is not a rig-quality claim. **Next — lead:**
+  coordinate backend restart/page reload around the owner's current8770 session,
+  verify repeat controls/FBX in browser, and continue library coverage. Existing
+  Dance6 end10.9333 versus newer export10.9 is preserved with a last-frame-hold hint;
+  source-time offset reconciliation remains open. **Owner:** usability acceptance
+  remains open. No running server, owner board or native animation changed by this pass.
+
+  **October27 MotionBoard — partial, lead (2026-10-27T02:15Z snapshot):** the requested
+  browser planner is deployed at `http://127.0.0.1:8769` with animated cards,
+  eight slots, trims/duration/reverse, saved boards and JSON proposal export.
+  [Launch/use](../Tools/MotionBoard/README.md). The manifest registers 12 libraries /
+  330 clips, including all 72 priority dance exports; broader conversion remains
+  incomplete, with failed checks retained for retry. Lead repaired overlay,
+  root-follow, framing and narrow-layout defects; separate port 8770 browser QA passed
+  trim/duration/reverse/save/export, and 11 JS/18 backend tests pass. Global card-only
+  speeds persist without changing sequence timing. **Next — lead:** verify actual
+  gesture drag/drop, finish direct FBX validation and resolve remaining library
+  conversion failures. **Next — owner:** try previewing and arranging a few moves;
+  usability and motion-quality acceptance remain open. JSON proposals do not author
+  native choreography or repair rigs. Existing Sequencer picker/Undo limitations
+  and paused broader dance repair remain open. [Evidence](validation/2026-10-27-motionboard.md).
+
+  **October26 practice setup, updated October27 — partial, lead:** the reopened
+  `L_AnimationPractice` / `Animation_Test` now uses owner-requested Quinn and the
+  exact-compatible VarietyDance `AS_PartyDance3` instead of Nyxar's starter walk.
+  Four bindings and the owner's two `AS_PartyDance3RM` clips remain; competing
+  Control Rig sections were disabled reversibly. Playback corrected from one frame
+  to `[0, 3399)` at30fps; map/sequence saved after prior owner edits were backed up.
+  Body resolves to Quinn with sampled pose evaluation at actual owner frames79
+  and3398; the latter is outside the starter clip. The additional spawnable's
+  playback remains unverified, and newer owner unsaved edits were left untouched.
+  Earlier Undo Drop Assets failed Control Rig shape detachment, then Undo AI:
+  Create Sequence invalidated focus/root before a Sequencer null-read crash;
+  preserved pre-crash files and [reopened setup evidence](CONTENT_PIPELINE.md#saved-sequencer-practice-and-undo-crash--october-26)
+  do not prove the Undo defect fixed. **Next — owner:** confirm the saved mannequin
+  workflow is usable. **Next — lead:** investigate any repeatable Undo failure
+  without replaying it in the owner's working session. Broader dancer repair stays
+  paused; library compatibility and animation-quality acceptance remain open.
+
+  **October27 cross-pack ordering still open — lead:** owner reports other packs
+  absent from the Sequencer picker and dragging clips spawning another actor;
+  the mannequin switch alone did not provide the requested rough clip ordering.
+  Read-only inspection found VarietyDance `SK_Mannequin.compatible_skeletons=[]`.
+  No compatibility, retargeting or native asset changes were made in this follow-up.
+  Owner will highlight movements in the downloaded
+  `Meshy_AI_Studio_T_Pose_Study_All_Animations.glb` before choosing a simple
+  shortlist/ordering workflow. CPU inventory records one mesh, a 36-joint
+  `SmartRigArmature`, and 19 separately named animations with valid key times
+  (40,182,788bytes; SHA-256 `43f368b4ac3df2e820ccccb9ed6f6efba81ef077ef03ac8692b873db9b83cba8`).
+  Examples include `Backflip_Sweep_Kick` (4.833s), `One_Arm_Handstand` (3.833s),
+  `Sprint_Roll_and_Flip` (2.733s), `Magic_Genie` (6s), and
+  `Wake_Up_and_Look_Up` (3.5s). This is a distinct rig, not a mannequin clone;
+  structural inventory does not prove visual quality or compatibility. Private
+  evidence: `SequencerSetup/MeshyReference/Inventory.json` under the existing
+  animation-library receipt folder. **Next — owner:** identify useful moments.
+  **Next — lead:** assess those examples, then provide a simple clip selection
+  and ordering workflow without altering original assets. Broad dancer repair
+  stays paused; the Undo defect and animation-quality checks remain open.
+  **Owner concept order:** slow off-pole `Backflip_Sweep_Kick` ->
+  `Breakdance_1990` slowed to 6s -> drift near the wall ->
+  `diagonal_wall_run` up the wall -> jump toward the pole -> catch and spin.
+  The supplied `Breakdance_1990` is only 0.5s/16 source keys; 6s is a requested
+  duration, not validated retiming. Drift, wall push, reach and catch connections
+  are not authored. This records concept planning, not production resumption
+  or animation adoption.
+  A second, separate proposal is zero-G `One_Arm_Handstand` -> reverse into
+  `Magic_Genie` -> `Sprint_Roll_and_Flip` off the wall. Reversing the handstand
+  clip is the lead's interpretation, not confirmed mechanics; nothing is authored.
+  Exact owner wording and mapping are in sibling `SequenceProposals.json`
+  (`Meshy-01` / `Meshy-02`), a private concept recipe, not a separate task list.
+
+  **October26 collection organization — implemented locally; sequencing remains open:**
+  Owner chose a collection tree instead of moving native assets. **Animations** now
+  contains 108 local collections spanning 4,879 unique assets (4,691 project assets
+  across45 packages and188 plugin assets); 3,952 are AnimSequences. SpaceSurvival's
+  1,918 members have source/character subgroups. Persisted parent/membership checks
+  pass, 71 existing collections remain unchanged, and fresh registry comparison
+  finds zero missing/stale root members. No native package/path, rig, animation or
+  runtime changed. [Usage and evidence](CONTENT_PIPELINE.md#animation-collection-tree--october-26).
+  **Next — owner:** expand Collections then Animations and try a package/clip preview;
+  report missing or confusing grouping. **Next — lead:** address organization feedback
+  and resume the separate sequencing/animation work only when requested. Animation
+  repairs remain paused; metadata verification closes no motion-quality acceptance.
+
 - **RPT-20261016-04 — Squirrel work duties and second Meshy station squirrel: DEFERRED / lead.** Owner October15 asks not to prioritize squirrel changes while developing a new hero. Defer asset changes, new duties and retirement of the current hero; preserve the current cast. Resume after owner coordination, then identify each squirrel separately and validate the replacement before retirement.
 - **RPT-20261016-05 — Hero replacement: DEFERRED / owner developing candidate.** Owner October15 is building a new hero and testing the texture plug-ins. This supersedes prioritizing the retro-futuristic soldier as temporary hero. Do not swap or retarget a candidate or alter the owner's Blender session; coordinate after the candidate is selected, then verify locomotion, camera/collision, seating, boarding and interactions.
 - **RPT-20261016-06 — Hero dive and roll: DEFERRED / hero-dependent work.** Keep the request open, but defer candidate-specific rigging, retargeting and controls implementation while the owner develops the hero. After selection, verify compatible clips, conflict-free KBM/controller input, collision-safe travel, entry/recovery and restored movement; flight evade is separate.
