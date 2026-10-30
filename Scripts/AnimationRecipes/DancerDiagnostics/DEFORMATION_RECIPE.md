@@ -1,0 +1,1981 @@
+# F3 deformation repair recipe
+
+## Working procedure and transfer rules — October26
+
+Use this section first; the sections below retain the experiments and evidence.
+The main target is Vexa. Finish her rig and routines, then document their
+verified results before broad adoption on Joy, Astra and other dancers. The
+owner now authorizes parallel Joy/Astra evaluation and isolated corrections;
+this does not establish shared topology or permit copying Vexa morph curves.
+The owner approved specific shoulder/hip views, not a complete anatomical rig.
+
+1. **Identify the exact failure.** Record character, source hash, clip, frame,
+   visible body variant and camera. G1 frame881 (14.6667s) is the October26
+   straight raised-arm shoulder regression. A different pose is not a control.
+2. **Preserve a visual baseline.** Keep the original licensed source and the
+   best accepted derivative. Never overwrite a better result to try a new idea.
+   Use one mesh and change one cause at a time; render matching front, back and
+   quarter views with the hair hidden equally. Inspect lit colour afterward.
+3. **Separate the causes.** First compare rest hierarchy, joint placement,
+   local axes, object transforms and animation reference pose. Next isolate
+   clavicle/neck authority, then weights, then normals, then local corrections.
+   Corrective smoothing cannot repair a backwards elbow or unreachable hand.
+4. **Coordinate the shoulder with the actual arm pose.** `coordinated_girdle.py`
+   derives each clavicle from the chest-relative rest frame and elevation,
+   rather than inheriting an unrelated acrobatic clavicle pose. The evaluated
+   recipe uses a smooth zero-to20-degree clavicle lift and shares lower-neck
+   rotation between the two neck joints while retaining head orientation.
+   These are tested F3 recipe settings, not universal anatomical limits.
+5. **Carry that coordination to every clip.** Better Spiral images did not
+   establish G/B quality. G1's raw transfer retained flat clavicles, giving the
+   arm-from-neck silhouette. The matched coordinated G1 frame881 front was
+   explicitly approved. `bake_gb_shoulder_response.py` rewrites only clavicle,
+   upper-arm and neck channels (six bones); all other local keys stay exact.
+   It moves the hands by up to4.671cm and the head by2.969cm in these clips.
+   Solve contact afterward; never reapply an old pole constraint blindly.
+6. **Balance weights using identical mirrored poses.** The original F3 left
+   shoulder weights differ from the right. `mirror_vexa_shoulder_weights.py`
+   mirrors the better side through matched vertices and protected boundaries.
+   A head tilt or unequal arm height can still make correct shoulders differ.
+   Do not force equal silhouettes in an asymmetric pose.
+7. **Keep neck correction local.** `nape_weights.py` diffuses only the small
+   posterior weight discontinuity and treats coincident head/body pairs as a
+   unit. Broad trapezius/scapula helpers produced rejected neck and back bulk.
+   The retained rig has95 original bones; no helper is needed for this result.
+8. **Distinguish shading seams from separation.** Audit coincident vertex
+   distances in motion. The ankle/wrist pairs stayed attached. Averaging normals
+   on separate meshes failed; `build_vexa_continuous_distal.py` copies surfaces,
+   stitches only40 wrist and44 ankle pairs and clears split normals. Original
+   parts remain hidden. Export only the visible derived surfaces.
+9. **Fix demonstrated weight contamination narrowly.** Eight hand vertices had
+   pelvis weights. `repair_vexa_hand_contamination.py` removes only that influence
+   and renormalizes the existing others; it does not auto-weight the hands.
+   Later neutral-finger controls isolate one opposite-hand influence; the exact
+   one-vertex repair and preserved controls are documented below. Other finger
+   deformation/contact remains open and must be diagnosed independently.
+10. **Do not confuse continuity with anatomy.** The wrist limiter flipped across
+    quaternion branches, producing near80-degree frame jumps. The derivative
+    filters bounded rotation vectors around fast events and keeps non-wrist
+    keys exact. Its below5-degree/frame result is a continuity check, not a wrist
+    range rule; source fidelity, finger pose and contact still need inspection.
+11. **Keep pose corrections tied to their source.** Hip/axilla morph coefficients
+    baked for Spiral are time-indexed. Disable them on G/B; do not replay them
+    by frame number on another routine. Recompute or build a verified pose-driven
+    correction after changing the joints. Blender preserve-volume and smoothing
+    must be baked or implemented equivalently for Unreal; modifier presence in
+    Blender is not native deformation evidence.
+12. **Test more than showcase poses.** Use bilateral wrist flexion/deviation,
+    forearm roll, ankle pitch/roll, toe and finger poses; test partially open
+    knees as well as deep flexion. Then inspect complete original/retargeted
+    clips, transitions, a moving body with fixed grip, reachable grip changes
+    and garment contact. Reject snaps, inversion, collapsed volume and clipping.
+13. **Check the actual exported result.** The FBX armature object must be
+    `root.001`, matching the mesh's extra native root. Preserve all95 original
+    bones. The private workbench retains12 influences and skin-cache tangents;
+    do not silently prune to8. Verify fresh dependency loads, curve counts,
+    bone/surface parity and actual native rendered frames. Seek times must stay
+    inside each clip; endpoint clamping caused a retained failed capture.
+14. **Transfer a technique, not an unverified file.** Check topology, bone names,
+    rest matrices, shapes, weights and garment transforms before copying body
+    repairs. The four inspected F3 bodies matched; Joy/Astra are not thereby
+    proven compatible. Their repairs need their own source identity and tests.
+15. **Record narrowly and retain failures.** Store exact scripts, hashes,
+    parameters, before/after frames and rejected alternatives here and in the
+    validation record. `docs/KNOWN_ISSUES.md` owns remaining work. A passing
+    numeric screen, successful import or owner-approved still does not close
+    full-motion, contact, native-game or other-character acceptance.
+
+Preserved sources: balanced shoulder `844aae5f`, local axilla `1f677227`,
+continuous distal mesh `d70f17f7`, wrist library `a865e0d9`, separate shoulder
+action library `4d72c70e`, one-vertex hand isolation `a9dbcbde`. These remain private derivatives, not production swaps.
+
+RPT-20261021-01, 2026-10-25. **Partial, private review only.**
+The owner approved one corrected curled hip silhouette. Open knees, thighs,
+the shoulder/underarm, complete motion and in-game adoption are not approved.
+**Vexa (saved pink/purple-haired Eden) is the sole active repair target.**
+Complete her before propagating changes to the other three dancers.
+This recipe records reproducible work and rejected approaches; it is not a
+universal repair or a numeric substitute for visual review.
+
+## Preserve and isolate
+
+Use the original licensed character-options Blender files read-only. Hash the
+source meshes, skeleton, materials and clips before starting. Outputs belong in
+the ignored `SourceAssets/DanceRefinement_20261025` directory; native experiments
+belong only in the isolated `WorkbenchNative/CharacterWorkbench` project.
+Keep the original mesh topology, UVs, shape options and source motion available.
+Run Blender hidden with `--background`; Unreal must use `-RenderOffscreen` for
+rendered inspection. Do not replace production assets or the shared skeleton.
+
+## Diagnose before changing weights
+
+1. Freeze the exact failed animation time and inspect both sides of the entire
+   hip–thigh–knee–ankle chain. Include intermediate bends and straightening,
+   not just the fully curled pose. Use the supplied anatomy reference.
+2. Run `review_native_knee_hinge.py`: clear animation in memory, restore the
+   native rest pose, and bend only the calf around its verified local axis.
+   On this F3 rig, local negative Z gives a normal forward knee bend.
+3. Compare that control with the transferred pose. A good native bend and bad
+   transferred bend point to bone orientation/roll before topology or weights.
+   Joint positions alone do not show which direction the kneecap faces.
+4. Reject a change that merely shifts the pinch to the thigh, hip or ankle.
+   DQ-only knee deformation, local smoothing and calf-only roll did not solve
+   this report. `SS_REVIEW_CALF_ROLL` stays off by default.
+
+## Coupled leg-plane candidate
+
+`leg_plane.py` aligns the thigh's native hinge axis with the plane defined by
+hip, knee and ankle, then reconstructs the calf bend. Twist-helper branches
+follow their owning segment; the foot branch retains its source transforms.
+Near full extension, carry the previous plane forward rather than normalizing
+an unstable near-zero cross product. This is F3-specific and must be recalibrated
+against a native bend control for another skeleton.
+
+`bake_leg_plane.py` reads the preserved hip proof's original motion and writes
+`Roxie_LegPlane_Actions.blend`, without replacing the default nine-clip library.
+It evaluates 961 frames and refuses large rotation jumps. The current bake has
+zero joint-center drift before reconstruction and a maximum 3.394-degree local
+leg step. Four evaluated poses reconstruct within 0.006 mm. These guard against
+technical mistakes; they do not certify anatomy, feet, timing or smoothness.
+
+## Rebuild pose-dependent hip correction
+
+Do not reuse corrective curves after changing thigh orientation. Run
+`bake_hip_correctives.py` with `SS_REVIEW_LEG_PLANE=1` for the separate candidate.
+The default mode is the earlier hip proof. The candidate samples 241 poses,
+compares localized preserve-volume and linear skinning, inverse-skins the
+difference, compresses it into 24 bases per affected mesh and bakes coefficients.
+Retain held-out frame error and inspect the actual result: matching a DQ target
+does not prove that target is anatomically correct. Only reuse body corrections
+after comparing geometry, topology, weights, rest rig, object transforms and
+active shape options. The October25 audit confirms the four local F3 bodies
+match, so a verified body repair can transfer; their bottom-garment transforms
+differ. Never assume this compatibility for a newly customized or unrelated mesh.
+
+The three affected meshes are legs, torso and bottom. The small exported proof
+contains only those parts and the rig; missing head/hands/feet in that isolated
+native proof are deliberate. `review_leg_plane_motion.py` assembles the complete
+source character in memory for full-body inspection and can render a 16-second
+video with `-- --video`. The forearm markers remain removable diagnostic objects.
+
+## Export and verify in Unreal
+
+`export_leg_plane_proof.py` exports separate rest-mesh and animated FBXs. It
+removes only sub-micron review bases after measuring their combined error over
+all 961 frames. Current candidate: 65 retained bases; seven removed; maximum
+combined removal error 0.00195 mm. Vendor shape options remain intact.
+
+Run `import_hip_proof.py` with `SS_REVIEW_LEG_PLANE=1`. Its legacy-FBX switch is
+ephemeral to that private process. Explicitly save the generated skeleton, mesh
+and animation: task-level save alone previously left a null skeleton on reload.
+Compare expected morph/curve names case-insensitively, matching Unreal FName
+identity. Preserve import warnings; reconstructed FBX bind poses still require
+visual and geometry comparison.
+
+Use a fresh process for `capture_native_hip.py` with the same flag. Reject stale
+poses, blank frames, clipped exposure and wrong aspect ratio. The native test
+uses neutral normal-based diagnostic shading, not production skin materials.
+Inspect open/closed knees from opposing views, then continuous playback and
+foot/cloth/hand contact before any adoption. Verify multiple dancers and all
+segment boundaries separately. New-library adoption remains disabled.
+
+The current native check contains 12 settled views and the matching 65 curves.
+`export_native_leg_proof.py` requires ordinary editor ticks: commandlet export
+asserted on MeshObject. Its fresh FBX readback matches 95 bone centers within
+0.0108 mm and bidirectional nearest surface vertices within 0.0163 mm at seven
+times, after one fixed rigid alignment. This confirms exported data parity;
+it does not measure engine GPU skinning or replace continuous visual review.
+
+## Vexa shoulder candidate
+
+`inspect_vexa_shoulder.py` compares the transferred pose and native raised-arm
+controls. Correct arm direction does not guarantee acceptable skin deformation.
+Clavicle participation and local shoulder volume need separate evaluation.
+The current `shoulder_support.py` follows overhead reach with clavicle lift,
+translates the arm branch to the new shoulder center, and preserves its world
+orientation. This is for free-floating motion only: hands move by up to 4.32 cm,
+so fixed pole contact must be solved separately.
+
+`bake_vexa_shoulder.py` reads `Vexa_LegPlane_Proof.blend` and saves the separate
+`Vexa_Shoulder_Proof.blend`. It bakes a derivative 961-frame Spiral action and
+24 localized shoulder morph bases, retaining the existing hip proof. A three-ring
+boundary mask prevents the new correction moving neck/wrist/waist boundaries.
+Sampling and eight held-out times approximate the chosen volume target within
+0.024 mm; the maximum shoulder local step is 0.437 degrees. These are engineering
+checks, not anatomical or owner acceptance. The candidate remains unadopted.
+
+Set `SS_REVIEW_SHOULDER=1` for `export_leg_plane_proof.py`,
+`import_hip_proof.py`, `capture_native_hip.py` and `review_leg_plane_motion.py`.
+Do not also set `SS_REVIEW_LEG_PLANE`. The full-character review requires
+`SS_REVIEW_CHARACTER=Vexa`. Export retains 89 combined review morphs, imports
+them into the isolated `VexaShoulderProof_20261025` folder, and preserves vendor
+shape options. Whole-body and opposing shoulder views remain mandatory.
+
+The first native close-ups exposed uneven shading despite 89 valid curves.
+`SS_REVIEW_RECOMPUTE=1` is a separate, process-only tangent comparison; it does
+not change production settings. Inspect its actual images before accepting it.
+Epic's [skeletal rendering paths](https://dev.epicgames.com/documentation/en-us/unreal-engine/skeletal-mesh-rendering-paths-in-unreal-engine)
+and installed `GPUSkinCache.h` describe runtime tangent recomputation for morphs.
+Consulted October 25, 2026; version 5.8. Tangent repair cannot certify geometry.
+
+## Native readback does not settle appearance
+
+Compute skin-cache/tangent recomputation and a separate high-precision morph
+duplicate did not repair the native close-up. Material skeletal/morph usage
+flags were already correct. The attempted runtime CPU-morph toggle is read-only
+and stayed enabled: it is **not** a valid CPU-versus-GPU comparison.
+`audit_vexa_runtime_pose.py` compares a live Geometry Script CPU-skinned snapshot
+at four times: 8,352 vertices agree within 0.118 mm after the fixed coordinate
+alignment. That narrows the problem; it does not prove GPU-rendered quality or an
+engine defect. Keep this distinction when interpreting an export round trip.
+
+## Left underarm and shoulder-blade study
+
+The owner rejects the left chest-to-arm crease and prefers the other shoulder.
+The later smoothing screenshot was only "possibly close." Vexa remains the
+single target. Keep her neck contour soft; do not copy exaggerated trapezius
+bulk from the male rig reference.
+
+`review_vexa_underarm.py` compares localized Corrective Smooth against the saved
+baseline. `bake_vexa_underarm.py` creates a separate 24-basis left-only proof;
+the other shoulder and modular boundaries receive no new correction. The chosen
+target is approximated within 0.077 mm in sampled poses and 0.056 mm at held-out
+times. This does not mean the target is anatomically correct. The owner still
+rejects the crease, so this proof is not a final repair.
+
+`build_vexa_girdle_study.py` adds two private scapula helpers under `spine_05`.
+Their motion follows the existing clavicle/shoulder relationship; three boundary
+rings protect modular joins. `audit_vexa_girdle.py` verifies all 95 original
+bone matrices over 961 frames remain unchanged, normalized weights, and helper
+continuity. It does not judge the skin. `review_vexa_girdle.py -- --video`
+renders front/back motion plus opposing stills. When assembling the full
+character, update the dependency graph after linking; do not reparent imported
+objects already attached to the correct rig. The earlier blank capture failed
+that requirement and was discarded.
+
+`review_vexa_girdle_weights.py` shows the actual saved influence maps without
+rescaling their values. Overlapping colors alone are not proof of good weights.
+The original clavicle hierarchy was already correct; adding helper bones is an
+isolated anatomy study, not a reason to replace the production skeleton.
+Existing corrective targets require recalibration if their underlying weights
+or rest frames change. Do not stack a new deformation on top of incompatible
+correctives and call the extra volume a repair.
+
+The [rig creator's comments](https://www.reddit.com/r/blender/comments/1apc8db/over_engineerd_shoulder_blade_rig_for_game/)
+describe overlapping shoulder/blade/trapezius/arm weights, suitable bend topology,
+driven shape keys, and an elbow helper copying half the forearm rotation.
+The last technique addresses elbows, not automatically shoulders. They export
+animation from Blender to Unreal and discuss recreating equivalent constraints
+in Control Rig; Blender constraint transfer is not established. Consulted
+October 25, 2026; the thread dates to February 2024. Their implementation is a
+reference, not a complete downloadable rig or a required muscle shape.
+
+## Coordinated motion and bilateral weights
+
+Later owner feedback rejects the expanded neck, raised blades and head distortion
+in the helper-bone experiments. Preserve those as failed controls. The current
+candidate uses only the95 original bones. The front view was called much closer,
+but this is not acceptance of the back, entire routine or native result.
+
+`review_vexa_girdle_authority.py` isolates the animation contribution. The earlier
+floating-arm rewrite retained clavicles from a different acrobatic arm pose.
+`coordinated_girdle.py` instead derives clavicles from chest-relative rest and
+actual elevation. It shares lower-neck rotation between the neck joints while
+preserving upper-neck/head orientations. This displaces the hands: maximum arm
+root shift8.863cm. It cannot be reused as fixed-pole contact motion.
+
+Clear an action before holding a manually adjusted pose. The first control was
+invalid because rendering reevaluated the original action; corrected captures
+assert their bone matrices. Use identical poses and cameras before blaming a
+left/right difference on weighting.
+
+`audit_vexa_shoulder_foundation.py` and `review_vexa_symmetry.py` find genuinely
+asymmetric original weights. Rest points less than1mm apart can have nearly1.0
+L1 difference after side-name remapping. `mirror_vexa_shoulder_weights.py` copies
+the better right weights into the left region with spatial and three-ring seam
+masks. It changes984 torso vertices, protects132 boundary vertices, leaves the
+right weights/rest bones/geometry unchanged, and rejects distant correspondences.
+In two mirrored pose controls the worst surface mismatch falls from49.39/53.53mm
+to3.57/3.88mm; P95 falls to about1.2mm. Residual rest-shape asymmetry remains.
+This establishes consistency, not acceptable anatomy.
+
+`bake_vexa_coordination.py` saves a compact95-bone/961-frame proof. Its shoulder,
+neck and upper-arm maximum local step is0.583degrees. Original materials remain
+in the licensed source; this private copy uses clay and hidden hair for inspection.
+`review_vexa_coordination_saved.py` reloads it for opposing views and motion.
+
+## Local nape correction, without muscle bulk
+
+`audit_vexa_neck_seam.py` verifies44 paired body/head vertices and matching weights.
+The visible notch was not a disconnected head. A custom-normal clearing control
+also failed to remove it. `audit_vexa_nape.py` locates abrupt posterior weight
+changes; `nape_weights.py` diffuses weights only in that small region, treating
+each seam pair as one logical vertex. It does not weld, reshape or split meshes.
+The front and remote shoulders are outside its mask. The original bone count and
+rest geometry stay unchanged.
+
+CPU before/after views show a reduced nape notch. The trial touches175 vertices
+(173 exceed the reporting L1 threshold). An eight-influence compression trial
+failed its0.05mm error gate at0.0676mm and was rejected; the saved candidate
+retains up to10 influences, with exact restoration at241 samples. Do not widen
+the gate or silently prune this at export. Verify the native influence budget
+and fresh deformed-surface parity before adoption.
+
+`audit_vexa_balanced_proof.py` checks961 seam frames and preserves the full weights
+when the compression gate fails. Maximum measured seam discrepancy is0.00122mm.
+`Vexa_ShoulderBalanced_Proof.blend` is the current private candidate; it is not a
+native game asset. `review_vexa_balanced_cpu.py` uses four CPU threads, Cycles CPU,
+opposing800px stills and an optional low-resource12fps back preview. That preview
+does not establish final frame pacing or complete artistic acceptance.
+
+The supplied [shoulder tutorial](https://www.youtube.com/watch?v=c_XM01I6ed0)
+supports checking topology, joint placement, separate weight regions and one
+modifier at a time. Its transcript and owner-supplied intro were reviewed on
+October25,2026. Native Blender master inspection finds no existing corrective
+rig to switch on. Blender B-Bones, constraints and smoothing modifiers need an
+explicit baked or equivalent runtime solution; they do not transfer automatically.
+
+## Preserve the outcome accurately
+
+Keep the approved earlier hip proof separate from the new leg candidate. Record
+owner feedback in `docs/KNOWN_ISSUES.md`; the current issue remains open. A build,
+import, low numeric error or PR merge cannot close visual/feel acceptance.
+
+## October25 balanced proof native verification
+
+**October25 private native follow-up:** Owner authorizes full VRAM, superseding the CPU hold. Proof844aae5f remains private in CharacterWorkbench at /Game/SpaceSurvival/Licensed/VexaBalancedProof_20261025. All65 correction curves and16s duration reload. Four live28,345-vertex samples differ from Blender by at most0.302mm (bones0.199mm; curve error0.000944). Component-copy weights retain10 influences at35 vertices with more than8; direct GPU-buffer introspection is not claimed. Two16s/24fps native videos contain768 frames total. Largest frame changes were inspected and follow the moving camera. Lit multi-angle review identifies a remaining skin fold at the axilla; hiding the garment confirms it is not just clothing. No production adoption or anatomy/choreography acceptance. Lead retains localized shoulder correction, garments, knees/thighs, pole grips and later multi-dancer reuse. Owner now describes the shoulders as looking very good except one spot; this is narrow positive feedback. Six controlled Blender renders use the existing packed textures with neutral or pink/blue lighting: colour softens the fold but does not hide its highlight. A separate Vexa_AxillaLocal_Proof.blend bakes24 local curves, retaining the844 baseline. Compression error0.00394mm; eight held-time errors max0.02227mm. Its full-motion/garment acceptance remains open. Owner explicitly accepts the shown side as a massive improvement. After questioning the back, owner notes unequal arm/head pose and says the shoulders are generally very close. Preserve this appearance; do not reshape it merely to make an asymmetric pose symmetrical. This does not close full-motion, native-material, pole-contact or other-character acceptance. Owner asks about wrists, ankles and other joints; inspect them through this same routine before broad reuse. Existing knee/thigh and garment/contact failures remain open. The separate1f677227 axilla candidate now fresh-loads in the private native workbench with89 correction curves and16s duration. Five sampled live surfaces match Blender within0.302mm; two384-frame native views are retained at24fps. This closes bounded transfer verification, not continuous artistic acceptance or production adoption. Earlier malformed capture arguments and the dependent missing-report audit failure are retained; corrected captures and parity succeeded. Distal-joint follow-up:961-frame wrist/ankle scan and16 closeups retained. This shoulder-proof clip holds both wrists at their rest-relative orientation, so it does not exercise wrist flexion. A visible right ankle contour/lighting discontinuity remains. Seven samples of44 ankle and40 wrist coincident vertex pairs stay within0.0013mm; the parts are not separating. An in-memory normal-average control changes neither the ankle defect nor the source and is rejected as a fix. Thumb-web spikes in the hand closeups also require inspection. No distal repair or full joint-range acceptance is claimed. Owner explicitly rejects calling this a gold-standard rig: no satisfactory wrist/ankle has yet been seen. The shoulder approval is local only. Required reuse gate: dedicated bilateral wrist flexion/deviation, forearm twist, ankle pitch/roll and foot/toe poses; complete source and retargeted clips on each distinct mesh/rig; torso-relative arm limits during pole-locked motion, including grip changes and body rotation. Unreachable contact must remain rejected or use a feasible body path/release; do not force a pinned hand by breaking the arm chain. Static pose passes, this16s clip and skin parity do not close any of those gates. Dedicated24-case/48-view isolated probes now exist on Vexa, with wrist flexion/deviation, ankle pitch/roll and forearm twist. Representative bent joints expose contour discontinuities and remain rejected; these diagnostic angles are not declared anatomical limits. No proof or production file was changed by the probes. Superseding the missing-source uncertainty: owner identifies AFS on M;58 exact files under M:/UnrealProjects/AFS now match the original source-manifest hashes. Original path manifest and failed historical path guard remain intact. Combined with the seven accessible originals, all65 source contents are accounted for; no AFS writes occurred.
+
+Source SHA256:844aae5f6ccfe4f25d5e8c8b5e9bd7e8d79e813b5375491b7749576bd2544824. Export does not resave it. Seven negligible morphs are pruned from FBX only; maximum combined source error0.00195mm. Curve comparison excludes those pruned names.
+
+Private workbench only: r.GPUSkin.UnlimitedBoneInfluences=True, threshold8, DefaultBoneInfluenceLimit=(Default=12), mesh LOD limit12. Canonical project/engine configuration is unchanged. GeometryScript readback is a component copy, not direct render-buffer inspection.
+
+Native receipts: NativeVexaBalancedRuntimeSkin.json, VexaBalancedRuntimeSkinParity.json, NativeVexaBalancedMotion.json and NativeBalancedVideos.json under .agent/local/AnimationReview_20261025. Native MP4s are SourceAssets/DanceRefinement_20261025/Vexa_ShoulderBalanced_Native_front.mp4 and _back.mp4;384 frames each,24fps,16s. Blender previews are separately named.
+
+The first capture's world-fixed cameras, obscuring hair and absolute-normal dark bands are superseded by body-relative cameras, hair-free diagnostic import and a signed normal ramp. This shading is not final skin/material acceptance. Lit96-sample OptiX views independently inspect geometry. Known FBX bind-pose reconstruction warnings remain; no warning-free import claim. No C++ changed, so a module rebuild was not warranted. Actual station performance, packaged behavior, whole-routine quality and owner acceptance remain open.
+
+Preservation: the old AFS source path is unavailable; do not rebase the guard. All previously retained imported copies remain the protected working sources.
+
+## October26 distal and G/B continuity repair
+
+**October26 distal and wrist-motion repair (supersedes the no-repair note above):** Private Vexa d70f17f7 removes pelvis influence from8 hand vertices and stitches only40 wrist/44 ankle boundary pairs, with source parts retained. Sampled thumb spikes and seam shading improve. The95 original deform/rest bones remain; FBX adds its armature-object root. Seven source comparisons differ by at most0.001437mm; five native surfaces by0.302mm. Native89-curve load,24 distal cases/48 views and4 shoulder preservation captures are retained. The full4566-frame G/B screen uses the same rest rig and disables Spiral-only correction curves. It detects near80-degree wrist jumps introduced by the earlier limiter. Separate action library a865e0d9 repairs wrist continuity: maximum4.932degrees/frame at60fps; all non-wrist local keys preserved, B2 unchanged in motion. This is a numerical continuity gate, not an anatomical bound or source-fidelity acceptance. Native before/after excerpts plus the complete G1 candidate contain789 frames; no pole constraint is active. Remaining fast upper-arm/leg motion, contact/body paths, finger/ankle contours, knees/thighs, garment fit and per-character full-motion acceptance stay AI-owned and OPEN. No production character/map/DLL/package adoption or merge.
+
+- `repair_vexa_hand_contamination.py` changes only eight contaminated hand vertices, removes pelvis influence and renormalizes their remaining weights. All other hand weights are asserted identical. Matched renders expose the before/after thumb web. Original proof1f677227 remains unchanged.
+- `build_vexa_continuous_distal.py` copies the torso/hands and legs/feet, joins only the audited84 boundary pairs and clears split custom normals on the new surfaces. All source faces/material slots/UVs are retained; original parts remain hidden. Seven posed comparisons reject shape-animation drift above0.02mm; measured0.001437mm. Export filters hidden originals. Do not apply a broad merge-by-distance to this model.
+- Private blend d70f17f7 remains95 bones; native import adds the FBX armature root. All89 retained curves survive import, with28,261 sampled native vertices. Private workbench skin-cache shader compilation/recomputed tangents are enabled; canonical/engine configuration is unchanged. No direct GPU-buffer introspection claim.
+- Wider-weight and four-half-angle-helper trials had too little visible benefit and were not promoted. Their private files/reports remain separate; the current mesh has no new deform bones.
+- `audit_vexa_gb_reuse.py` checks4566 frames and36 stills. Same-world rest error3.58e-7, same object matrix; no extra retarget. The existing elbow/rear-reach screens flag no frames. They do not establish anatomy or contact. G1/G2/B1 retain other local steps up to25.64degrees/frame after wrist repair; they are not polished motion.
+- `repair_gb_wrist_continuity.py` filters bounded wrist rotation vectors only near fast events, avoiding the shortest-quaternion-branch jump at pi. Source cfebfc7e is immutable. All other action key coordinates, interpolation and handles are checked unchanged. The greatest wrist orientation change is47.33degrees; this remains a candidate to compare against source intent. Fresh reload/export repeats the step gate; B2's motion is unchanged.
+- `export_gb_wrist_comparison.py` must match the mesh armature object name `root.001`. The first native attempt failed because animation export used `root`, while the mesh expected `root_001`. That failed log is retained; renaming the export-only object fixes the extra-root identity without renaming any deform bone. Eight native animations then import with matched durations.
+- `capture_gb_wrist_comparison.py`/encoder retain four matched1.6s before/after event pairs at30fps plus complete G1 at24fps. Diagnostic camera/shading and offscreen seeks are not natural-play/skin-material/performance evidence. Maximum seek discrepancy is0.000000890s. The excerpts are not loopable dance segments.
+
+Receipts under `.agent/local/AnimationReview_20261025`: `VexaDistalRepair/HandRepair.json`, `ContinuousSurface.json`, `GBReuse/Report.json`, `GBRotationSteps.json`, `GBWristContinuity.json`, `GBWristExport.json`, `NativeGBWristVideos.json`; native `NativeVexaContinuousDistalFullRange.json`, `VexaContinuousDistalRuntimeSkinParity.json`, `NativeVexaContinuousShoulderCapture.json`, `NativeGBWristComparison.json`. Private editable sources/FBXs/videos remain under `SourceAssets/DanceRefinement_20261025`; no licensed/native payload is committed.
+
+No C++ changed; no module rebuild or package was warranted. Source/Python/documentation checks accompany publication. Whole choreography, contact and owner acceptance remain RPT-20261021-01, with no blocking owner checkpoint.
+
+Fresh-process follow-up reloads all eight native comparison animations with their expected skeleton and duration. The first comparison capture extended a late G1 excerpt past the clip endpoint; the encoder rejected its0.2s seek discrepancy. The retained EndpointClamp receipt is not passing timing evidence. Corrected capture windows produce789 frames with maximum0.000000891s seek error; all nine encoded videos decode to their exact expected frame counts without decode errors. Existing FFmpeg PNG chunk warnings remain in the encoding log. Matched native wrist frames visibly remove the abrupt snap, but finger distortion remains visible.220 protected project files,65 imported copies and all65 original source contents (58 relocated AFS files) still match their hashes.50 source structural checks, Python compileall,26 mesh/17 WAV format checks, both documentation gates and scoped whitespace checks pass.
+
+## October26 approved shoulder response carried to G/B
+
+**October26 G/B shoulder response:** Owner rejected G1 frame881 (14.667s) for an arm-from-neck silhouette, then explicitly approved the matched coordinated front. Earlier Spiral acceptance had not established G/B quality. Separate private action library4d72c70e applies the existing chest-relative clavicle/neck recipe to4566 G/B frames, changing only six local bone channels and retaining all other keys. Maximum sampled matrix reconstruction error4.18e-7; wrist continuity remains below5degrees/frame. Maximum hand-path shift4.671cm means pole contact must be solved again. Four native clips fresh-load;822 captures include two405-frame G1 shoulder-oriented views and12 stills. Both videos decode exactly; maximum seek error0.000000636s. Native front/back samples retain the improved shoulder response. Other rapid motion (up to25.65degrees/frame), fingers, knee/thigh shape, garments, transitions, reachable grips and full-body/multi-character quality remain OPEN. Original mesh, earlier accepted proofs and production assets are unchanged. Owner authorizes continued autonomous work: Vexa first, document the complete process, then Joy/Astra, then remaining dancers. No new owner checkpoint, ClickUp write, schedule or merge.
+
+Source: `GB_ShoulderResponse_ActionLibrary.blend`, SHA256 `4d72c70e5410b55847c81943c4ab7c6a3e4d2baa5b151611673dbec6216f4679`. Its source wrist library `a865e0d9` and current mesh `d70f17f7` remain unchanged. `review_gb_shoulder_response.py` isolates the cause at identical poses/cameras. `bake_gb_shoulder_response.py` rewrites clavicle_l/r, upperarm_l/r and neck_01/02 only. The shoulder action keeps the arm world orientations; its attachment positions move. This is not fixed-contact choreography.
+
+The source recipe now begins with a fifteen-step practical procedure, tested settings, retained failures, export pitfalls, transfer requirements and exact baseline hashes. Do not restart helper-bone/neck-bulk trials or replay Spiral-specific morph coefficients on G/B. Do not transfer weights to Joy/Astra by vertex index without proving compatibility.
+
+Receipts: `GBShoulderResponse/Report.json`, `BakeReport.json`, `Export.json`, `NativeReload.json`, `Videos.json`, `NativeSamples.png`, and `NativeGBShoulderResponse.json`, under the ignored animation review directory. Native assets remain in the private `VexaContinuousDistalProof_20261025` package folder. Captures use diagnostic shading and shoulder-oriented cameras; cropped hands/feet and unsampled transitions are not full-body quality evidence. Known PNG encoding warnings are retained; full video decoding passed. No C++ changes, rebuild, package, production adoption or whole-routine acceptance.
+
+## October26 opposite-hand weight contamination
+
+**October26 hand spike isolation:** One left-ring-finger vertex4472 retained4.4068% right-index influence. The spike remains with neutral fingers, isolating weights from animation. Private Vexa a9dbcbde removes only that opposite-hand influence and renormalizes the existing three;6265 other joined-surface vertex weights remain exact. Matched sixteen native controls show the spike removed. Two whole native surface comparisons contain28261 vertices each: only one vertex differs, with all28260 others exactly equal. Fresh reload retains248 morphs, the same skeleton, four unchanged shoulder clips and an explicit12-influence LOD build setting. Existing proof files remain hash-identical. Hand overlap, abrupt source rotations and pole contact remain OPEN; this is not complete hand/anatomy acceptance or a production swap.
+
+The preserved input is `Vexa_ContinuousDistal_Proof.blend` (`d70f17f7`). The output is `Vexa_HandIsolation_Proof.blend`, SHA256 `a9dbcbde4743c2eed97b92c1ab18157d8b903a620206e17cd325031a0e976e6e`. Native destination: `/Game/SpaceSurvival/Licensed/VexaHandIsolationProof_20261026/SK_VexaHandIsolationProof` in the private workbench. `probe_gb_finger_shape.py` compares animated and neutral fingers; `audit_gb_hand_spikes.py` identifies the stretched edge. `repair_vexa_cross_hand_weights.py` requires dominant owning-hand weights and independent rest-space proximity, changes one demonstrated point and checks every other vertex. Do not broadly remove cross-body weights without these controls.
+
+At G1 frame881, the affected edge changes from7.72014x rest length to below the post-repair worst hand-region edge of1.9988x. This is a spike diagnostic, not an anatomical threshold. G1 frame220 still contains hand/forearm overlap; the recipe does not hide or solve it. Native skinned-component copies at8s and12.2s preserve all other surface positions exactly; this is GeometryScript component geometry, not direct GPU-buffer readback.
+
+The first reload gate inspected initialization data instead of effective LOD build settings, then two attempts to reflect renderer settings failed. Those receipts are retained. Installed UE5.8 `SkeletalMeshEditorSubsystem.get_lod_build_settings` is the correct readback. A limit of0 means the project default (12 in this workbench), not pruning; the private mesh now explicitly saves12 using `set_lod_build_settings`, and a fresh process verifies it. Never lower the validated influence budget merely to satisfy a generic limit. See [Epic skeletal-mesh rendering documentation](https://dev.epicgames.com/documentation/unreal-engine/skeletal-mesh-rendering-paths-in-unreal-engine?lang=en-US), accessed October26.
+
+`audit_raw_gb_rotations.py` reads original GLB quaternion keys before retargeting. It finds rapid arm rotations in the supplied files as well: G1 right forearm about2352degrees/s at2.433s and G2 right arm about2259degrees/s at1.4s. This identifies source motion requiring visual repair; it does not judge the separate generation video or excuse native defects. Keep motion repair separate from mesh weights.
+
+Receipts: `GBFingerShape/Repair.json`, `After/EdgeAudit.json`, `NativeReload.json`, `InfluenceSetting.json`, `NativeSkinDelta.json`, `RawRotationAudit.json`, `NativeVexaHandIsolation.json`, `NativeVexaHandIsolationSkin.json`. Initial rejected reload/reflection receipts remain alongside them. All are private under the established animation-review directory. No C++ changes, new game build/package, production-map edit, merge or owner acceptance.
+
+## October26 bounded arm passage repair
+
+The skinning repair cannot remove a bad joint trajectory. Original GLB rotation
+audits plus identical-rest-pose controls show the rapid rotations predate the
+latest retarget. A threshold above10 degrees per60fps frame only nominates views;
+it does not authorize flattening every fast gesture. Nineteen intervals were
+screened; opposing start/peak/end views identify specific local loops to change.
+
+| Change | Preserved input | Output hash prefix | Frames | Worst upper-arm step after | Max hand-path change |
+|---|---|---|---|---|---|
+| G2 right downward loop | 4d72c70e | ac64f038 | 59-109 | 5.658 deg/frame | 54.274 cm |
+| G2 left downward loop | ac64f038 | fa3967d2 | 787-830 | 7.863 deg/frame | 55.848 cm |
+| G1 left behind-torso loop | fa3967d2 | 0a38e12a | 192-270 | 1.970 deg/frame | 54.440 cm |
+
+Each trial copies the action and replaces only interior arm-chain rotations
+with a smooth endpoint quaternion path and an eight-frame smoothstep taper.
+The existing chest-relative clavicle coordination is recalculated; the neck
+pass is not applied twice. Untouched curves retain all key metadata exactly.
+Exterior coordinates/interpolation on touched LINEAR curves remain exact;
+Blender may recompute unused Bezier handles by floating-point roundoff. The
+initial over-strict handle assertion is retained, not hidden. Maximum sampled
+matrix reconstruction error is2.862e-6. Finger/wrist local keys are unchanged;
+the earlier wrist continuity stays below5 degrees/frame. These numbers do not
+prove anatomy, contact, source-video fidelity or artistic quality.
+
+The final local library is `GB_SelectedPassages_ActionLibrary.blend`, SHA256
+`0a38e12a774436fd08a44508f32820573cdc0dab4a56658737ecc1b7d4060b8e`.
+It retains the earlier actions; selected exports use `A_F3_SelectedPassages_g1`
+and `A_F3_TwoPassages_g2`. Do not apply the retained Spiral-only morph curves to
+these clips. Matching source/native views show the edited limbs in front of the
+torso and the approved raised-arm pose retained. Remaining quick movements,
+wrists/ankles, garments and reach/contact require continuous scrutiny.
+
+Private native assets are `A_SelectedPassages_g1_selected` and
+`A_SelectedPassages_g2_selected` under
+`/Game/SpaceSurvival/Licensed/VexaHandIsolationProof_20261026`. Four complete
+24fps captures contain405/405 G1 and338/338 G2 frames. All four videos decode to
+the expected count; maximum pose-seek error is0.000000636s. Initial PNG chunk
+warnings are retained; decoded video verification succeeds. A fresh NullRHI
+process loads the same skeleton and durations16.85/14.05s. Earlier proof files
+are hash-identical. Native captures use diagnostic shading and a body-following
+camera; this is not final skin, fixed-camera choreography, gameplay or package
+acceptance. No production assets/map/DLL/save were replaced.
+
+Reproduction: `repair_g2_arm_excursion.py`, `repair_g2_late_excursion.py`, then
+`repair_g1_left_excursion.py` require the exact previous hashes and refuse an
+existing destination. Review with the matching passage scripts before export.
+Then `export_gb_selected_passages.py`, `capture_gb_selected_passages.py`,
+`encode_gb_selected_passages.py` and `reload_gb_selected_passages.py` provide the
+separate native checks. Never move an old pinned hand onto these new paths.
+Use feasible body travel or a deliberate release/regrip when contact is added.
+
+Private receipts: `GBFastPassage/{Repair,LateRepair,G1Repair,SelectedExport,
+SelectedVideos,SelectedReload}.json`, `GBArmEventViews/Report.json`,
+`NativeGBSelectedPassages.json`. Earlier trials remain separate. PR96 remains
+draft/unmerged; hand-repair head1cae454f source409 and documentation597/598 passed.
+No C++ changes or module rebuild were needed. Whole-routine and other-character
+acceptance remain in RPT-20261021-01.
+
+## October26 one mesh, five paired zero-G segments
+
+Preserve `Vexa_HandIsolation_Proof.blend` (`a9dbcbde`) and the original
+`Refined_ActionLibrary.blend` (`cfebfc7e`). The new private joint library is
+`ZeroG_Coordinated_ActionLibrary.blend`, SHA256
+`fc2df16b48e1ef4c6ec6775c4744abc90da26f0fdca4d35b04283d21a339f357`.
+It contains Drift16s, Spiral16s, Butterfly14s, Inversion16s and LateralArc14s.
+The12 changed local bones are both clavicles, upper arms, neck joints and
+thigh/calf/foot chains. All unrelated keys are exact,95 bones retained and
+all sampled hip/knee/ankle centres remain unchanged. Parent-relative
+`matrix_basis` reconstruction is required: sequential world-matrix assignment
+in a live hierarchy produced an exploded rejected preview. The correct bake
+checks all4565 frames; maximum matrix error is2.265e-6.
+
+All25 ordered endpoint pairs have positional mismatch below0.061mm,
+orientation agreement within the quaternion comparison's precision and
+maximum velocity mismatch0.003765m/s. This checks joins, not artistic quality.
+Two higher thigh-roll passages were inspected separately. Do not smooth an
+intentional leg-crossing simply because its angular velocity is larger.
+
+### Rebuild correction curves after the joint changes
+
+1. Clear old time-indexed REVIEW coefficients on the private copy. The retained
+   old Spiral curves cannot be retimed onto five different joint trajectories.
+2. Evaluate linear skinning and the localized preserve-volume target at the
+   actual pose. The hip mask uses distance to the nearest rest thigh joint:
+   `smoothstep(clamp((0.42-distance)/0.22,0,1))`, metres. This is the tested F3
+   target, not an anatomy rule. Inverse skin only where the active determinant
+   remains above0.01; reject singular transforms instead of inflating deltas.
+3. Build one shared PCA basis across the five clips, not five incompatible
+   meshes. The private source has168 new bases:48 Bottom,16 joined torso/hands,
+   96 joined legs/feet and8 Top. Part names describe combined objects; do not
+   mistake the joined hand object for hands alone.
+4. Test interpolation in the final posed surface. Four-frame coefficient
+   sampling initially missed1.803mm between keys. Its10.62mm rest-space error
+   was amplified by inverse skinning and was not a10.62mm visible defect.
+   Keep the rejected draft and measure in the space the player sees.
+5. Refine only intervals whose midpoint posed error exceeds0.2mm (four levels
+   maximum), then check independent quarter-interval samples. Drift uses344
+   coefficient samples, Spiral278, Butterfly229, Inversion241, LateralArc211.
+   All2596 held-out samples stay within0.164mm. Basis vectors do not change.
+6. Pin all five joint actions with fake users and store the explicit
+   `zero_g_curve_pairs` scene mapping. A fresh reload previously dropped unused
+   actions. Assign BOTH the rig action/slot and every corresponding shape-key
+   action/slot when switching clips. A rig-only action switch is invalid.
+
+The saved shared source is `Vexa_ZeroG_SharedHip_Proof.blend`, SHA256
+`455c499224fb39bbd6de41ee3c98bf5fac69916a1b3cceb710e17888acd326b8`.
+Export only visible derived surfaces, object root `root.001`, all95 original
+bones and120fps sampled curves. Eight negligible Top bases are pruned only in
+the export with a combined displacement bound below0.01mm. Import160 morphs
+and160 matching curves into each native clip. Duplicate the proof skeleton
+into the new namespace first so its added curve names cannot mutate the older
+proof skeleton. `AnimSequence.get_editor_property('skeleton')` is required;
+the initial direct-property error and guarded exact-namespace resume remain
+recorded. The old-proof hash guard covers the resume and later finalization;
+the interrupted first import did not persist its guard receipt.
+
+### Knee-band controls: source and native comparison
+
+**October26 matched-camera correction:** The same normal ramp and camera reproduce the knee band in Blender. Static native snapshots with newly calculated smooth normals also retain it. This supersedes the earlier inference of an Unreal-only normal fault; neither explicit-white masking nor duplicate-vertex/cache controls fixed the appearance. The preserved source455c4992 is unchanged. Inspect the source knee contour, weights and intermediate bends next. These controls do not certify anatomy or final materials.
+
+The new assets live only in the private CharacterWorkbench under
+`/Game/SpaceSurvival/Licensed/VexaZeroGSharedHipProof_20261026`:
+`SK_VexaZeroGShared`, `SKEL_VexaZeroGProof`, and `A_ZG_01_Drift` through
+`A_ZG_05_LateralArc`. Five complete posed-surface comparisons contain28261
+vertices each, maximum bidirectional position difference0.276mm;27 sampled
+bone poses differ by at most0.192mm using one fixed coordinate conversion.
+This establishes bounded transfer, not topology equivalence or full motion.
+
+The native normal ramp initially showed harsh bands around the hips and knee.
+Enabling global recompute, explicitly opting the component into skin cache,
+enabling the section, and changing VertexNormalWS to PixelNormalWS did not
+remove them. A derivative-of-world-position control removed the bands while
+showing the underlying triangles. That initially suggested a shading-only
+fault, but the matched-camera control below supersedes the native-only
+inference. The installed cache summary confirmed the mesh participating;
+Nanite was false. A flat-normal control alone cannot certify good geometry.
+
+The first green-mask control looked better, but this did NOT establish a fix.
+Both component and source-asset colour copies returned black green, and a
+rendered VertexColor.G control independently confirmed black. The installed
+shader blends toward the recomputed tangent with that channel: black selects
+the original tangent. Preserve both aborted0-frame capture receipts; do not
+call these colour-copy failures or claim that the source colours are white.
+Normalizing the diagnostic shader alone also did not remove the bands.
+
+A separate mesh-only import, `SK_VexaZeroGWhiteMask`, explicitly overrides
+vertex colours to white (green range0.99999988..1) and retains the same source,
+160 morphs, skeleton and12 influences. It has SHA256
+`5c5bdbbb625837b30382c98ee65792a4e7ae953a5f75d3e56b066cfc1bc36528`.
+Its saved section0 enables recomputation with green mask1. Identical views
+still show bands, including when the console settings are enabled before
+component registration. This is an UNRESOLVED normal-path comparison, not an
+engine fix. The older black-mask experiment `b83de5a2` is retained separately.
+Fresh full-motion capture uses the explicit-white control and
+`r.SkinCache.RecomputeTangents=2`, checking saved flags, colours,160 curves and
+12 influences. Its footage is useful for movement but is not accepted shading.
+Production settings and older proof assets are unchanged.
+
+Epic's [render-path documentation](https://dev.epicgames.com/documentation/en-us/unreal-engine/skeletal-mesh-rendering-paths-in-unreal-engine)
+describes masked recomputation. [UE-305999](https://issues.unrealengine.com/issue/UE-305999)
+documents a no-mask regression, resolved August29,2025 with target5.7. Both
+were consulted October26,2026. This installed5.8 comparison does not prove the
+same upstream bug regressed, and the tested mask is not a verified fix. The
+documented old memory-limit CVar is absent here; do not interpret its failed
+lookup as zero memory. Installed headers/shaders and live readback govern.
+
+### Reproduction and remaining review
+
+Run joint review/bake, shared hip bake, adaptive refinement, fresh source
+controls, export and isolated native import in that order. The normal controls
+and saved black-mask settings are retained experiments, not a recommended fix.
+Run `import_zero_g_white_mask.py` before the current full-motion control.
+Then `capture_zero_g_full_motion.py` fresh-loads the
+proof and renders all five clips from front, back and a fixed stage camera.
+The5472 frames produce15 videos whose decoded frame counts agree. This checks
+capture integrity and provides continuous evidence; it is not owner visual
+approval, playable input, packaged performance or an anatomical guarantee.
+Inspect partially open knees, wrists/ankles, rear shoulder motion and garments
+through the complete paths. Pole grip must be solved after final body motion;
+the previously rejected V8 constraint and old contact paths remain invalid.
+The separate60fps visible-surface scan covers all4565 samples. With unchanged
+duet offsets of +/-1.70m and base height10.80m, the3.48m-radius chamber has
+at least0.5987m glass clearance,0.5276m central-pole clearance and1.1605m
+separation between conservative X slabs across any sampled clip ordering.
+The lowest floor/ceiling margins are2.6235m/2.9483m. These bounds cover the
+five visible proof objects, not future hair, physics, other meshes, unsampled
+interpolation or production placement. The chamber itself was not modified.
+
+The distal scan nominates Butterfly left foot frame474 (91.283degrees from
+the imported rest basis); ten opposing source closeups inspect that passage.
+Quaternion magnitude alone is not an anatomical verdict. The five clips have
+neutral local wrists, so they cannot serve as a wrist-range acceptance suite.
+The previous bilateral distal stress cases and real G/B contacts remain
+required. Keep Vexa first; do not infer Joy/Astra compatibility from F3 results.
+
+Private receipts are `ZeroGJointBake/Report.json` and `ZeroGSharedHip/`:
+`Report`, `PosedHoldouts`, `AdaptiveCurves`, `Export`, `NativeImport`,
+`NativeParity`, `NativeControls`, `NativeRecomputedControls`,
+`NativeExplicitSkin`, `NativePixelNormals`, `NativeGeometricNormals`,
+`NativeMaskedTangents`, `SavedTangents`, `NativeNormalized`, `NativeVertexGreen`,
+`WhiteMaskImport`, `NativeWhiteMask`, `NativeCacheStartup`, `FullMotion`, `Videos`,
+`FullSurfaceEnvelope` and `AnklePeak/Report`
+JSON files. The first white-mask wrapper had a nested-string syntax error;
+its log remains, and the corrected retry captures six frames successfully.
+Original native sources, approved proof blends, production map/DLL/saves and
+Joy/Astra remain unchanged. Full Vexa/contact/artistic approval remains open
+before any repair is transferred. PR96 stays draft/unmerged; b9cdff07 source410
+and documentation599/600 passed. No C++ changed or module rebuild was needed.
+
+## October26 contact and source-control findings
+
+The approved shoulder copies remain unchanged. Vexa is still the sole repair
+target; none of these experiments is a production swap or a complete rig pass.
+
+### Knee and material controls
+
+Matched-camera Blender normal ramps reproduce the knee band, and newly
+recomputed static Unreal normals retain it. This supersedes the earlier
+Unreal-only-normal inference. The next work belongs on source contour/weights,
+not another skin-cache toggle. After the verified leg-plane correction, a
+local half-bend helper makes a visible knot and is rejected. A knee-only DQ
+control changes little at43degrees and adds bulk in deep flexion. A bound
+Corrective Smooth mask (radius0.14m, fade0.09m, factor0.5, ten length-weighted
+iterations, pinned boundary) moves at most3.812/8.462/7.594mm in three poses,
+with zero change outside the mask, but does not remove the objectionable crease.
+Do not promote these controls as fixes.
+
+Rest-triangle matching restores53904 original material assignments on a
+separate assembly without changing UVs or geometry. Unlit albedo shows that
+most of the apparent torso/leg colour difference was lighting and contour.
+Across48 waist pairs, the largest mean channel difference is about0.014;
+the largest sampled channel difference is about0.029 in linear RGB. Top and
+bottom skin material slots have zero faces, so there is no duplicate body
+inside those garments. No skin recolour was applied. The first material
+render's front/rear labels were reversed by the camera cross-product order;
+use the corrected albedo control for direction, not the old filename alone.
+
+### Unoccluded wrists and ankles
+
+`review_distal_unoccluded.py` extracts the same evaluated surface and cuts it
+only at the proximal forearm/calf for a clear diagnostic view. Twenty cases
+and40 opposing views cover bilateral wrist flexion/deviation and ankle
+pitch/roll. These are controlled ranges, not a universal anatomical standard.
+The repaired wrist is clearer than the old occluded shot; the ankle still has
+an angular heel/Achilles profile in dorsiflexion. Neither is owner-approved.
+The rig object has0.01 scale: normalize camera direction vectors before adding
+the camera distance. Earlier cameras accidentally sat inside the limb. Use
+explicit parent-relative matrix_basis assignment and verify the resulting
+pose; direct world-matrix assignment silently produced stale test poses.
+
+### Supported pole grip: useful local fit, rejected whole-clip constraint
+
+The controlled experiment fixes the right hand through one rigid whole-body
+transform, preserving all arm local transforms. It does not use the rejected
+V8 arm IK, but it intentionally changes the original root trajectory. The
+target hand matrix must retain the rest scale0.01; a unit-scale target made an
+invalid100x character. Finger flexion uses the verified inward sign; the first
+sign bent fingers away from the pole. Both failed controls remain recorded.
+
+`fit_supported_finger_contact.py` fits four three-joint curls against a50mm
+diameter pole using actual weighted mesh vertices. The local CPU evaluator
+matches Blender within0.00349mm. The retained static settings give pad gaps
+of0.19–0.34mm without vertex penetration. `fit_supported_thumb_contact.py`
+adds16degrees of base opposition and0/50/52degrees of the tested thumb flexion
+channels, with about0.296mm pad gap. These are source-specific fitted controls,
+not human range limits or transferable raw angles. The saved Fit.json contains
+exact local matrices and the hand target for reproduction. Opposing and top
+views show contact, but thumb/index self-contact still requires review.
+
+Triangle radial tests, not only vertices, give a minimum pole gap near0.016mm
+for this static grip. Skinning parity does not certify the hand's shape.
+The whole G1/G2 fixed-support experiment is REJECTED: maximum pelvis speeds
+are10.06/6.55m/s and angular speeds1253/1150degrees/s;32/26 of the six-frame
+surface samples contain body/pole intersections. Preserving the arm pose
+alone cannot make a support trajectory safe or artistic.
+
+A separate slowed G1 passage (source frames780–1000 at20percent speed) has441
+samples and two opposing640px videos. Evaluated surface parity is within
+0.00525mm. Importantly, its denser half-source-frame scan catches eight free
+hand/pole intersection samples at944–947.5, missed by the coarse scan. It is
+still a failed contact candidate, not a finished sequence. Keep exact contact
+windows, route the free hand, and use intentional release/regrip passages;
+never force the shoulder or wrist through a constraint to hide these failures.
+The existing five free-floating segments are separate from this pole study.
+
+Private receipts: ZeroGSharedHip/KneeSourceControl, AlignedKneeTargets,
+AlignedKneeSmoothing, MaterialReview, VexaDistalRepair/UnoccludedFinal,
+GBSupportedFingerFit2, GBSupportedThumbFit, GBSupportedMotionAudit and
+GBSupportedPassage beneath .agent/local/AnimationReview_20261025. Inputs remain
+hash-identical. Joy/Astra and the other dancers remain after Vexa, not silently
+marked complete. No game/map/DLL/save changes or Unreal invocation occurred
+in this follow-up; the prior native proof remains available and unchanged.
+
+## October26 explicit pole release and labelled knee controls
+
+### Retained working candidate, not a complete routine
+
+The action-only `GB_SupportedRelease_ActionLibrary.blend` (SHA256
+49f8765479a611da20536ca2576879ab845cc9ba16558d5912866e3a8dd72cc2)
+uses the unchanged a9dbcbde hand mesh and 0a38e12a selected-passage library.
+It covers G1 source780–1000 at20percent playback:1101 frames,60fps,18.333s.
+The static50mm-pole finger/thumb fit is retained while the body follows one
+rigid support frame. At source920–940, quintic easing opens the fingers,
+translates the body40cm away and releases the moving hand-frame constraint
+into its fixed source920 frame. Later movement resumes the original local
+arm poses. No arm IK is forced to hold a hand through the obstructed crossing.
+
+Interpolate local rotations and rebuild hierarchical FK. Independently
+interpolating world joint matrices can shorten the limb between source keys.
+Bake quaternion keys with continuous signs and LINEAR interpolation, then
+fresh-reload the saved action rather than evaluating only the authoring scene.
+The candidate contains one action, not another duplicate body/texture file.
+
+`review_supported_release.py` performs1101 triangle-radius pole checks:
+zero intersection samples at0.01mm tolerance, minimum gap about0.015mm.
+That tiny static contact margin is not a robust production collision allowance.
+`render_supported_release.py` exposes the release fingers from opposite sides.
+`bake_supported_release_candidate.py` requires the recorded source hashes and
+zero collision samples; it refuses to overwrite the action candidate.
+`verify_supported_release_reload.py` fresh-reloads95 bones at nine poses,
+with maximum matrix-element discrepancy0.00000453.
+
+Private native prefix: `/Game/SpaceSurvival/Licensed/VexaPoleReleaseProof_20261026`.
+`capture_supported_release_native.py` imports only animation against the
+preserved skeleton and creates `L_G1SupportedRelease_Review`; it does not open
+or save the production station. Native95-bone comparisons over nine poses
+agree within0.103mm using one fixed basis, explicit actor-origin subtraction
+and no per-frame fit. A fresh NullRHI reload verifies map, mesh, skeleton and
+18.333s clip dependencies. Grey materials isolate motion; existing XANDRA
+UDIM/virtual-texturing warnings mean this is not a skin-material validation.
+
+The first882-frame native capture clipped feet in some views. Retain it as
+failed framing, not full-body visual proof. `capture_supported_release_wide.py`
+loads the saved review without saving assets and increases camera distance
+40percent at800px. The corrected882-frame capture completes with no errors,
+old-proof hashes unchanged and sampled filmstrips fully framed. Both opposing
+441-frame videos decode successfully. The first recapture attempt failed on a
+missing report variable before playback; that failed log is retained.
+Initial PNG/MP4 inspection found all882 PNG inputs valid and both441-frame
+videos decodable despite an encoder PNG warning; that does not cure framing.
+
+This is a supported turn and deliberate release, not loop closure, a full
+G1/G2 repair, chamber integration or complete anatomical/artistic acceptance.
+The five free-floating segments remain separate. Vexa stays first; only after
+her reusable repair is ready do Joy/Astra and other dancers receive adaptation.
+
+### Rejected routes: collision clearance alone is insufficient
+
+A Cartesian free-arm detour clears the pole but creates120.46degrees of
+off-axis elbow rotation in this rig's diagnostic coordinates, versus31.20
+in the source. Its coupled roll/hinge retry still reaches108.21degrees.
+Both are rejected; do not copy these solvers as successful repairs.
+A local-keypose blend preserves the source elbow range, but its return path
+has nine pole collision samples with up to25mm penetration. Also rejected.
+The earlier sinusoidal waypoint bump has three collisions and was superseded
+by the explicitly rejected Cartesian trial, not accepted. Joint continuity,
+orientation, body clearance and visible deformation must be reviewed together.
+The explicit release avoids this failure without changing local arm motion.
+
+### Knee camera/topology controls, no mesh change adopted
+
+The earlier bend-plane camera called front actually faced the inside/back
+of the knee. `review_knee_anatomical_views.py` derives the anterior direction
+from the rest foot-to-ball vector transported with the thigh; all six tested
+poses give inside-dot-anterior near-0.9997. Its24 labelled bilateral views
+separate the patella silhouette from the posterior flexion crease. Do not
+mistake a view label or natural posterior fold for an anterior knee defect.
+
+`audit_knee_topology.py` finds no0.01mm coincident vertex pairs, boundary or
+nonmanifold edges among731 near-knee vertices/1564 triangles. The knee is not
+a disconnected seam. Deep Spiral and Butterfly poses each compress12
+triangles below10percent rest area; source contour still deserves review.
+Longitudinal thigh/calf redistribution and posterior-only DQ controls show
+little useful improvement and remain unadopted. The latter moves at most
+7.8mm while leaving the anterior mask untouched; displacement is not quality.
+
+Private receipts: GBSupportedRelease, NativeSupportedRelease,
+NativeSupportedReleaseWide, GBSupportedPassageRouted2, GBSupportedPassageHinge,
+GBSupportedPassageKeypose, and ZeroGSharedHip/{KneeTopology,
+KneeAnatomicalViews,PosteriorKneeVolume}. Originals and accepted derivatives
+remain hash-identical. No production mesh/map/DLL/save or package adoption.
+
+### Continuous arm screen and heel control
+
+The saved support/release yields2202 bilateral arm samples with no reversed
+elbows or owner chest-relative rear-reach flags; maximum rear reach9.785degrees
+is within its overhead allowance. The five shared zero-G segments yield9130
+bilateral samples without those two flags. These screens do not certify palm
+orientation, self-contact, wrists, ankles or artistic quality.
+
+The heel has52/58 lower posterior vertices already weighted rigidly to the
+respective foot. A212-vertex posterior influence transition changes the
+Achilles contour without fixing the pointed heel appearance; preserve-volume
+control also does not repair it. Both remain unadopted. Source shape and camera
+orientation must be distinguished from weight collapse before further edits.
+Receipts: GBSupportedRelease/ArmScreen.json, ZeroGSharedHip/ArmRangeScreen.json,
+AnkleWeights.json and VexaDistalRepair/HeelWeightControl. No saved mesh change.
+
+## October26 editable loop orders and native transition verification
+
+The private shared Vexa mesh and five corrected clips now drive two76-second
+Level Sequences in `VexaZeroGLoopProof_20261026/L_ZeroGDuet_Review`:
+
+- OrderA: Drift, Spiral, Butterfly, Inversion, LateralArc.
+- OrderB: Butterfly, LateralArc, Drift, Inversion, Spiral.
+
+The sequences reference the existing clips and their160 corrective curves;
+they do not duplicate animation payloads, body meshes or textures. Both copies
+use Vexa intentionally. This does not establish cross-character compatibility.
+Each sequence binds the actor and its skeletal component, uses60fps display
+and24000 tick resolution, enables force_custom_mode and disables animation
+notifiers. Each clip occupies its exact duration, with no overlapping blend
+section. Common hover endpoints were authored in the source clips. The placed
+LevelSequenceActors autoplay and loop indefinitely without camera/input tracks.
+
+`author_zero_g_duet.py` refuses existing destinations, copies only the private
+review environment, and saves at a new prefix. Existing proof files remain
+SHA-identical. Source guarded coordinates are x=-170/+170cm, y=0, z=1080cm.
+`validate_zero_g_duet.py` verifies those actual loaded actor locations, then
+observes82 seconds of natural Play:704 samples, both players wrap once, nine
+front/back/side/above captures. Both actually move. The middle structural ring
+occludes portions of the performers from several viewpoints; these are stage
+placement views, not unobstructed anatomical proof. The saved production room
+is unchanged. Do not silently remove its ring to make a review look better.
+
+`verify_zero_g_sequence_joins.py` fresh-loads again and compares Sequencer
+against an independent standalone source-clip component before, at and after
+every boundary, including the loop seam, plus segment midpoints. Across40
+cases, each96-bone/160-curve comparison agrees within0.000163mm and0.000000604
+curve value. This proves the sequence preserves the referenced pose/corrective
+evaluation at these samples. It does not certify all skin contacts or artistry.
+
+The attempted AnimComposite route is retained privately as a failed API probe:
+the installed Python factory does not expose target_skeleton. No composite was
+created. The verified LevelSequence route uses already supported repository
+APIs and is directly editable for later dancer orders.
+
+`audit_zero_g_self_contact.py` screens1145 posed samples at15fps. Triangles
+strongly weighted to hands/forearms do not overlap the selected torso/head
+triangles in any of the five segments. Its region thresholds exclude adjacent
+shoulders, other limbs and garment interfaces. It is not a continuous complete
+self-collision certificate. Pairing rig and shape-key actions remains mandatory.
+
+The knee anterior view is more normal than the earlier mislabeled posterior
+camera suggested; partially open and deep-bend posterior contour still needs
+review. Ankle heel shape is not repaired by the rejected weight/DQ controls.
+Vexa full G/B contact, all-joint/garment quality and artistic acceptance remain
+open before Joy/Astra adaptation. Keep the approved front shoulder baseline.
+No production asset/DLL/save/package change; PR96 remains draft and unmerged.
+
+Receipts: ZeroGLoop/{Author,NaturalPlayback,JoinParity}.json and NaturalViews;
+ZeroGSharedHip/SelfContactScreen.json. Previous release publication ad57f75b
+passed exact-head source413 and documentation606/607 CI; CI is not art approval.
+
+## October26 G2 supported subpassage — retained, not a complete routine
+
+The six-frame coarse screen suggested source517–781 was clear. The dense
+525–770 probe instead finds27 free-hand pole intersections at553.8–556 and
+562–564.8, reaching25mm penetration. That wider passage is rejected. Keep its
+receipt; do not use the coarse pass as a collision certificate.
+
+The narrower570–770 interval contains1001 tested poses at0.2 playback and
+60fps, with no pole collisions or the two arm-range flags. The hand-frame
+method moves the body as one rigid transform and leaves arm-local rotation
+unchanged; the fitted finger/thumb locals are applied separately. Sampling
+interpolates parent-relative joints and rebuilds FK. Do not interpolate all
+world matrices independently, which can shorten limbs between keys.
+
+`bake_g2_supported_candidate.py` requires the successful narrower interval
+inside the wider receipt and refuses existing output. It writes only one
+95-bone action to `G2_SupportedPassage_ActionLibrary.blend`, hash
+`3b3673d4dfdce8998f314a644d37253b3d53c8051f323a302aab4d843452cbdd`.
+The action is16.666667 seconds. Fresh Blender reload checks nine poses, with
+maximum matrix-element error0.000006676. Its FBX object root is `root.001`.
+
+`capture_g2_supported_native.py` imports into the new private prefix
+`VexaG2SupportProof_20261026`, reusing unchanged hand-isolation mesh a9dbcbde.
+The orange50mm pole is explicit. Nine native95-bone samples agree with the
+source using one fixed basis/scale within0.095mm. The clip, map, mesh and
+skeleton fresh-load in a separate process. Existing native proof hashes stay
+unchanged.802 PNGs at800px pass decoding; both401-frame24fps videos decode.
+Opposing12-frame filmstrips show the whole body within the camera and varied
+vertical/horizontal poses. They do not establish continuous close-up anatomy.
+FFmpeg emits the existing PNG metadata warning; independent PNG chunk checks
+and decoded output counts pass. This is recorded, not silently called clean.
+
+Use `verify_g2_support.py`, `reload_g2_support_native.py` and
+`check_g2_support_media.py` to reproduce those bounded checks. No new body or
+texture is needed. The existing approved shoulder/hip derivatives are retained.
+
+Entrance, release, G1-to-G2 continuity, full original G/B coverage, wrist/ankle
+and garment quality remain open. This selected passage cannot be advertised as
+the complete repaired G2 or as an accepted loop. No production adoption,
+character swap or package change. Complete Vexa before Joy/Astra adaptation.
+
+The retained right-hand50mm-pole calibration is versioned in
+`calibration/vexa_right_pole_50mm.json`. `load_supported_grip.py` checks both
+exact source hashes before returning its fitted matrices. Reproduction no
+longer depends on a private optimizer receipt or rerunning the fit. This
+preset is specific to Vexa a9dbcbde and action library0a38e12a; do not apply
+it to Joy, Astra or another pole size without separate calibration.
+
+## October26 G2 entrance/return: pole clear, self-contact fails
+
+The selected passage now has an explicit2.5s approach and2.5s release. A
+one-second quintic speed ramp at either end preserves0.2 source playback in
+the middle; integrating the ramps adds one second to the motion duration.
+The fingers open while the whole body moves40cm away from the pole, avoiding
+arm IK. An8s floating return retreats another metre, interpolates local joint
+poses by FK, then approaches the starting pose. The resulting30.666667s loop
+is1841 frames at60fps, with exact endpoint matrices and maximum visible radius
+2.728m inside the3.48m stage radius.1841 pole samples have no intersection and
+no elbow-reversal/rear-reach flags. This is not enough to approve the result.
+
+The action-only source `G2_ContactLoop_ActionLibrary.blend`, SHA
+`ea304873ce4aaa9ac75459f48c91010784440e67ca00f9f72f51c056d4b9f223`,
+fresh-loads95 bones at nine comparison poses. Its private native copy in
+`VexaG2LoopProof_20261026` captures1474 opposing frames without changing the
+older proof. It is a failed quality control, not a production-ready routine.
+
+The separate hand/forearm-versus-torso/head screen flags143 of461 samples.
+Close-ups confirm the supporting right forearm cuts into the waist/raised
+hip. Restoring the original source finger locals leaves69 intersections at
+the initial pose and192 at10.6s, so the new finger fit is not their cause.
+The loop return midpoint has no such contact; the source motion is the main
+problem. This supersedes any reading of the narrower G2 pole-clearance result
+as complete contact clearance. Do not adopt either G2 candidate yet.
+
+`probe_g2_support_clearance.py` tests0/10/20/30-degree forward rotation of the
+whole right arm around its shoulder, then reanchors the body to the unchanged
+hand frame. It preserves the local elbow and wrist relationships rather than
+forcing a new elbow route. At the inspected worst pose10degrees still has120
+triangle pairs;20 and30degrees clear them. Six sampled poses at20degrees also
+clear the pole. Close-ups show a separated forearm/hip. This is a bounded
+hypothesis; `audit_g2_arm_clearance.py` owns the dense range/contact check.
+No20-degree bake or native adoption is established by the six-pose probe.
+
+The saved loop script first failed because a newly introduced local helper
+was absent from Blender's module search path. Adding the explicit recipe
+directory fixed that execution failure. Keep the failed log; it did not write
+an asset. The grip loader's checked-in calibration returns identical19 fitted
+local matrices and only accepts the exact two recorded source hashes.
+
+Next: finish the forward-reach control through motion and recheck contact and
+native anatomy; then finish full G1/G2/B coverage, distal/garment quality and
+artistic continuity. Vexa remains first; Joy/Astra are not silently marked
+blocked by owner review, but no unverified repair is copied onto them.
+
+
+**Dense fixed-axis control rejected:** The six-pose20-degree probe does not
+generalize.1841 samples find4 brief head/pole intersections and157 rear-reach
+flags; the461-sample body screen still has9 failures. A fixed chest-X rotation
+that moves a lowered arm forward moves an overhead arm backward. Preserve this
+failure. `audit_g2_forward_aim.py` instead uses the cross product of the actual
+upper-arm direction and chest-forward direction, rotating toward the latter
+before reanchoring the hand. It preserves elbow/wrist local transforms but
+still requires its own dense contact/anatomical result; do not infer success.
+
+**Direction-aware result:** The actual-direction20-degree control removes all1841-frame rear-reach/reversal flags, but still has30 head/pole collision samples and9/461 body-contact samples. It is also rejected for adoption. The next repair must change contact timing/reach only where needed; a blanket fixed grip plus uniform arm offset is insufficient. No new corrected loop was baked from either failed reach control.
+
+## October26 G2 contact and posterior hip repair
+
+This supersedes the failed fixed-axis/uniform reach controls above for sampled
+contact only. `g2_contact_recipe.py` consolidates the selected570-770 passage,
+quintic approach/release/return, direction-aware arm swings and exact retained
+grip calibration. It matches217 prototype poses exactly. The action source is
+`G2_ClearContact_ActionLibrary.blend`, SHA
+`e80efde6391f1627f5739c9c9a1b5371589ca6f0e6201549ddbdd674816779e7`.
+All1841 samples clear the defined pole/arm and distal-arm/body screens; endpoint
+matrices match exactly. It is still only a selected G2 passage, not full G/B.
+The validator explicitly excludes adjacent shoulder, within-hand, garment and
+between-sample contacts. Its grip matrix error is below0.000001; never substitute
+that metric for skin contact or anatomical review.
+
+The owner withdrew a still-pose objection, then identified posterior hip volume
+sinking inward. That feedback does not approve the whole routine or leg range.
+`audit_g2_lower_limb.py` records pelvis-relative directions, knee hinge signs and
+ankle rest-direction departures. No knee reversal is flagged, but large hip
+rotations remain review nominations, not a universal range-of-motion pass.
+
+### Separate stray weights from the volume correction
+
+Four right inner-thigh vertices1528/1534/1566/1574 in `Vexa_Continuous_Feet`
+carry1.05-1.49percent left-thigh-twist weight. `isolate_distal_leg_weights.py`
+removes only these isolated opposite-leg influences, redistributing them to the
+existing own-leg groups. Pelvis weights remain exact;52233 other vertex weight
+records are unchanged. The guarded save checks the exact four identities,
+normalization and original source hash before writing
+`Vexa_LegIsolation_Proof.blend`, SHA
+`8cd382f7f12e3ea75b5e4a325915b31b48eaedf442177dae402ad4bab91f3e3b`.
+These rest-space coordinates/vertex identities are Vexa-specific, not presets
+to apply blindly to Joy, Astra or another topology.
+
+The broad localized DQ target fails at crossed-leg rotations: a1/16-frame probe
+finds a9.798mm target jump at vertex1528. The four-weight repair removes that
+specific sampled jump, but a second broad-target bake still fails elsewhere.
+Retain both failed receipts. Do not globally enable Preserve Volume or smooth
+across the discontinuity and call it fixed. Blender's Armature modifier manual
+documents DQ's180-degree discontinuity; that is supporting context, while the
+local target samples establish this failure (official manual checked2026-10-26:
+https://docs.blender.org/manual/en/5.1/modeling/modifiers/deform/armature.html).
+
+### Restrict and bake the posterior target
+
+`hip_posterior_mask.py` limits correction to the posterior lateral hip, fading
+away from the midline, anterior thigh and waist. `bake_g2_posterior_hip.py`
+computes masked DQ-minus-linear deltas, maps them through the inverse weighted
+linear skinning matrix, and fits exportable shape bases. It preserves95 rest
+bones, bone motion, topology and the repaired weights. It does not depend on
+Blender-only modifier evaluation in Unreal. Three meshes use24/8/24 bases;
+505 adaptive key times pass1008 independent posed holdouts, maximum0.314113mm.
+These numbers measure target reproduction, not anatomy or desired appearance.
+
+Result: `Vexa_G2_PosteriorHip_Candidate.blend`, SHA
+`aa7da9855d2a5af57806674988c2d1017411ccb04201d4d0570a7138c0c3bdae`.
+Always pair the rig action with the mesh shape actions in scene property
+`g2_hip_curve_pairs`. Corrections are G2-specific; do not replay these time curves
+on zero-G or another action. Preserve earlier accepted shoulder derivatives.
+
+Fresh saved-mesh evaluation checks1841 frames with no pole/distal-arm-body
+intersection flags, exact start/end surfaces and2.749815m maximum radius within
+the3.48m stage footprint. It does not check garment/body collisions or certify
+hip/knee/wrist/ankle range. Matching off/on images at four times and three angles
+show fuller posterior volume; the raised-leg skin/garment crease remains visible.
+
+### Native reproduction
+
+The exporter refuses to run without the exact successful geometry receipt.
+Rest/animated FBXs go to private `G2PosteriorHipProof`; native import uses a new
+private skeleton and namespace `VexaG2PosteriorHipProof_20261026`,56 morphs and
+56 matching curves at120Hz,12 allowed bone influences. Previous proofs are
+hash-preserved. A separate process fresh-loads mesh/clip/skeleton and captures
+24 three-angle stills plus737 frames of the30.6667s loop. Eight independent
+native/source surfaces agree within0.105mm and95-bone samples within0.097mm.
+The video decodes737 frames; PNG metadata emits the existing FFmpeg warning.
+
+The review copy has no production adoption, new game DLL or packaged release.
+Native/source agreement does not repair a bad source silhouette. The skin/garment
+crease, knee contours, extreme hip directions, full original G/B coverage and
+multi-character/artistic acceptance remain open under RPT-20261021-01.
+
+**Posterior controls:** Hiding the separate top/bottom leaves the inner raised-hip
+crease visible. A colored body-part view locates it within the lower-body mesh,
+not at the upper/lower waist seam. This is not a garment-only defect. The first
+static loop camera clips feet near25.08s; its take is rejected for framing.
+The corrected737-frame camera follows the bone bounds; twelve sampled views
+include the whole body. Neither framing nor surface parity closes anatomy.
+
+### October26 inner-hip controls — not adopted
+
+The raised-leg flap remains with separate clothing hidden. Ray casts into the
+10.60s rear view identify lower-body vertices1547/1555/1599:56–66percent pelvis
+and34–44percent glute_r, with no thigh influence. The4776-vertex lower mesh is
+one connected component. All48 boundary edges in the surveyed hip-height range
+are at the waist (restZ1.065–1.114m), not at the flap. Recomputed smooth normals
+do not remove it. This isolates actual deformation rather than a detached hip
+piece or a normal-map defect; it does not establish that all source topology is good.
+
+Preserved private controls in G2PosteriorHip:
+- GluteFollowProbe: existing glute helpers swing25/50percent around each thigh
+  head toward the posed thigh direction; child arm/leg/pelvis matrices remain
+  unchanged. Half swing shortens the flap but leaves a sharp fold.
+- GluteReweightProbe: smooth posterior mask transfers75percent of masked pelvis
+  influence to own glute across1570 body/clothing vertices, combined with half
+  swing. Rejected: visible creases shift and worsen. No weight adoption.
+- HipSmoothProbe: posterior-only length-weighted Corrective Smooth, factor0.5,
+  five/ten iterations, ORCO and pinned boundaries. The central flap remains.
+- InnerRelaxProbe: only-smooth mode with a narrower12cm midline mask, three/ten
+  iterations. It softens the surface but does not resolve the raised-hip defect.
+- GluteDQProbe: prior time corrections muted, lower-body Preserve Volume plus
+  half helper swing. Inner fold persists and other distal contours degrade.
+
+Two diagnostic setup failures are retained in logs: the first helper control
+was overwritten by the active animation during render; the corrected probe
+detaches the action after sampling and verifies non-glute matrices remain exact.
+The first wireframe thickness was too large;0.45mm gives a usable topology view.
+Neither initial image set is quality evidence. No source .blend was overwritten.
+
+Blender's official5.2 API confirms the smoothing options; the manual explains
+that corrective smoothing reconstructs rest detail and can lose volume. This
+supports the bounded experiment, not a claim that smoothing fixed this mesh:
+https://docs.staging.blender.org/api/current/bpy.types.CorrectiveSmoothModifier.html
+https://docs.blender.org/manual/id/3.0/modeling/modifiers/deform/corrective_smooth.html
+(checked2026-10-26; the latter is an older manual, options verified locally5.2.2).
+
+Next repair must address the inner-hip pelvis/thigh transition with a localized
+pose corrective and assess the actual silhouette; do not repeat broad weight
+transfer, global DQ or count successful exports as visual improvement. The
+aa7da985 posterior-volume candidate and accepted shoulder derivatives remain
+unchanged. Full routine/artistic acceptance is still open.
+
+### October26 hip self-contact and motion isolation
+
+The previous pole/distal-arm/body screen does **not** cover hip self-contact.
+`audit_g2_hip_self_contact.py` now checks the exact preserved aa7da985 candidate
+at all1841 frames (3682 side/frame samples). It finds822 flagged samples:
+81left/741right, worst106 nonadjacent hip/thigh triangle pairs at right11.85s.
+The script writes a report successfully even when `summary.screen_passed` is
+false. Never interpret its process exit as an anatomy pass. The regions are
+posterior pelvis/glute-dominant against same-side proximal-thigh-dominant
+triangles; adjacent topology, other regions and between-frame contact are excluded.
+
+Matched-pose controls distinguish geometry/weights from motion: the good left
+7.1s leg pose mirrored onto the right gives0/0 sampled intersections; the bad
+right10.6s pose mirrored onto the left gives47left/41right. Blindly mirroring
+weights is therefore insufficient. This does not prove equal skin quality.
+The original `g2_default.glb` also contains a large posterior swing: approximately
+112.89degrees at source11.0033s in rest-pelvis diagnostic axes, compared with
+124.15degrees in the corresponding candidate probe. The constant-speed mapping
+and coordinate definitions are retained in RawHipDirections.json; these are
+not clinical joint angles or a complete attribution of retargeting error.
+
+An unsaved control changes only each thigh subtree. In pelvis rest axes with
++Y posterior/+Z superior, angle=atan2(direction.y,-direction.z). Up to15degrees
+is unchanged; above that use15+15*tanh((angle-15)/15), preserving lateral direction
+and subtree-local transforms. These15/30degree settings are authored controls,
+not universal anatomical limits. Mute the prior G2 time-driven hip shapes when
+changing motion; their coefficients belong to the original action.
+
+That control reduces flags822→221 (45left/176right), but is **not accepted**.
+Endpoint matrices match; upper-body matrix error is4.06e-6, descendant-local
+error0.000178 and maximum thigh step4.083degrees at60Hz. Pole, garments and
+opposite-leg contact were not revalidated for this altered motion. Earlier
+wording to preserve the pose means preserving the baseline copy, not treating
+the owner's withdrawn still-pose objection as a lock on all routine motion.
+
+The remaining bent/twisted poses reject further simple controls:
+
+- Half glute swing, posterior DQ and their combination leave31/34/33 pairs
+  respectively at right12.0333s, versus41 without them; silhouette remains poor.
+- A rest-height quaternion field creates additional waist/notch distortion.
+- Local nearest-thigh normal projection reduces41→14 pairs at12.0333s and
+  13→0 at13.5s, but retains a sharp crease. Maximum shifts21.881/9.335mm.
+  This heuristic is not an implementation of implicit skinning research.
+- Driver inspection confirms glute helpers have no rest-relative motion in
+  the sampled candidate; hip-head translations/scales are near their rest
+  values. A35mm superior/12mm posterior helper translation reduces41→31 pairs,
+  but still leaves the crease. It is not a saved rig repair.
+- Thirty local/global ARAP steps on a posterior patch at the softer motion
+  preserve rest-edge directions approximately, but distort the buttock and
+  increase the13.5s left intersections13→24. Rejected;0/0 at7.1s did not make
+  its stretched silhouette acceptable. No fitted corrective was saved.
+- Five half-strength neighbor-averaging passes on posterior hip weights,
+  with opposite-leg influences prohibited, still leave39 pairs at12.0333s.
+  A separate minimum-thigh-support gradient (.92–1.10m rest height) produces
+  an excessive buttock stretch and37 pairs with local DQ. Both are rejected.
+
+Private receipts in `AnimationReview_20261025/G2PosteriorHip`: HipSelfContactAudit,
+HipBalancedPoseProbe, RawHipDirections, HipMotionControlAudit,
+BoundedHipVolumeProbe, HipRotationFieldProbe, HipCollisionCorrectiveProbe,
+HipDriverInspection and GluteTranslationProbe. No baseline .blend, production
+asset, accepted shoulder or native proof was overwritten. Continue with a fitted
+local deformation correction and coordinated motion; counts alone are insufficient.
+
+
+### October26 smooth G2 hip-motion candidate — limited screens pass
+
+The combined posterior-only trial reduced822 hip flags to31 but introduced a
+37.025degree right-thigh step at60Hz. Its narrow5–15degree activation band
+released the adduction correction too abruptly near12.4s. This trial is rejected;
+four clean stills were not sufficient evidence. CoupledHipAudit and CoupledMotion
+retain the failure.
+
+`g2_smooth_hip_control.py` replaces that switch with continuous, G2-specific
+motion shaping. Preserve the95-bone rest rig, weights, topology, upper body and
+all thigh-descendant local channels. In rest-pelvis axes (+Y posterior/+Z up):
+
+- Posterior swing <=5degrees is unchanged; above5 use5+5*tanh((angle-5)/5).
+- Same-side lateral angle >=-5degrees is unchanged; beyond that adduction use
+  -5-5*tanh((-angle-5)/5), without a posterior activation switch.
+- Axial twist within15degrees is unchanged; beyond15 use signed
+  15+5*tanh((abs(angle)-15)/5), also without the switch.
+
+These are authored limits for this selected G2 passage, **not universal joint
+limits or a transferable skin-weight repair**. They change the leg choreography.
+Never apply them blindly to Joy/Astra or all animations. The old G2 time-driven
+hip morphs must be muted (`REVIEW_G2_`); their old coefficients do not match the
+changed motion. No global DQ, smoothing modifier or new skin weights are used.
+
+Run `audit_g2_smooth_hip.py` in hidden Blender, then
+`save_g2_smooth_hip_action.py`, then the audit with `-- --reload-action` in a
+fresh process. The writer refuses existing output and requires the exact source
+and passing recipe receipt. The audit writes a report even on failure: inspect
+`summary.screen_passed` and its scope, not process exit alone.
+
+The private action-only `G2_SmoothHip_ActionLibrary.blend` is18,874,095bytes,
+SHA `0c692c04d9882fb90a1d253b17166e542ebb6eb595df487150de72e3221580d2`.
+Use action `A_F3_G2_SmoothHip_Review` with preserved mesh aa7da985 and the morph
+mute above. It copies the prior action and replaces only thigh_l/thigh_r local
+location/rotation/scale curves; it does not duplicate textures or mesh payloads.
+Control SHA34713dc46c774a19586dd7278932d3f5678083eab1e89b8bed54ad705ed42343.
+
+Fresh saved-action audit:0/3682 same-side hip/thigh flags;0/1841 pole and
+distal-arm/body flags; maximum radius2.749731m inside3.48m; exact endpoint
+matrices. Upper-body matrices match the preserved action exactly; target
+reconstruction error8.35e-6 matrix units, descendant-local error0.000140.
+Right/left thigh maxima7.333/3.904degrees per60Hz frame remain pacing evidence,
+not a fluidity pass. Garments/body, opposite-leg, other joint and between-frame
+contacts are outside these screens.
+
+Fresh saved-action review renders921 frames per opposing camera at30Hz,
+plus eight body-only rear/quarter stills. The combined video decodes921 frames,
+30.7seconds, with no dropped/duplicated frames. The known folded-under hip poses
+are improved in inspected views, but flexed-thigh/glute contour, pacing, knees,
+wrists/ankles and full routine quality remain open. This is not a gold-standard
+rig. `SourceAssets/DanceRefinement_20261025/G2HipMotionReview.html` retains the
+review, and SmoothHipAction/ReloadAudit/Motion/SavedViews retain private evidence.
+No native import, production adoption, package or owner acceptance of this
+candidate. Earlier mesh/shoulder/native proofs remain unchanged.
+
+### October26 G2 pacing derivative — preserve pose path while slowing bursts
+
+Use preserved aa7da985 plus action0c692c04. In hidden Blender, run
+`retime_g2_smooth_hip.py`, `save_g2_paced_action.py`, and finally
+`audit_g2_smooth_hip.py -- --paced-action` in a fresh process. The writer refuses
+existing output. `SS_ANIMATION_PROJECT` selects the project. No mesh, rest rig,
+weights or earlier action is rewritten. Output is an action-only private file:
+`SourceAssets/DanceRefinement_20261025/G2_PacedHip_ActionLibrary.blend`, action
+`A_F3_G2_PacedHip_Review`, SHA
+`0b55fa684da59ec67bd5f7c6e0665e986b13850ff251cac7e5bd628073f5d48a`.
+
+At60Hz, measure the largest local quaternion change across all95 bones and
+pelvis translation. The authored targets are90degrees/s and0.45m/s, not joint
+limits. Required slowdown is max(1,angular/90,translation/0.45). Expand with a
+30-frame-radius maximum; smooth with a positive Gaussian (sigma8, radius24).
+Assert the result is never below the required slowdown. Integrate one monotone
+time map and stretch slightly to an integer60Hz endpoint. Apply that same map
+to every LINEAR curve key; reject curve modifiers or out-of-range keys.
+
+This source's only animated shape curves are REVIEW_G2_ curves, explicitly
+muted because they belong to the old motion. The audit rejects unaccounted
+shape actions/drivers/NLA. Other sources need synchronized corrective timing;
+never assume skeleton-only retiming is safe for another clip or character.
+
+Fresh replay lasts43.233333s instead of30.666667s. Across2595 frames it has
+0/5190 same-side hip/thigh flags and0/2595 pole/distal-arm flags. Maximum local
+rotation is90.020511degrees/s (float-evaluation tolerance0.5degrees/s), versus
+439.948degrees/s before; pelvis peak0.449853m/s. Loop matrices match exactly;
+maximum world radius2.749731m. Inverse-time source pose error3.13e-6 matrix
+units;225 object/time surface comparisons differ by at most0.00229mm. The
+pose path is retained within measured precision, not merely similar key poses.
+
+Two opposing fixed-zoom cameras render1298 frames each at30Hz. The combined
+video decodes1298 frames,43.2667s including the endpoint frame. Review remains
+`SourceAssets/DanceRefinement_20261025/G2HipMotionReview.html`; previous video
+is retained. Receipts: SmoothHipPacing, PacedHipAction, PacedHipAudit and
+PacedHipMotion under the ignored G2PosteriorHip directory. There is no native
+import or production adoption. Timing metrics do not establish artistic feel,
+good skinning, complete contact coverage or owner acceptance.
+
+### October26 local glute follow — waist-anchored review candidate
+
+The contact-safe leg path still left a rounded, low glute contour in flexed
+poses. A0/15/30percent helper-swing control, seven source poses and opposing
+views, isolates the response of the existing glute_l/r bones. The30percent
+control lifts the inspected contour but pulls at the separate waist boundary.
+Do not adopt the unanchored control: it exposes a new seam despite zero hip
+intersection flags. No extra body/shoulder/neck volume is added.
+
+`g2_glute_follow_control.py` anchors the48 upper boundary vertices of the
+continuous lower-body mesh. Using nearest-boundary rest-space distance, apply
+smoothstep(distance/0.08m) to glute weights and transfer the removed weight to
+pelvis. Exactly116 vertices change, sums are retained, and all other groups
+and vertices stay unchanged. This is tied to aa7da985 topology and its existing
+pelvis-parented glute helpers. It is not a generic auto-weight algorithm.
+
+For each side, derive thigh swing relative to the pelvis-rest frame, remove
+axial twist, and apply30percent of that swing about the thigh-head pivot to the
+existing glute bone. Assert the source helper is otherwise at its pelvis-relative
+rest transform. Leave all other bone world targets unchanged. The first
+waist-anchored controls have zero border displacement across seven source poses;
+opposing body-only views remove the new waist-gap regression.
+
+Run `audit_g2_smooth_hip.py -- --paced-action --glute-follow` in hidden Blender.
+It compares fixed original mesh regions, applies the patch only in memory and
+records the full patch plus hashes. Across2595 frames:0/5190 same-side hip/thigh
+flags,0/2595 pole/distal-arm flags; exact loop; waist drift below0.001mm;
+unaffected sampled surfaces below0.0035mm. Local displacement reaches51.608mm.
+The surface-error field in this mode excludes vertices with glute influence;
+it is not a claim that the intended deformation is unchanged. Garment/body,
+opposite-leg and other joint contact remain outside the screen.
+
+`save_g2_glute_follow.py` requires that receipt, preserves the source, writes
+only an action library plus `G2_GluteFollow_Manifest.json`, and refuses overwrite.
+Initial candidate983f5c07 was rejected by code inspection before use: copying
+the paced action retained fractional helper keys between newly inserted integer
+keys. Clear only the two replaced glute channels before baking. Do not remove
+unchanged channels or rely on integer-frame verification to catch this defect.
+The corrected writer is checked in a fresh process with `-- --verify-only`,
+including every integer and half-frame time.
+
+Corrected private action `A_F3_G2_GluteFollow_Review` lives in
+`SourceAssets/DanceRefinement_20261025/G2_GluteFollow_ActionLibrary.blend`,
+16,158,819bytes, SHA
+`f7f76b2e3e638903ae218ca0540245576f87de64ab703c0db26a02d721f83549`.
+It requires the matching manifest's116-vertex patch on aa7da985 and muted
+REVIEW_G2_ curves; the action alone is not the candidate. Fresh5189-sample
+95-bone comparison has max4.25e-5 matrix error and exact loop. The original mesh,
+accepted shoulders and earlier proofs remain byte-identical. This is a saved
+review derivative, not a production mesh swap or native/owner acceptance.
+
+The controlled full-loop render has1298 frames per opposing30Hz camera and a
+fully decoded combined video. After encoding/decoding, only13 frames per view,
+the full videos, all body-only comparisons and receipts are retained for these
+two new loops;2.412GiB of expendable PNG frames reclaimed. No full mesh/texture
+Blender copy was created. The first dense audit was interrupted to correct its
+receipt scope; the completed fresh report is GluteFollowDenseAudit, followed
+by GluteFollowReload. Remaining work is garment/contour review, export/native
+comparison, other joints and full choreography; do not call this a gold-standard
+rig or transfer by vertex index to Joy/Astra.
+
+## October26 saved G2 native transfer and visible grip direction
+
+The paired f7f76b2e action/116-vertex waist patch now has a fresh private Unreal
+transfer. Keep the original aa7da985 mesh and previous proofs unchanged.
+`export_g2_glute_proof.py` exports the paired rest mesh and120Hz animation. It
+removes only56 inactive REVIEW_G2_ keys from the export copy; retaining those
+old curves would mix a previous pose-specific correction into this new motion.
+
+The120Hz transfer **failed** the unchanged0.5mm comparison gate:1.349mm bone
+and1.389mm surface error at the fractional paced time corresponding to source
+12.4s. `probe_g2_glute_resampling.py` reconstructs regular-sample local FK and
+reproduces1.363mm error at120Hz, versus0.113mm maximum at240Hz over eight poses.
+This isolates export sampling at the fractional timing corner; do not widen
+the tolerance or edit the leg pose to hide a transfer error.
+
+`export_g2_glute_rate_refinement.py` exports only a240Hz animation and reuses
+the same rest FBX. Set `SS_G2_VARIANT=glute_follow_240` for
+`import_g2_posterior_proof.py`, `capture_g2_posterior_proof.py` and
+`compare_g2_glute_native.py`. Default invocation retains the old posterior
+proof behavior. Use the installed engine with hidden/offscreen launch flags
+and the private CharacterWorkbench, never the owner's open editor.
+
+Fresh saved-map capture gives eight95-bone comparisons max0.123mm and eight
+28261-vertex visible-surface comparisons max0.152mm. It retains24 opposing
+stills and a1039-frame24Hz full-loop video, fully decoded. The destination is
+`/Game/SpaceSurvival/Licensed/VexaG2GluteFollow240Proof_20261026` in the private
+workbench. Animation FBX3513382f reuses rest FBX85405642. Import logs contain
+the existing invalid-bind-pose/recreated-bind-pose warning; FFmpeg reports
+PNG metadata warnings but decodes all frames. This is bounded native parity,
+not a packaged/natural-play/artistic acceptance claim.
+
+### Garment controls remain rejected
+
+The bottom already has glute/pelvis/thigh-twist weights. Neutral fit contains
+16 vertices more than1mm inside the body, deepest2.017mm. Nearby barycentric
+body-weight transfer (full through6mm, fading to zero at20mm) barely changes
+the fold. A3mm rest clearance, capped at6mm, reduces sampled intersections
+but makes the visible surface lumpier; reject it too. The first offset probe
+edited mesh vertices without updating shape-key Basis and therefore did not
+test the intended change. Its failed control is retained separately.
+Receipts and views: G2GluteFollowNative/GarmentFollowControl.json and
+GarmentClearanceControl.json under the local review root. Start further
+garment work from neutral fit and local surface continuity, not global offsets.
+
+### Preserve liked stills; distinguish orientation from contact
+
+Owner says many current stills look good and asks whether the gripping hand
+is upside down, then notes the thumb is hard to identify. No grip rotation or
+finger-shape change was made. `review_g2_grip_motion.py` opens the exact saved
+action/paired patch without saving assets. `-- --labels` colors actual thumb
+vertices cyan and little-finger vertices violet. At source12.4s the thumb is
+above the fingers; index base is63.030mm above little-finger base. This pose
+is not an upside-down grip. Do not flip a wrist from an ambiguous silhouette.
+
+The60Hz review covers2595 samples: zero right-hand/pole triangle flags at
+0.01mm penetration tolerance and zero cross-digit triangle intersection flags.
+1508 hand-core vertices move at most0.0289mm during held contact; CPU surface
+evaluation agrees with Blender within0.00111mm. The initial all-right-weight
+drift included the moving forearm and is retained as a rejected measurement,
+not a contact failure. Wrist direction peaks38.176degrees; this is a geometric
+angle, not an anatomical limit or full twist acceptance.
+
+`-- --render` produces two hand-following12Hz views, but body occlusion makes
+some of those frames inadequate for inspection. `-- --isolate` adds a transient
+forearm mask and colored fingers, producing520 frames per view through the
+same43.233s loop. The cut edge is diagnostic visibility, not a mesh repair.
+These checks exclude palm/digit junctions, within-digit folding and between-
+frame contact. Keep whole-arm motion, hand shape, release, full G/B coverage,
+garments and multi-character quality open. Do not copy these Vexa-only vertex
+IDs/calibrations onto Joy or Astra. No production map, mesh, DLL or save changed.
+
+### Right-hand view identification (October26)
+
+The source12.4s closeup is the right palm, not its back. In this sideways
+grip the fingers point left and thumb points up. `-- --palm-proof` derives
+the palmar normal from right-hand rest landmarks, transported by the saved
+hand transform; opposite view exposes nails. An unsaved open-finger control
+keeps the wrist matrix within7.1e-8 while the index distal joint moves68.264mm.
+The first control left the action live: render evaluation restored its curl,
+so that comparison was rejected. Freeze the pose by detaching the action
+and restoring local bone transforms before opening fingers. No saved grip
+or motion changed. This resolves view identity only, not whole-arm twist,
+finger fit or artistic acceptance.
+
+### Signed finger curl supersedes radial-only grip confidence (October26)
+
+The right palm identification and thumb-up statement remain correct. The grip
+itself is **rejected**: the saved four-finger calibration uses `-width` as its
+positive curl axis, driving fingers toward the dorsal surface. With along =
+middle-base minus wrist and width = index-base minus little-base, right palmar
+normal is `-along.cross(width)`. At source12.4s this is world-Y negative;
+saved index/middle/ring proximal segments point13.99/18.41/12.75mm away from it.
+A pole outside the mesh and no cross-digit intersections do not detect this.
+Do not use the old calibration for G1, G2 or another dancer as an accepted grip.
+
+`probe_g2_palmar_grip.py` preserves aa7da985/f7f76b2e and makes unsaved controls.
+It keeps the hand rotation and all arm local transforms; positive finger flexion
+now uses `width`, with the pole moved to the palmar side by whole-pose translation.
+This requires fresh full-body contact review before any motion adoption.
+The first coupled fit fails21mm little-finger penetration. `--coarse --fit`
+fits digits independently and reduces penetration, but leaves a25.42mm thumb
+gap. `--thumb-axis --fit` transports a thumb-specific rest hinge across the
+palm; it reduces the gap but fails57 thumb/index triangle pairs and0.463mm pole
+penetration. All three are rejected controls, not saved animation candidates.
+
+The `--thumb-axis --surface --fit` control uses a thumb-specific palmar pad,
+actual pole/triangle clearance and thumb/index intersection penalty, but leaves
+a14.54mm thumb gap. Adding `--cmc` closes that gap to0.346mm with no triangle
+overlap, yet creates a visibly stretched upward thumb hook: **rejected**.
+Adding `--opposition` rotates the thumb around its own proximal axis as well.
+This static control has0cross-digit pairs,0.0489mm minimum pole/triangle gap,
+0.00254mm CPU/Blender parity, and mean-nearest pad gaps0.178/0.630/0.213/2.269mm
+for the four fingers and3.314mm for the thumb. Three opposing/top views show
+palmar curl and a folded thumb. This is a better static candidate, not approval.
+`--reuse` records private calibration3deea08d without saving a Blender asset.
+
+Whole-pose translation by(-16,+105,0)mm puts the pole on the correct hand side,
+but the first motion screen fails22/131 samples against body/feet/hand. Radial
+retreat plus10degrees shoulder swing reduces this to11; still rejected.
+The arm-only two-bone solve retains the source elbow plane and uses the smallest
+smooth root adjustment needed to avoid a straight-arm singularity (10degree
+minimum bend,5mm blend band). The first full-retreat target was unreachable and
+is rejected. Rejoining the original free-flight wrist path limits root change
+to43.982mm and removes held body collisions, but simultaneous opening/withdrawal
+still has4/131 pole flags. Keep wrist changes and all motion limits under review.
+
+Fixed-wrist opening is not safe:200/202 original-finger transition samples and
+100/101 rest-finger transition samples hit the pole, primarily thumb/little
+finger. The2D wrist-path optimizer finds202 individually clear points but jumps
+14.9mm between neighboring openings; that discontinuous path is **rejected**.
+The staged control unhooks the thumb first (25degree base rotation about the
+transported hand width), then opens the fingers and withdraws around the pole.
+The initial131-sample screen has2sub-millimeter hand contacts and no screened
+arm/body or cross-digit intersections. This remains an unsaved control; dense
+contact, arm directions, timing and opposing visual review must pass before
+saving or transferring it. No old grip acceptance carries into this new control.
+
+The installed Blender5.2 Rigify `rigs/limbs/super_finger.py` explicitly supports
+signed primary rotation axes. The [Blender rigging manual](https://docs.blender.org/manual/en/2.81/addons/rigging/rigify.html)
+also distinguishes thumb and finger axis alignment (accessed October26; historical
+2.81 advice is not a mandate to replace this rig). This control checks those axes
+against this mesh; no Rigify generation, plugin installation or bone rest edits.
+
+### Release orientation and reusable authoring boundary
+
+The initial staged control fails34/2595 dense pole samples and bends the wrist
+direction to96.071degrees. It is rejected. Letting the hand follow the changed
+forearm after clearance reduces that direction peak to48.666degrees; this is a
+geometric measurement, not a medical/anatomical certificate. That version has
+six approach-only index/pole contacts, deepest0.06755mm. Preserve both receipts.
+Index opening lead is explicit (`1-(1-u)^lead`);2.0 is the rejected control and
+2.3 is the next separately named candidate. No collision tolerance was relaxed.
+
+The wrist is fixed during the hold, with a staged thumb unhook and finger
+opening. Once clear, the original local wrist relationship follows the new
+forearm. The body pose and earlier hip/shoulder work remain the source;
+right-arm IK and the minimum smooth root adjustment resolve reach. This still
+requires full saved surface, motion and native checks before adoption.
+
+`check_palmar_timing.py` measures95 local rotations and pelvis translation.
+The unpaced correction peaks337.916degrees/s at the wrist, so still-image
+quality alone is insufficient. A shared monotone map proposes51.166seconds
+instead of43.233, targeting90degrees/s and0.45m/s for this artistic routine.
+`save_g2_palmar_action.py` refuses failed/stale dense evidence, protects all
+source hashes and writes an action-only derivative with its required weight
+patch. Its `--verify-only` mode checks a fresh reload at half-frame times.
+Those artistic speed choices are not universal human limits.
+
+Index lead2.3 clears the2595-frame control:0pole,0arm/body,0cross-digit
+intersection samples; no rear-reach/hinge-reversal flag. Maximum root shift
+remains43.982mm and visible radius2.749731m. This supersedes the failed lead2.0
+approach only; the static thumb gap and complete artistic/native review remain.
+Saved uniform120Hz actiona4874816 runs51.166667seconds and clears6141 saved
+right-hand/pole samples (minimum radius25.04502mm for a25mm-radius pole).
+However, its12281 half-frame95-bone replay fails1.198484mm positional parity.
+Do not treat that contact pass or successful file save as source fidelity.
+
+The separate `--source-knots` variant409a79ad also inserts every original
+fractional action-key breakpoint after the shared time mapping. It retains
+the120Hz regular samples for nonlinear IK between those breakpoints. This
+avoids straddling existing corners without replacing the source or mesh.
+Fresh SavedReplayKnots passes12281 samples: maximum95-bone positional error
+0.080783mm, maximum matrix error0.00005865, loop error0.00000548. Actual local
+rotation peak94.400degrees/s and pelvis peak0.452054m/s meet the stated95/.46
+verification ceilings; do not confuse these ceilings with universal anatomy.
+SavedHandSurfaceKnots passes6141 right-hand/pole triangle samples, minimum
+radius25.045020mm for a25mm pole. This screen excludes other body regions and
+between-frame contacts. Two615-frame opposing12Hz videos fully decode; four
+held/approach/release stills were inspected, with the corrected palmar curl
+and earlier body shape retained. Full choreography/garment/native acceptance
+remains open. The first slow verifier alternated large action bindings every
+sample and was stopped; batched expected/replay passes retain the same sample
+times and reduce repeated animation-cache rebuilds.
+
+The current source is `G2_PalmarGrip_Knots_ActionLibrary.blend`, SHA256
+`409a79adfcfd8e9b365310f1d58955f91e6662eac47e613a6fb7314455ecd90d`.
+It holds10573 regular-plus-breakpoint samples over51.166667seconds, paired
+with its manifest and116-vertex waist patch. It is an action-only derivative;
+the approved source meshes are not rewritten. Reproducible native export is
+`export_g2_palmar_proof.py`; `SS_G2_VARIANT=palmar` selects its isolated
+import/capture/comparison. It reuses the unchanged glute-follow rest mesh and
+skeleton, imports only a new animation, and protects old native proof hashes.
+Source replay does not establish native transfer; read the separate receipt.
+
+Fresh palmar native import/capture now passes eight95-bone comparisons within
+0.115274mm and eight visible-surface comparisons within0.194188mm. It imports
+only animation60445f36 into `VexaG2Palmar240Proof_20261026`; old proof bytes
+remain unchanged.38 stills include14 opposing hand closeups. The1229-frame
+24Hz scripted native loop fully decodes; selected hold/release hand and body
+views were inspected. This is sampled animation evaluation, not natural Play,
+complete anatomical/artistic approval or a multi-character pass. Import has
+no logged warnings/errors; capture retains existing template warnings for
+12 Xandra Blueprint/input entries,126 texture entries and3 material skeletal
+usage flags. Those vendor/template warnings are not repaired by this pass.
+The current local review is `SourceAssets/DanceRefinement_20261025/G2PalmarReview.html`.
+
+Unreal already supplies [Full Body IK with bone limits and preferred angles](https://dev.epicgames.com/documentation/unreal-engine/ik-rig-solvers-in-unreal-engine)
+and [configured physical animation](https://dev.epicgames.com/documentation/unreal-engine/physics-driven-animation-in-unreal-engine)
+(Epic5.8 documentation accessed2026-10-26). They are suitable runtime tools
+when configured for the rig/contact behavior. They do not establish that this
+imported animation has correct flexion axes, skin weights or artistic poses.
+These scripts are offline repair/reproducibility tools, not per-frame game
+scripts. Preserve the working authored rig and bake verified motion; use
+native IK/physics where actual runtime adaptation is required. Do not replace
+this specific repair with an unconfigured physics or solver toggle.
+
+## G1 signed grip and folded-arm shoulder coverage — October26
+
+The owner reports a visibly defective ordinary folded-arm shoulder. The earlier
+approval applied to the shown raised-arm poses; it never established all-pose
+quality. Keep this failure in RPT-20261021-01. Do not describe its correction as
+a universal rig or infer that the other dancers are already repaired.
+
+**G1 contact before skin correction.** `g1_palmar_motion_control.py` transfers
+the signed calibration3deea08d using a rigid whole-body hand-frame transform.
+This retains the supporting right arm's local motion. An arm-only alternative
+introduced unnecessary wrist/root changes and was rejected. The inherited
+free left arm intersected the chest: elbow-only controls left19 failures,
+while the saved smooth two-dimensional reach/elbow profile b8a1ab7d resolves
+the defined sampled contact. The profile affects the free arm only.
+
+The first release contained a25cm positional jump; slowing it into a59s clip
+would conceal rather than repair that discontinuity. Continuous release keeps
+the original hand residual, and `--pin-orientation` holds the grip orientation
+until the fingers clear. The final control97afb916 clears1101 limited pole,
+arm/body and cross-digit samples. Both-arm checks cover2202 side/frame samples
+without a defined rear-reach/hinge flag. These are bounded screens, not proof
+of all anatomical or surface quality.
+
+`G1_PalmarGrip_Knots_ActionLibrary.blend` is action-only, SHA256
+`cc652d7905589a1534fe91fa2d27999c43a7aa809a350fa14aa6fcbfdf3711a1`.
+It preserves4394 regular/fractional source samples over27.45s. Fresh240Hz
+replay checks6589 samples/95 bones: maximum position difference0.103028mm,
+matrix difference0.000087902; actual local peak90.590degrees/s and pelvis
+0.450615m/s. Saved120Hz right-hand/pole checks clear3295 samples at minimum
+radius25.036162mm for the25mm pole. Endpoints differ: this passage is not a
+standalone loop. The slow timing targets remain artistic settings, not human
+joint limits.
+
+**Identify the shoulder cause before repainting.** At source3s (G1 frame816),
+`review_g1_shoulder_regression.py` matches3106/3106 torso rest vertices against
+preserved844aae5f with maximum weight difference0. The crease reproduces on
+the bare body and the preserved mesh at the same pose, before the free-arm
+contact relief. This rules out lost shoulder weights and clothing-only causes;
+it does not establish adequate weights/deformation for this forward reach.
+
+Independent controls:10/20-degree clavicle protraction shifts the free arm
+22.534/44.896mm, and global Preserve Volume adds unwanted shoulder/chest bulk.
+Neither is adopted. Local Corrective Smooth factor0.5, eight iterations,
+ORCO rest and boundary pinning removes the deep axilla fold without changing
+bones, weights or the held hand. A first mask limited to z<1.49m left a cap
+crease at source7.254899s, discovered in the full passage rather than the
+two initial still poses. That first3c519d6a candidate and native import remain
+comparison evidence, not the preferred repair.
+
+**Preferred shoulder-cap mask.** Reuse `shoulder_support.shoulder_mask` around
+the left upper-arm rest origin (radius0.22m,0.14m falloff, three-ring modular
+boundary protection). Multiply by smoothstep x0.09–0.14m and z1.15–1.24m;
+omit the earlier upper-z cutoff so the cap participates. This covers549
+vertices and excludes the neck/other shoulder. The target changes no rest
+coordinates, bone poses or skin weights. The largest posed target displacement
+is59.949mm in the severely collapsed region; do not report it as a tiny global
+adjustment. Check volume/silhouette throughout movement.
+
+`bake_g1_shoulder_corrective.py -- --cap` evaluates2201 actual G1 target poses
+at120Hz, inverts only nonsingular local skin matrices and compresses the local
+deltas into96 shape curves. Earlier30Hz interpolation failed0.635mm between
+samples, even after fitting error passed; it was rejected without loosening
+the0.3mm holdout gate. The current cap version fits within0.033435mm and275
+unfitted quarter-source-frame times stay within0.037396mm. Ten saved-curve
+checks leave every vertex outside the mask unchanged; no additional bones.
+
+Current private source: `Vexa_G1_ShoulderCap_Candidate.blend`, SHA256
+`51c25e242a481e7a98aee5281f11aa09094ecfbf0510272401f7868e87a8128e`.
+Pair `A_F3_G1_PalmarGrip_Knots_Review` with
+`A_F3_G1_LeftAxilla_Correctives`. These time-indexed coefficients belong to G1,
+not another clip. Transfer the method and mask only after checking another
+mesh's scale/topology; regenerate and verify its targets. Never copy the G1
+curve timing onto Joy/Astra or the other dancers.
+
+Fresh source/native receipts belong under `G1ShoulderCapCorrective` and
+`G1ShoulderCapNative240`. Use `export_g1_shoulder_proof.py -- --cap`, then
+`SS_G2_VARIANT=g1_shoulder_cap` with the existing private native tools. They
+must carry both the rest morphs and the paired animation. Import success is
+not rendered/native parity. Complete joint, garment, choreography, loop joins,
+multi-character and natural-play acceptance remain separate.
+
+**Normals are a separate gate.** The saved cap morphs reproduce the eight
+posed smoothing targets within0.032033mm, yet the skinned-normal source view
+retains a cap dent. Removing shadows or clothing does not remove it; a frozen
+copy with normals recalculated from the actual deformed surface does. This
+control does not justify another weight repaint or prove every surface good.
+Native same-pose A/B confirms recomputation removes this shading crease.
+Global recomputation also exposes unwanted modular/garment normal seams, so
+it is not the selected treatment. `export_g1_shoulder_normals.py` makes a
+separate rest FBX with green recompute weight on the549 shoulder vertices
+only; all other mesh parts are black. The mask is clamp(4*capMask,0,1).
+`import_g1_shoulder_normals.py` retains the same96 morphs/12 influences and
+saved green-channel section settings in a new mesh, preserving the original.
+Use `SS_G1_NORMAL_CONTROL=local` for the bounded A/B, then
+`SS_G1_RECOMPUTE=local` for full native capture. Skin cache must participate;
+the capture records its actual CVars. A successful import is not evidence
+that this local blend rendered correctly. The saved Blender file keeps its
+original normal treatment; its raw Workbench shading is not a substitute for
+the selected native normal path. No production renderer settings are changed.
+
+The localized native mesh has SHA256
+`e434f6713f6fe5b172eb518d8608deea362ed9920657d3e547ce8dca73fa93c7`;
+rest export243a8f3e preserves the same96 morphs and12 bone influences.
+The converted native mask has522 vertices above1e-5 and range0..1 (very small
+source weights quantize away). Both18-view A/B controls and old-proof hashes
+pass. Eight fresh native95-bone/surface comparisons differ by at most0.153mm
+and0.162mm;48 stills and two660-frame24Hz videos are retained. Source and
+native visual review show the reduced forward-reach fold; other joints and
+garments remain open. Do not extend this claim to all poses or other clips.
+
+Run the full capture once with `SS_G1_RECOMPUTE=local`, then again with
+`SS_G1_SHOULDER_MOTION=1` for the separate continuous front close-up. Compare
+with `compare_g2_glute_native.py`, then run `build_g1_shoulder_review.py` to
+encode, fully decode and build the private `G1ShoulderReview.html`. Raw PNG
+metadata warnings remain in encode logs. FBX inactive vendor-curve/bind-pose
+and template capture warnings remain documented; no expected G1 corrective
+curve is missing. The first masked import's relative-path guard failed before
+writing; the corrected guard resolves the absolute path before hashing.
+
+
+## G1 to G2 join: preserve the shoulder across clip boundaries (October26)
+
+Private bridge `G1G2_Join_ActionLibrary.blend` is four seconds at120Hz, SHA256
+`6172cbdedd0721c2d08813c26c9d977168c28eae21f67b4e06dba7a77394c22f`.
+Use G1cc652d79, this bridge, then G2409a79ad consecutively. This ordering is
+not a closed loop. Original clips, mesh51c25e24 and calibrated hands are unchanged.
+The bridge library is5,159,551bytes; its eight additional local morphs occupy
+103,322bytes in `G1G2_Join_MorphBasis.npz` (97d023f5). There is no duplicate
+full-character Blender file.
+
+`review_g1_g2_join.py` matches endpoint local-bone rotations/velocities with
+spherical cubic interpolation and the pelvis trajectory with a cubic Hermite
+path. An initial30Hz pole/distal-arm screen passed, but the later both-arm
+screen caught562 left rear-reach samples (maximum7.963degrees) during the
+blend. This was rejected before saving. `--forward-arm` moves only the free
+left arm and descendants toward the torso-forward half-space with a smooth
+response; endpoint poses and elbow/hand local rotations stay unchanged.
+Contact clearance alone cannot accept a transition.
+
+The G1 corrective timing cannot just run through the new pose interval.
+Projection into its96 bases alone failed1.3893mm. Four extra residual bases
+reduced target error, but coefficients reached28.339 and Blender's key-value
+range clamped them, producing18.339 coefficient error on actual replay. That
+control is rejected. Never accept the linear algebra fit without evaluating
+the actual saved shape-key action. The first report-only serialization error
+(numpy boolean) occurred before saving and its failed log is retained.
+
+Preferred: `fit_g1_g2_join_corrective.py -- --augment-basis
+--independent-basis --forward-arm` fits the localized smoothing target to
+**eight independent join bases**, each coefficient normalized within[-1,1].
+Use the same549-vertex cap mask, local nonsingular skin inverse and smoothing
+settings as G1. Match G1's endpoint delta and derivative before approaching
+the new target; fade to zero over the final0.6s because G2 uses its preserved
+rig correction. G1's original96 curves are zero during the bridge and remain
+unchanged in G1.481 fitted samples have0.026808mm maximum error;240 unfitted
+half-frame samples have0.023584mm maximum error. This is a time-specific
+correction, not a universal shoulder solver.
+
+`save_g1_g2_join.py` writes the paired bone/shape actions and compact basis;
+`--verify` reloads them in a new hidden Blender process.961 whole/half-frame
+samples retain95 bones within0.032436mm and2.79e-5 matrix units, with shape
+coefficient error below5.82e-8. Both-arm rear/hinge screen flags are0. Peak
+local angular rate66.620degrees/s and pelvis speed0.257758m/s stay under the
+existing slow-passage ceilings; these are artistic pacing criteria, not
+universal human limits.481 actual evaluated skin/morph surface checks have
+0 pole/distal-arm-body intersections and maximum radius2.147299m. These
+screens do not cover every joint, garment, self-contact or between-sample event.
+
+`review_saved_g1_g2_join.py` shows two seconds of unchanged G1, the four-second
+bridge and two seconds of unchanged G2 from three fixed opposing viewpoints.
+Keep G1/join bone and matching shape actions paired; clear stale REVIEW_
+values when switching to G2. The Workbench review uses original normals;
+selected native local-normal behavior must be checked separately. Source
+receipts are under G1G2JoinForward, G1G2JoinForwardSaved/Replay and G1G2JoinMotion.
+Live sequence integration, complete routine artistry and other characters remain open.
+
+A separate static thumb experiment (`fit_palmar_thumb_pad.py`) held the wrist,
+body and four fingers fixed. The pad already faced inward (cosine0.9813).
+Its new face-center gap metric improved3.3982 to2.1661mm, with no pole/cross-digit
+penetration, but the visible hook did not clearly improve. No fit/calibration
+was adopted. Preserve the signed-palmar grip and keep hand polish open; this
+metric differs from the earlier nearest-three-vertices gap and is not directly
+interchangeable with it.
+
+Three saved-action views each fully decode193 frames at24Hz. Selected transition and opposing frames were reviewed; original Workbench normals and remaining garment contours are still visible. Private `G1G2JoinReview.html` has four valid local media/navigation links. After video hashes and full decodes passed,540 intermediate PNGs (355929293bytes) were removed, retaining39 selected boundary/midpoint frames, three overview sheets and all videos/receipts. Native transition validation remains pending.
+
+Run `review_saved_g1_g2_join.py -- --boundary-only` for the inexpensive exact
+boundary check. Fresh saved G1/end and bridge/start differ by at most 0.026141mm
+on evaluated visible surfaces; bridge/end and G2/start differ by 0.002653mm.
+The 95 bone positions differ by at most 0.002365mm. Both pass the unchanged
+0.3mm surface and 0.15mm bone gates. This catches stale corrective curves or
+unmatched shape bases at switching; it does not validate the native renderer.
+
+Fresh private native bridge proof now supersedes the pending-transfer status.
+`export_g1_g2_join_proof.py` exports a1860e65; import/capture use
+`SS_G2_VARIANT=g1_g2_join` with the existing posterior-proof scripts.
+The new private VexaG1G2Join240Proof_20261026 folder retains104 morphs/curves.
+Eight native poses match95 bones within0.258351mm and visible surfaces within
+0.244242mm, under the unchanged0.5mm gates. All145 captures completed,
+including97 motion frames at24Hz; opposing stills were inspected and the
+motion video fully decoded. Old proof hashes remain unchanged.52 bind-pose
+import warnings and existing capture-template/UDIM/material warnings remain;
+this is not a zero-warning or production gameplay claim.
+
+`build_current_g_routine_review.py` assembles existing G1, bridge and G2 native
+videos into the82.75s `G1G2_Current_Full_Unreal.mp4` (0c1a38c2), with1986 decoded
+frames at24Hz. The two camera cuts are explicit: this is not a live sequence
+or a loop. An accidental default25Hz2068-frame encoding was rejected and
+retained privately before forcing24Hz. Owner will review on PC later; no
+external upload was requested and that review does not block AI work.
+
+## G2 leg phrasing: remove accidental holds before adding routines (October26)
+
+Owner requests the current routine first, with overlapping limb movement and
+brief deliberate accents rather than long rigid straight-leg poses. New image
+and video references inform flow/pacing, not literal replacement choreography.
+`audit_g2_floating_holds.py` finds frozen local leg poses at0–6,34–42 and48–50s.
+`audit_g2_leg_phrase.py` measures both knees below15degrees in38.15% of the
+current passage,19.91% of full raw G2 and30% of the selected raw segment.
+The raw and edited durations differ: these proportions diagnose phrasing,
+not a frame-aligned retarget comparison or anatomical limit. The contact recipe
+selects source570–770, slows playback and holds endpoints; do not silently
+claim it contains all original G2 or restore rejected backward swings.
+
+`g2_floating_life_control.py` preserves primary motion outside0–6.8,33.5–44 and
+47–51.1667s, using0.9s quintic fades. Initial4degree thigh/8degree knee overlap
+was too subtle and is retained as an unadopted control. Preferred `phrase=True`
+uses alternating12degree thigh flex, up to30degree knee flex,3degree spacing,
+and delayed3degree ankle follow on a6.2s cycle. Existing glute swing-follow is
+recomputed for changed thighs. The free left elbow/wrist have only2.5/0.8degree
+follow; right grip, shoulders, spine and endpoints stay unchanged. This is
+specific authored motion, not a universal anatomical solver or new routine.
+
+Control51079172 passes769 samples of the limited pole/distal-arm/posterior-hip
+screens with0flags; protected-bone and outside-window matrix differences are0.
+Both knees below15degrees falls to18.99%. This supports the intended direction,
+not artistic acceptance. Opposing source views show a clearer knee draw/return.
+The first source camera clipped the swing exit; `--framed` fits a fixed camera
+to all passage joint bounds plus0.5m margin instead of accepting that view.
+
+`save_g2_floating_phrase.py` copies G2409a79ad and replaces only ten bone-channel
+sets, retaining850 untouched curves exactly and preserving all fractional
+source knots. Candidate173a6223 uses10194 knots,120Hz and51.1667s; it is126914820B
+versus125754768B for the preserved original action, with no duplicate full mesh.
+Fresh `--verify-only` replay checks12281 poses at240Hz: max95-bone position error
+0.022614mm, matrix error2.20e-5, local angular speed94.400degrees/s and loop
+matrix difference5.49e-6. Existing0.15mm/0.001/95degree gates are unchanged.
+These are fidelity/pacing gates; wrists, ankles, garments and anatomy still
+require continuous visual judgment. Candidate is private, not production.
+
+Reproduce with hidden Blender: `review_g2_floating_life.py -- --phrase`, then
+`--phrase --render --framed`; save/replay with `save_g2_floating_phrase.py` and
+`--verify-only`; `build_g2_floating_review.py --framed` encodes source views.
+Receipts live under G2FloatingLife/PhraseControl; originals, rejected controls
+and source hashes remain available. Native transfer was a separate gate, now
+verified below.
+
+Fresh private native leg proof supersedes the pending-transfer status.
+Saved173a6223 exports animationd37bc45c and reuses the unchanged glute mesh.
+Eight95-bone comparisons stay within0.089867mm and visible surfaces within
+0.106435mm;1267 captures complete (38 stills,1229 motion frames). The full
+24Hz video42692e6a decodes all1229 frames. Selected front/back/side stills
+were inspected; their pelvis-focused framing does not show every extremity.
+The motion camera follows the full body. Existing template warnings remain.
+
+The combined leg review is now CurrentGLegReview.html / videoaad072ad,
+1986frames at24Hz (82.75s). It contains G1cc652d79, bridge6172cbde and G2leg173a6223,
+with two explicit camera cuts. It is not live sequence playback or a closed loop.
+No production assets, game DLL, saves or package changed.
+
+## Restore choreography coverage before calling the routine finished (October26)
+
+Owner reports that the current motion reads as one extended orbit. Coverage
+inspection confirms that only sourceG1 frames780–1000 (12.983–16.650s) and
+sourceG2 frames570–770 (9.483–12.817s) are selected: about7seconds combined
+from30.866seconds of original motion. Slowing and adding approaches/returns
+expanded those excerpts to the current review. Repairing contact/deformation
+on narrow excerpts lost most original choreographic variety; do not present
+the82.75s review as the complete original G1/G2 routine.
+
+`describe_g_routine_sections.py` retains a ten-section source/time map and
+adds chapter controls to CurrentGLegReview.html. `review_raw_motion_sources.py`
+inventories original G1/G2 and owner IMG9733 without saving or modifying inputs,
+sampling52 source joints at60Hz and rendering two fixed opposing-axis views.
+First wide source sheets leave substantial empty space because their camera
+fits the complete motion. Rate peaks are diagnostic, not anatomical limits.
+
+The owner specifically approves the raw G1 contact-sheet leg ideas (0–9.5s):
+alternating extensions, knee lifts, folds and exchanges. Restore substantially
+more of that motion at a deliberate pace, preserving repaired upper-body/contact
+behavior; a small periodic knee overlay does not satisfy this correction.
+The additional26s reference video illustrates an arch, backward inversion and
+opening at roughly10.5–13s despite visual drift. Its associated19.667s GLB
+7ca1b394 has a torso inversion at8.633–9.550s and abrupt local rotation peaks
+around10.95–11.03s. Different durations/timing mean these are not frame-aligned
+proof of transfer. Interpret the intended motion through the drift; do not
+discard a useful phrase solely because generated details are distorted.
+The backward flip is optional inspiration, not committed placement in this
+routine. Owner will judge the current video later; AI leg work continues.
+
+`g2_source_leg_control.py` is a separate unsaved candidate: it transfers
+relative leg rotations from the retained target-rig G1 library into held G2
+passages while retaining rest lengths and upper-body transforms. Source windows
+0.5–3,4.5–6.5 and7.5–9s are recorded explicitly. Endpoint fades and established
+glute-follow remain, but contact, speed and appearance must pass before saving
+or replacing the173a6223 candidate. This is neither a universal retarget fix nor
+a silently adopted new routine. Original actions and approved versions remain.
+
+## Source-phrase review and conceptual blocks — October26
+
+The source-leg7d0b0c83 control fails39 of769 sampled times: four opening
+pole intersections at5.2667–5.4667s and35 return arm/body samples at48.2667–
+50.5333s; hip overlaps occur in31 of those times. Six diagnostic videos fully
+decode940 frames, with failed status retained. Greater leg variety is not
+permission to adopt a colliding control. Upper-body preservation was a
+diagnostic isolation choice, not an owner-imposed choreography lock.
+
+Original matching-mannequin FlipsAndTricks previews now cover BackFlip,
+ButterflyTwist and SideFlip front/side at3x duration (726 decoded frames).
+Rest-matrix differences remain below4.77e-7; this establishes source binding,
+not target-dancer anatomy. Review images show useful fold/open and unequal-leg
+rotation; retain complete phrases rather than only0.6s stretched across16s.
+Reproduce with review_library_motion.py and build_library_motion_review.py.
+
+The independent review inspected166 chronological half-second routine samples,
+48 release samples and opposing diagnostic frames. It did not watch real-time
+playback. Long waits31.5–38.2s/64–76s and uncoordinated free-arm/torso poses are
+the immediate repair targets; preserve stronger G1 and G2 fold/extension shapes.
+Seven video input hashes remain unchanged.
+
+[Choreography blocks](CHOREOGRAPHY_BLOCKS.md) records the latest owner direction,
+ten concepts, source windows, compatible contact families, and official UE5.8
+information. Concept agents performed no rigging/animation. Images are planning
+references, not source renders or validation; pole P4 middle has an explicitly
+rejected extra arm. Current routine refinement continues before new blocks.
+
+### Timing-only comparison, not a replacement action
+
+`review_current_g_timing.py` produces private video1e83e92c, 75.05 seconds,
+4,503 fully decoded frames at a 60 Hz presentation rate. All 1,986 original
+pose frames are represented; repetition does not create newly evaluated poses.
+Four held passages use smooth speed ramps. G1, the bridge, supported G2 motion
+and return blend keep their existing speed. The input video hash is unchanged.
+CurrentGTimingReview.html compares this with the original82.75s edit.
+
+This changes only a review video. Missing whole-body source phrases, continuous
+camera playback, rig/contact checks at revised animation timing and owner
+judgment remain open. No action, rig, production asset or new concept sequence
+was changed. Concept boards were shown before any new-block implementation.
+
+## Current G2 return: coordinated source phrase, still diagnostic
+
+The ten new conceptual blocks remain unrigged/unanimated. This control repairs
+the existing G2 return at47–51.167s using G1 source7–9.5s (retained target frames
+421–571): gather, side extension/counter-turn, fold/knee recovery, upright.
+It transfers pelvis orientation, chest, head, arms and legs together while
+retaining the current floating world route. Both hands are released in this
+interval. The donor0a38e12a is repaired source-derived, not untouched raw motion.
+The original9.4167s wrist/arm rate spike remains an inspection point.
+
+Controlaf9b48e6 explicitly loads current saved leg action173a6223 at120Hz.
+It preserves outside-window poses exactly, rather than silently reverting to
+409a79ad. The initial control81832c44 lost the imported0.01 world scale and is
+invalid; its apparent deformation cannot be used to judge the saved rig. A
+scale-preserved intermediate still used the older baseline and is superseded.
+The current control applies rotation deltas to existing matrices, retaining
+scale and pelvis translation with per-pose assertions. No rig or action is saved.
+
+Current audit:769 samples at15Hz,28 flagged times (9 arm/body,22 hip,3 overlapping;
+no pole flags). Outside-window/protected matrix error0.0. The gate correctly
+rejects adoption. Opposing diagnostic videos each decode113 frames; these are
+unsaved source previews, not native transfer or whole-routine acceptance.
+Private G2SourcePhraseCurrentReview.html retains the failure label and prior
+versions remain available. Next repair is the specific entry-arm and folded-hip
+response, retaining the recovered phrase rather than dropping its poses.
+
+Reproduce with hidden Blender review_g2_floating_life.py -- --source-phrase.
+For explicit failed-preview inspection only, add --render --framed --diagnostic;
+encode with build_g2_floating_review.py --source-phrase --framed --diagnostic.
+The saved first-leg verifier accepts both historical 'phrase' and newer
+'PhraseControl' receipt names while still enforcing passed status and exact
+control/source hashes. These names do not relax any geometry gate.
+
+## Released-hand and service-motion lessons — October26
+
+Full evidence: [source return and service audit](../../../docs/validation/2026-10-26-dancer-source-followup-and-service-audit.md).
+This section supersedes no accepted mesh/action. Current originals remain
+51c25e24/173a6223/0a38e12a; the current whole-body source return is still held.
+
+1. **Separate world orientation from wrist posture.** The released-left-hand
+   route cleared the foot but holding its world orientation forced41.81degrees
+   of new wrist compensation. Opposing views rejected that policy. Keeping the
+   source wrist relative to its forearm clears the same319 limited samples and
+   preserves its local angle within0.000022degrees. Do not apply this free-hand
+   rule to Joy's bottle/cup: their coordinated pouring tilt is intentional.
+2. **Preserve choreography and measure actual surfaces.** The G2 corridor is
+   a measured0.18m chest outside/up target on48.8–50.1s,0.4s quintic ramps and a
+   small residual pulse49.2–49.65s. The calibrated residual in chest metres is
+   `[-0.025947406888008118,0.0103490324690938,0.01972557045519352]`.
+   `source_return_left_corridor(..., hand_orientation='source_local')` keeps
+   other-body matrices and arm lengths; its10–145degree elbow interval is a
+   conservative review envelope, not a universal human limit. The source
+   pose/forearm plane still needs direction/skin checks.
+3. **Do not mistake a local pass for a repaired phrase.** The319-sample240Hz
+   screen excludes upper arms, hips, garments and whole-body anatomy. Forty
+   stills and the20-image independent comparison support the narrower wrist
+   improvement only. Other contacts/hip folds remain; added world joint speed
+   must be judged in motion. Bone markers occluded inside skin do not prove
+   thumb direction. Use opposing closeups instead of guessing from them.
+4. **Hip mirroring is not the missing solution.** Donor/target axes and local
+   translations agree. A pre-existing pelvis/rest alignment difference does
+   not establish a new bug. The targeted mirror trial leaves18L/45R triangle
+   contact pairs and worsens stretch; preserve the waist patch. Next hip repair
+   needs localized pose-dependent surface response and surrounding contour
+   checks, not broad weight/helper gains or deletion of the folded pose.
+5. **Calibrate the actual service rig.** Joy's CC_Base rig has101 bones; Astra
+   uses a different PerfectFemaleBody71-bone rig. Neither inherits Vexa's
+   topology-specific weights/morphs by assumption. Joy's native import metadata
+   identifies `outfit_v25/SK_Joy.fbx`; an older same-name FBX is insufficient.
+6. **Near-extension elbow normals can flip.** Joy's framewise cross-product
+   solve generated >120degree jumps. Candidate04 calibrates a hinge direction
+   in original2.0s bone space, transports it with orientation and unwraps signed
+   roll through the existing contact envelope. Right wrist maxstep57.45→16.22
+   degrees is improvement, not acceptance. Shared original cup-hand travel
+   preserves bottle/cup placement and tilt; six tracks change,95 remain exact.
+7. **Astra needs a stance-aware departure.** Stopped pickup feet into a moving
+   carry phase cannot be cured by matching endpoints alone. The velocity-aware
+   bridge held the tray but tripled left-foot travel. Both bridge trials remain
+   withheld. Trace current phase, actor velocity/yaw, speed and support foot
+   before choosing a start-step or native transition. Do not transfer Vexa
+   weights or retime the entire carry clip to hide that handoff.
+
+Private receipts are `G2FloatingLife/SourcePhraseWristPoliciesPrecise/Audit.json`,
+`SourcePhraseDirectionAudit/LocalWristReview.json`, `JoyAssessment_20261026/`
+and `AstraAssessment_20261026/` beneath the existing AnimationReview directory.
+The precise wrist comparison uses float64 quaternion normalization; the earlier
+float32-dot result's0.04degree floor is not a real wrist change. Source file
+guards, failed controls and independent readback remain retained. No production
+adoption, native service replay, ClickUp write or merge follows these checks.
+
+The source-only [Joy pour reproduction bundle](JoyPour/README.md) guards both
+private pose exports and the exact Candidate04 patch hash. Run into a new private
+directory, then validate to a new report; neither operation overwrites evidence.

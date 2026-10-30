@@ -1,0 +1,396 @@
+# MotionBoard local planner — October 27, 2026
+
+Status: PARTIAL. RPT-20261016-03 owns remaining lead work and owner acceptance.
+Snapshot: 2026-10-27T02:15Z. Local authoring/browser preview, not a game build or rig repair.
+
+## Tool and storage
+
+Docker publishes `127.0.0.1:8769`; tracked code is in `Tools/MotionBoard`.
+GLBs, vendor modules, manifest/discovery inventory and state stay ignored in
+`SourceAssets/MotionBoard`. Assets/frontend are mounted read-only, state separately
+writable. Python uses the standard library; no host packages are installed.
+Allowlisted routes and Host/Origin checks restrict access; JSON saves are bounded,
+revision-checked and atomically replaced. A stale tab returns HTTP409, and corrupt
+state is preserved rather than silently overwritten.
+
+Animated cards feed eight rough-order slots with trim, duration, reverse and notes.
+Export is a JSON proposal with clip/source identity, not a merged GLB/FBX or
+Unreal animation. Browser-selected GLBs stay local and need reselecting after
+reopening. Direct FBX loading now has CPU fixture checks; browser validation is open. Global
+card-only ¼×/½×/1×/2× speed changes preserve phase and browser preference; main
+preview, slot timing and exported proposal timing are unchanged.
+
+## Verified snapshot
+
+- Private manifest: **12 registered libraries / 330 clips**. All 72 priority clips from
+  VarietyDanceAnims, RitualDanceAnims, SensualMoves and SensualMoves2 are now
+  packed/registered, superseding the earlier 59-clip/export-only snapshot.
+  Native export receipts record unchanged inputs; preview exports do not establish
+  target-dancer compatibility or visual quality. Snapshot SHA-256:
+  `5e525c71d941acc216855d2874ce633e77cba2696d675294fce51d06b87c0399`.
+- Python backend: 18 tests passed in an isolated existing Docker image using only
+  temporary fixtures; no owner board was mounted. Coverage includes path/Origin
+  guards, eight-slot types/ranges, stale HTTP409, corrupt-save preservation, atomic
+  replacement/failure cleanup, mount roots and optional bounded clip metadata.
+- JavaScript: lead reports 11 passing tests for the model/library/framing behavior.
+  This is source/fixture evidence, not a physical drag gesture or every-clip review.
+- Lead browser QA repaired overlay, root-follow, framing and narrow-layout defects.
+  Separate port 8770 test state passed clip trim, duration, reverse, save and JSON export.
+  The owner's port 8769 board was not used as the QA write fixture. Global card speed is
+  implemented with phase continuity and browser persistence; owner feel is open.
+
+These browser findings are the integrating lead's observed results, not a claim
+that this document's author reran the UI. Private review material remains under
+`.agent/local/MotionBoardReview`; native conversion receipts are in
+`.agent/local/MotionBoardExports`.
+
+## Repeat playback and direct FBX follow-up — 2026-10-27T02:35Z
+
+- Optional item playbackMode/playbackSpeed/repeatCount fields keep old items in
+  one-pass stretch mode. Source trims, source speed and total slot duration are
+  distinct. A0.5-second trim ×10 at1× occupies5seconds; repeat-for10seconds yields
+  20cycles. Reverse starts each cycle at trim end. Interior boundaries reset; the
+  final boundary samples the completed or fractional cycle. Export adds an
+  explicit playbackPlan; no source curves or seams are repaired.
+- `npm run check`: **22 tests passed, no skips**, including shared timing, library,
+  private Meshy/Flips framing and direct FBX fixtures. Tests cover exact boundaries,
+  fractional/reverse cycles, reload/pause, card-rate independence, mixed slot
+  timing and exported loop boundaries. The stale temporary Tavern FBX fixture
+  was replaced by the existing private A_F3_ZeroG_01_Drift.fbx fixture.
+- `server_test.py -v`: **20 tests passed** in the existing Docker image with a
+  read-only tool mount, temporary state and no published ports. Repeat modes
+  roundtrip without altering legacy items; invalid totals/types fail without
+  replacing saved state. Owner assets/state were not mounted.
+- The FBX loader warns that vertex influences above four are reduced in preview.
+  Source file/curve hashes remain unchanged; skin-deformation fidelity is not
+  established by parsing. Direct FBX browser interaction remains pending.
+- Dance6's existing start4.87/end10.9333 is retained even though current export
+  metadata ends10.9. A timing-only edit preserves it; a changed end10.92 is
+  rejected. The UI explains last-frame holding rather than silently retiming
+  owner data. Full source-origin offset reconciliation remains open.
+- No browser/GPU, Unreal/Blender, server restart, owner save or native animation
+  operation occurred in this pass. Lead browser repeat-mode/layout checks and
+  deployment coordination are pending. Seams are not blended and owner
+  acceptance is still open.
+
+## Deployment, coverage and CPU study — 2026-10-27T02:55Z
+
+- Integrating-lead read-only receipt `RepeatDeployment.json` confirms both
+  loopback backends8769/8770 are deployed. Served/disk revisions are22/23 and
+  owner items match. The8770 whole response differs because validation normalizes
+  library metadata; that is not an owner-item change. The owner is actively
+  editing8770, so old snapshot hashes are not claimed unchanged. This check wrote
+  no owner state. Repeat layout/interaction remains browser-unverified under the
+  current CPU-only constraint; direct FBX and gesture drag/drop checks stay open.
+- Lead's completed import snapshot: **1304 clips / 22 logical packs**, with1285
+  clips in43 preview GLBs plus19 Meshy clips, about490.5MB. Source receipts cover
+  1307 unchanged original files and6345 pose probes with error at most0.235mm.
+  The43 files are preview chunks, not distinct purchases. Flight, AFS glider/zombie,
+  large Paragon weapon, ambiguous FBX and seven unlocated titles remain outside
+  accepted coverage. This supersedes the earlier dated330-clip preparation.
+- `SourceAssets/PerformancePlan_20261027/Review.html` exposes the complete80-second
+  CPU study,160 decoded frames at2Hz, with source/time indices. Recorded
+  `Receipt.json`/`Verification.json` show unchanged source hashes, both camera
+  views fitting the figure, continuous section-boundary positions and zero
+  positional error for preserved S04 departure samples at displayed times.
+  This is articulated proxy planning: no native character, skin weights or
+  production animation changed. Contact, acceleration, full-speed native quality
+  and loop acceptance remain unverified. The lead owns the final renderer/receipt
+  refresh after the S08 supporting-hand correction.
+- The isolated MotionBoard Docker image build passed; it did not restart either
+  portal. The performance-study script compiled in read-only Docker; the lead's
+  CPU render/verification is separate evidence. Existing22 JavaScript and20
+  backend fixture passes remain applicable; they are not owner visual acceptance.
+
+## Coverage and unresolved checks
+
+The broader conversion queue is partial. At this snapshot, retained retry receipts
+show TavernAnims and DrunkAnimations packing failures and an MCO_Mocap_Basics
+validation failure; other conversions continue. Failed/unregistered outputs are
+not counted as Ready. `PackQueueStatus.json` and `SubsetRetryStatus.json` retain
+the exact evidence. LibraryDiscovery.json reconstructs 38 owned-library candidates;
+exact Fab-category membership/complete coverage is unconfirmed. Archive copies,
+root-motion variants and demo poses are not automatically unique animations.
+
+Actual pointer drag-and-drop, direct FBX browser interaction and owner usability remain open.
+The lead owns missing-library conversion and failed-check retries. Neither valid
+keys nor a browser preview prove correct deformation, contacts, transitions,
+retargeting, all-clip quality or native-game acceptance. Sequencer compatibility
+and its earlier Undo defect remain separate; broad dancer repair stays paused.
+No C++ module, production rig/map, packaged game or release changed. C++ build,
+gameplay/performance and packaging checks do not apply to this browser-only delta.
+Final documentation gates must use the exact assembled publication files.
+
+## Sparse FBX preview repair — 2026-10-27T06:20Z
+
+The54 added Awesome Dog UE30fps FBXs match native AssetImportData MD5 identities:
+14 Pro Club Girl,14 Goddess,26 Sensual Dancer. Sources are on D; no new Unreal
+export was needed. These are54 clips, not108 clips from counting60fps copies.
+All137 imported-folder files and selected originals remain unchanged.
+
+The initial Sensual26 GLB (a0234a8d) was rejected. Its delayed constant translation
+axes started from identity after a same-ID skin-cluster node overwrote the canonical
+rest transform; independently keyed rotation axes were paired by index. Earlier
+52,105 same-parser samples could not detect this common-parser fault and are
+explicitly superseded as sufficient preview evidence. New checks use raw FBX
+keys and actual adjacent limb lengths, not just output-versus-parser agreement.
+
+- Corrected Sensual GLB: SHA-256
+  `ad1b8ea2c6bc4343141d92c7f57b27e7da6074fd6f0c49dfbd630d0b515b21f5`,
+  37,419,584bytes. The other28 new preview files/clips are untouched; three GLBs
+  total115,175,436bytes. Both loopback endpoints read back the exact corrected
+  file,48 libraries/1374clips and unchanged other47 manifest records.
+- Independent raw-key check:1,750,276 authored union knots; translation error
+  below0.00000191cm and orientation error below9.42e-8rad. Structural check:
+  106,379 poses at120Hz plus offset samples; eight actual arm/leg segments vary
+  at most0.07884mm. Corrected CPU joint overview was inspected. This is not
+  full-rate rendered motion, native tangent or skin acceptance.
+- Between-key linear-Euler versus quaternion preview sampling differs by up to
+  5.95degrees on unweighted ik_hand_gun; largest weighted difference is1.5734degrees
+  on ball_r, Exotic25 at5.25s. Neither approximation is the native FBX evaluator.
+- Durable three-edit patch produces loader SHA-256
+  `dd1efb67ac04f1a741cb90d87ef44735be113f3ee30ea35d3f3b32aa3c2218cd` from
+  exact r180 input d97724a6. All11 dependencies are pinned; MIT notice retained.
+  Independent review matched the patch to the tested candidate.
+- After deployment, Node checks:29 passed,0 unexpected failures,1 explicit TODO
+  failure for an unsplit0-to360-degree span. Docker bootstrap tests:7 passed.
+  This known upstream large-angle limit, missing rotation axes, cubic tangents
+  and four-influence reduction remain open. Dense28 tracks remain numerically
+  unchanged (signed zero bit differences only in13 Pro clips).
+- Initial Docker deployment mount was too shallow for the script's repo-relative
+  default and failed before writes. Correct repo-shaped mount then succeeded;
+  fresh loader hash and post-deployment tests bind the deployed bytes.
+
+Private receipts are in `.agent/local/MotionBoardNewPacks_20261027/CorrectedSparseAxes`
+and `.agent/local/OwnedDancePacks_20261027/CorrectedSparse*`. The rejected generated
+preview is retained separately. No owner-board writes, portal restart, native
+asset edits, GPU launch or host installation occurred. Browser refresh is needed
+for already loaded preview bytes. Native/target/artistic and owner acceptance
+remain OPEN; current S09 study is unchanged by this repair. No native build applies.
+
+## Source screening and catch follow-up — 2026-10-27T06:38Z
+
+The corrected preview data provides five bounded screening leads for the existing routine. These are source-relative seconds, not added performance sections; no excerpt has been adopted.
+
+| Pack / clip | Source excerpt | Potential use |
+| --- | --- | --- |
+| Goddess / Sensual Goddess 13 (Slow) | 18.0–21.2s | Fold, recover and reorient with unequal knee recovery |
+| Pro Club Girl / AD Pro Club Girl 8 | 18.0–21.2s | Coordinated knee exchange and arm sweep |
+| Sensual Dancer / Exotic Dancer 14 | 17.2–20.4s | Torso unfold, asymmetric reach and turn |
+| Goddess / Sensual Goddess 7 (Slow) | 10.0–13.2s | Alternate gather and release connector |
+| Sensual Dancer / Exotic Dancer 17 | 15.6–18.8s | Alternate gather, reach, turn and fold |
+
+Private `ShortlistAfterCorrection.md` and its JSON under `.agent/local/OwnedDancePacks_20261027` retain exact source/native hashes and five metric beats per excerpt. All five FBX/native identities were freshly checked. The 5Hz joint screen does not establish visual fluidity, continuous timing, support or zero-G suitability. Review each coordinated phrase before adapting it; grounded dancer routines remain later scope.
+
+A separate CPU inspection of the inherited S08 catch distinguishes an inaccurate composite hand capsule from a real defect. The wrist-to-middle_03 segment spans articulated joints and is too broad to represent the whole hand. Nevertheless, a sampled thumb_03 joint centre lies inside the pole cylinder; removing that composite alarm would hide real contact trouble. One bounded outward wrist-placement trial retains torso/leg positions and original hand shape while clearing the tested articulated hand proxies, but its contact gap is too large to establish a supported hold. It is not adopted. Joint/capsule checks still do not prove actual skin clearance or a valid palm/finger grip.
+
+The separate clock-only trial retains the Dance6 interval and endpoints. It cannot by itself repair the stage-yaw speed change at38s or the earlier change from a moving twist donor to a frozen-endpoint fade. Discrete source-key corners and finite-difference precision must be distinguished from introduced timing discontinuities. No static pose substitution, source geometry change or new native animation was accepted from these studies.
+
+Private evidence: `.agent/local/PerformancePlan_20261027/S09Replacement/Entry43Assessment/HandChainReview.json`, `SmoothHandOffsetReview.json` and `TimingStudy/`. Current full-performance movie, native assets, source clips and owner boards remain unchanged. RPT-20261021-01 remains open; no GPU, Unreal or Blender launch occurred. Source/core/documentation CI passed on PR97 head3c2726c520294f190d2363862c781857c5e25b1d; that is tool/document evidence, not performance acceptance.
+
+## Full motion before detail — 2026-10-27T07:19Z
+
+Owner direction: complete the intended performance before micro contact/skin/physics.
+This is a priority change, not acceptance of unresolved defects. RPT-20261021-01 remains open.
+
+- Review: `SourceAssets/PerformancePlan_20261027/FullMotionReview/Review.html`.
+- Movie: `FullPerformance_24fps.mp4`,88seconds/24fps/2112frames, decoded successfully;
+  SHA-256 `529a65e7b00e9414fab65f3dd54397d22a9cb780ea242be915f7d217c2f005de`.
+- Pose samples SHA-256 `ca59f1593795846b29acea2117479e3ea211372e7f2f8194ceae921ecf68ba2c`.
+- Private recipe/evidence: `.agent/local/PerformancePlan_20261027/S09Replacement/CombinedCatch/full_motion.py`,
+  `timing.py`, `TimingReceipt.json` and `FullMotionMacroReview.json`;
+  output `Receipt.json` binds recipe/source/output identities. These are local experiments.
+- Changes: moving twist/catch donors overlap; source clock and stage yaw ease through the
+  catch. The33.5–35s **proxy** proportion blend avoids an abrupt scale cut; no native mesh,
+  source clip or character geometry is edited. The44–88s plan retains inversion,2.5descending
+  turns, release and return. No rejected finger-calibration candidate is used.
+- Bounded macro review: no sustained frozen-body interval in2112samples; each0.25s window
+  changes at least one body point by6.6cm. This does not prove natural timing. Joint-center
+  framing stays within both fixed views. It is not a full skin/framing assertion.
+- **Still open:** exact88→0 resets pelvis0.788m/head0.685m/worst joint0.934m, so playback is
+  intentionally non-looping. The71.0–71.5s return has a paused pelvis with a fast arm sweep;
+  judge the moving preview before changing it. Native retargeting, actual skin/contact,
+  physics and owner acceptance remain unverified. Finger candidates are frozen/rejected,
+  not silently promoted because the priority changed.
+- Sources, original80s/88s studies and owner MotionBoard proposals are preserved. No
+  Unreal/Blender/GPU launch, native asset write, portal restart or owner-board write.
+
+Next lead work is whole-performance flow and the finish/start connection; detailed contact
+and physics follow, then Joy/Astra. Documentation-only publication requires the documentation
+gate; no C++/Unreal build is applicable to this private CPU preview/evidence update.
+
+## Full-flow candidate — 2026-10-27T07:42Z
+
+The owner prioritizes a complete intended performance before micro detail.
+The new private review is `SourceAssets/PerformancePlan_20261027/FullFlowReview/Review.html`.
+It is an articulated CPU proxy, not a native Vexa action or a game build.
+
+- Full movie:88seconds/24fps/2112frames; SHA-256
+  `12860736a48f94f1dfe17062fb28b35f7dee42f1e8549977dff82dc5f6553c5f`.
+- Pose samples SHA-256
+  `e1bfdc7630260dd3927610ad3222bcbc2118f0f2098bdbed963b45e6bdfac074`.
+- Separate finish/start movie:8seconds/192frames; SHA-256
+  `55a24ff3761d0c003609c1a968a0c82bc775263b83bc575cee3b9613f25521db`.
+- Both movies decode; the full review offers continuous looping and speed choices.
+  Original sources and both earlier studies are hash-unchanged. Sampled positions
+  outside0–0.5,70.5–71.5 and84–88seconds match the previous full-rate preview exactly.
+- Return overlap uses moving outgoing/incoming donors and connected root travel.
+  Maximum24Hz joint step in the affected return changes from0.495m to0.126m.
+  This is a proxy comparison, not a universal animation-quality threshold.
+- Finish connects a reverse-G1 gather through a separately blended torso frame
+  and local limb motion. A rejected world-direction blend created an abrupt leg
+  swing; the body-frame blend reduces its largest24Hz step from about0.414m to0.167m.
+  The final four seconds are newly authored, not preserved G2 choreography.
+- Independent CPU review: quaternion/frame reconstruction error below1.1e-15;
+  exact88→0 joint-position error3.24e-16m and sampled velocity mismatch2.86e-5m/s.
+  The0.5s and84s joins have no material introduced velocity jump.
+  The86s velocity corner originates in reversed G1 source phase0.3, not the fade
+  ending; it remains a normal-speed playback watchpoint.
+- Lead and independent reviewer inspected the changed-phrase stills: the return
+  progresses and the inverted finish unfolds through diagonal to upright.
+  Stills and numerical continuity do not establish normal-speed artistic acceptance.
+
+`Receipt.json` binds source/recipe/output identities. Reproducible clocks,
+blend strategy and rejected approaches are recorded in
+[the performance study](../production/G1_G2_PERFORMANCE_STUDY.md#full-flow-candidate--2026-10-27t0742z).
+Private recipes remain under
+`.agent/local/PerformancePlan_20261027/S09Replacement/CombinedCatch`.
+
+RPT-20261021-01 remains open: actual-rig adaptation, skin, contact/support, joint
+limits, chamber clearance, native motion, physics and owner acceptance are not
+established. Micro work stays deferred. No Unreal/Blender/GPU launch, native asset,
+owner-board write or portal restart. Documentation/body gates apply to this
+four-document publication; no C++ or native build applies.
+
+## Whole-rig CPU motion — 2026-10-27T08:26Z
+
+Status: full-performance draft, not native adoption or owner acceptance.
+Private review: `SourceAssets/PerformancePlan_20261027/FullRigFlowReview/Review.html`.
+
+| Artifact | Identity and coverage |
+| --- | --- |
+| FullRigMotion_Continuous.npz | `ce090dd21dc8660e22e3d593b9af0977fef14918471894898e0189022d1ac702`;2113 samples/95bones/24Hz, including88s endpoint |
+| Vexa_RigMotion_24fps.mp4 | `c7423376c4d451c8d3ff26cf241727e7a689ffd0b62965e5697be7176a98dd15`;88s/2112 frames, actual rig positions with simplified anatomy |
+| Vexa_FullRoutine_2fps.mp4 | `2cf27fb10e3e4bced2a2c138eaeb56359fce58828bc2ba2805bc9766d13f38d2`;88s/176 frames, original geometry and full skin weights |
+
+Both movies decode. No GPU, Unreal or Blender process was launched. Four private
+Python recipe files compile. All seven protected source hashes pass, including
+original shoulder blend51c25e24, rest FBX243a8f3e and earlier full-flow movie12860736.
+
+The raw FBX hierarchy has95 unique bones; five skin instances are not five rigs.
+All28,261 vertices and up to10 skin influences are retained; rest surface replay
+error is4.324µm. Across2113 samples, max rotation orthogonality error is9.92e-8,
+determinants range0.999999898–1.000000112, fixed local translations differ by at
+most0.290µm, and the exact88→0 matrix endpoint error is0.
+
+Independent review rejected two macro transfer failures rather than accepting
+finite matrices as motion quality. A collapsed21s proxy direction produced a
+161.43-degree arm step; a coherent20.8–21.8s local-arm connector reduces it to
+17.27degrees while preserving body/legs. A near-antiparallel69s minimum-swing
+frame produced171.87degrees; donor-transverse framing reduces it to19.61degrees.
+The short direction-only/fast-fade controls were rejected. Removing wrist aim
+toward the articulating middle-finger marker preserves donor wrist locals.
+
+Independent readback confirms exact repair endpoints, unchanged protected body
+and legs throughout, unchanged non-wrist bones outside repair windows, and wrist/
+finger local preservation within the connector to8.52e-14. This does not accept
+the remaining94-degree wrist step at44.25s or rapid15.83/16.25s sections.
+
+Lead inspected opposing30s/53s mesh stills: the flip and inverted folded descent
+are present without a gross mesh explosion. Full24fps motion uses simplified
+anatomy;2fps flat-shaded mesh captures cannot establish final smoothness, normals,
+garment quality, support or hidden intersections. Original96 G1 time-indexed
+corrective curves are intentionally not replayed on the new clock. Exact saved
+departure replay, full-rate skin, contact/physics and native/owner checks remain
+open under RPT-20261021-01. Earlier reviews and source assets are preserved.
+
+Private recipe and evidence: `FullRigTransfer/transfer.py`, `target.py`,
+`verify_motion.py`, `render_motion.py`, `Donors/RestReferenceComparison.json`
+and `MotionVerification.json`. Their full source identities, failed controls
+and reproduction are documented in the performance study. This follow-up
+publishes documentation only; C++/Unreal build and game tests do not apply.
+
+## Full-mesh performance playback — 2026-10-27T09:00Z
+
+Current private review:
+`SourceAssets/PerformancePlan_20261027/FullMeshMotionReview_Framed/Review.html`.
+Movie SHA-256 `9fd319e73aabf1c7aed4539a35d64145843aaad8f96b961d5399b0a759d22aef`;
+motion `7e958903d2155b4dc589d9710ed1851c011293dbd2064cfb3971351f194a8b7a`.
+Both views show the original28,261-vertex/95-bone/full-weight mesh at24fps,
+2112decoded frames/88seconds, with neutral CPU shading.
+
+Two moving donor/body-frame overlaps replace frozen Cartesian transitions
+at15.5–16.5s and20.5–22s. Exactly58interior samples change; boundaries and every
+outside matrix match ce090dd2, and88→0 matrices are exact. The protected sources
+remain unchanged. Proper rotations and fixed local translations pass within
+0.290µm. Independent full-timeline analysis found no new catastrophic body collapse
+or whole-body freeze lasting0.5s; this is a bounded screen, not motion acceptance.
+Target pelvis/calf peak reductions are29.39→12.27 and48.22→11.94degrees/frame.
+
+The initial full-mesh movie07e432dc was rejected for side-view cropping on17frames.
+The corrected renderer a26b81e9 shifts only that camera center36px. Independent
+projection of all28,261vertices at2113times from both angles passes, with minimum
+front/side margins30.105/13.690px. The lead inspected the changed-phrase contact
+sheet and corrected worst-frame image. The final movie fully decodes.
+
+Private GLB `c6d04df76a179522332f8b03dbca7c7d7061706276dcb9b44097d57946105ccc`
+preserves topology/binds and all up-to10 positive influences. CPU decode of97frames
+stays within0.170µm per vertex; a separate coordinate/scene audit stays within
+0.158µm. Original sources and prior proof files remain unchanged. Native importer
+support for every influence set is untested; UVs, original textures/split normals,
+time-indexed corrective shapes and physics are absent from this neutral draft.
+
+Private recipes/evidence: `FullRigTransfer/assemble_body_flow.py`,
+`BodyFlowVerification.json`, `full_mesh_video.py`, `MacroAudit/` and
+`NativeTransfer/README.md`. Nine private Python recipes parse successfully.
+No C++/native source changed; Unreal build/game checks are inapplicable.
+Documentation/body gates apply to this four-document follow-up.
+RPT-20261021-01 remains open for whole-flow quality, then contact/skin/physics,
+native playback and owner acceptance. No native/GPU/owner-board operation occurred.
+
+## Native replay and routine feedback — 2026-10-27T09:40Z
+
+- Source motion: `FullRigMotion_BodyFlow.npz`, SHA-256
+  `7e958903d2155b4dc589d9710ed1851c011293dbd2064cfb3971351f194a8b7a`.
+  Native mesh/motion FBX: `cf734f77b339f140300277e06f7f2f26e03edb02ba2768f67f2f66d48a4906fa`.
+- Private workbench/map: `.agent/local/CharacterBatch_20261021/WorkbenchNative/CharacterWorkbench.uproject`,
+  `/Game/SpaceSurvival/Licensed/FullBodyFlowLive_20261027/L_FullFlowLive`.
+  No main station or shipping character adoption.
+- `FullRigTransfer/NativeTransfer/NativeLiveComparison.json` compares 233 native
+  samples spanning two 88-second wraps against the source. Pelvis, head and
+  right-hand position RMS error is 0.166 cm; maximum is 0.466 cm using the
+  explicit source-metres to Unreal-centimetres axis conversion. Half-frame
+  offsets are worse. This is sampled bone-motion parity, not all-surface parity.
+- Import retained 96 bones including the added root. Original source has up
+  to ten skin influences; the workbench is configured for twelve/unlimited.
+  UV warnings remain because this neutral export has no UVs. Original textures,
+  time-indexed corrective shapes and physics were not restored or accepted.
+- CPU all-skin chamber envelope audit covers 2,113 poses at placement
+  `(0,0,850)` cm, radius 348 cm, floor 615 cm and ceiling 1,775 cm.
+  Minimum room clearances are 83.46 cm radial, 327.67 cm below and 525.00 cm above.
+  Pole/skin overlaps remain detected; room containment does not clear pole contact.
+  Evidence: `NativeTransfer/StageEnvelope.json`.
+- The actual observatory map was staged for a later review but was **not shown
+  or visually accepted**. The initial proposed camera was rejected for deck
+  occlusion; replacement sightlines remain a CPU check.
+- Owner feedback: overall greatly improved; unsupported inversion and
+  unmotivated floating returns remain open under RPT-20261021-01.
+  Preserve good sections and fix these connections before exact grip/skin work.
+- The review harness encountered an invalid skeletal component after PIE ended;
+  that shutdown error is retained, not erased. Native review auto-closed at the
+  GPU deadline; no Unreal process remained at the 09:27 UTC check. Subsequent
+  work is CPU-only. A future harness needs an invalid-component guard.
+
+Evidence lives privately under
+`.agent/local/PerformancePlan_20261027/FullRigTransfer/NativeTransfer`;
+the immutable `NativeLiveComparisonSource.json` is the comparison input.
+No C++ build, packaged release or owner acceptance is claimed.
+
+## Routine causality CPU review — 2026-10-27T10:30Z
+
+- Isolated combined motion `8c1f80263e75631e1f73adb3958992303377c17190cf26fcf4d80bce2aa3cc68` combines early route `efe47398`, inversion `da471833` and late return `86c297c1`; input hashes are verified in `RoutineCausality/FullRoutine_CausalityCandidate.assembly.json`.
+- `FullRoutine_Checks.json`:2113 finite poses/88s, proper rotations, local offsets within0.547 micrometers, exact outside20.25–61.5/62–75s and exact loop. All full-weight mesh samples fit the3.48m side envelope to numerical tolerance, with camera margins43.70/83.99px. No geometry/weight edit.
+- Independent `LateReturn/FinalCombinedMacroAudit.json` (`9702d128`) verifies original hierarchy, source hashes, actual segment lengths within0.000463mm and no new isolated limb flip/reset at the requested joins. Added48.04s/73.17s arm cadence and inherited wrist/toe rotations remain review points, not hidden passes.
+- New full movie `0eecf848b5f06ad1ce3e4a75e8c58870ce18f36a1d7ff57680c14ef3243bb5ae`:2112 decoded frames/88.000s/24fps, no decode error, duplicate or dropped frame. Two fixed opposing views and explicit schematic chamber framing; lead sampled image review is not owner acceptance.
+- Review:`SourceAssets/PerformancePlan_20261027/RoutineCausalityReview/Review.html`. Earlier reviews remain intact. No Unreal/GPU launch, production asset adoption, owner-board write, texture/corrective/physics change or game build. New candidate native playback and lit actual chamber remain unverified; prior233sample native evidence belongs only to older motion `7e958903`.
+- Scope of this follow-up is documentation/evidence only. Local and assembled documentation checks are required before publication; native build/test is not applicable to these tracked changes. RPT-20261021-01 remains OPEN/AI.

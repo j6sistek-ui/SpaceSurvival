@@ -5,6 +5,11 @@
 **October 29 wave controls supersede the September 22 preset during waves:** forward cruise is automatic. Left stick or mouse moves sideways/up/down; A/D and R/F provide keyboard drift. Outward movement gradually slows in the outer part of the play area; inward movement keeps full response. The camera lets the ship move across the screen and gently follows near its edges. There are no visible walls or route markers. RT or W/S adjusts cruise power; LT/Space slows without stopping forward cruise; B/Shift boosts; bumpers dash/roll; A/left click fires. Right-stick free-look remains available in Free Flight and station maneuvering. Those modes retain zero-throttle coasting and nose steering.
 
 Editor review: launch the canonical project, select Waves at the cockpit, leave the station and test both lateral axes, release, edge resistance and both bumpers. Compare Free Flight separately. The source PR and rebuilt local Editor do not update the packaged/itch build. [Wave-flight evidence](validation/2026-10-29-wave-flight.md).
+**MotionBoard local authoring:** with Docker Desktop running, use
+`docker compose -f Tools/MotionBoard/compose.yaml up --build -d`, then open
+`http://127.0.0.1:8769`. The browser planner needs private preview/vendor libraries;
+it does not launch Unreal or create a game build. [Setup, storage and tests](../Tools/MotionBoard/README.md),
+[coverage and verification limits](CONTENT_PIPELINE.md#motionboard-local-animation-planner--october-27).
 
 **Open the new entertainment layout:** In the canonical C-drive project, use the Content Browser to open `/Game/SpaceSurvival/Licensed/EntertainmentObservatory/L_EntertainmentObservatory`. Play in this map uses the First Person template for walking review; it is separate from the normal game's startup level. Ground floor contains the copied crew/performance lounge, the middle is enclosed, and the third floor has the panoramic windows. All construction is editable by actor/folder. Do not rerun its generation recipe over your edits. [Review images and verification](validation/2026-10-23-entertainment-observatory.md); original station/workshop and packaged build remain unchanged.
 

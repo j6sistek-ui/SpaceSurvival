@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motion Board · SpaceSurvival</title>
+<link rel="stylesheet" href="/style.css">
+<script type="importmap">{"imports":{"three":"/vendor/build/three.module.js","three/addons/":"/vendor/examples/jsm/"}}</script>
+</head>
+<body>
+<header><div><span class="eyebrow">SPACESURVIVAL / CHOREOGRAPHY</span><h1>Motion Board</h1></div>
+<div class="header-actions"><span id="saveStatus">Opening…</span><button id="reloadLibraries">Reload libraries</button><button id="loadFiles">＋ Add GLB / FBX</button><button id="loadFolder">Add folder</button><button id="export" class="primary">Export proposal ↗</button></div></header>
+<main>
+<section class="library"><div class="section-heading"><div><h2>Your moves</h2><p>Watch a card. Drag a move into a numbered slot.</p></div><span id="count" class="badge">0 clips</span></div>
+<div class="filters"><input id="search" type="search" placeholder="Find a move…" aria-label="Find an animation"><select id="package" aria-label="Animation package"><option value="all">All packages</option></select></div>
+<div class="filter-bottom"><label><input id="showBasics" type="checkbox"> Show basic locomotion</label><label class="card-speed">All cards <select id="cardSpeed" aria-label="All card preview speed" title="Changes card previews only; your sequence timings stay unchanged"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><button id="cardMotion" class="quiet">Pause card previews</button></div>
+<div id="libraryStatus" class="subtle">Reading animation libraries…</div><div id="cards" class="cards"></div></section>
+<section class="work"><div class="viewer-heading"><div><span class="eyebrow" id="previewMode">CLIP PREVIEW</span><h2 id="previewTitle">Choose a move</h2></div><button id="resetView" class="quiet">Reset view</button></div>
+<div id="stage"><div id="stageHint">Drag to rotate · scroll to zoom</div><div id="stageMessage">Loading your animation library…</div></div>
+<div class="transport"><button id="play" class="primary" disabled>▶ Play clip</button><button id="playSequence" disabled>▶ Play sequence</button><button id="restart" aria-label="Restart">↶</button><input id="scrub" aria-label="Preview time" type="range" min="0" max="1" step="0.001" value="0"><output id="clock">0.00 / 0.00 s</output></div>
+<div id="editor" class="editor"><div class="editor-title"><h3 id="editTitle">Trim a move</h3><span id="speedLabel" class="badge">1.00×</span></div>
+<div class="trim-track"><div id="trimFill"></div><input id="trimIn" aria-label="Trim start handle" type="range" min="0" max="1" step="0.01" value="0"><input id="trimOut" aria-label="Trim end handle" type="range" min="0" max="1" step="0.01" value="1"></div>
+<div class="timing-fields"><label>Playback mode<select id="playbackMode"><option value="stretch">Stretch to duration</option><option value="repeat-duration">Repeat for seconds</option><option value="repeat-count">Repeat count</option></select></label><label id="repeatSpeedField" hidden>Playback speed <span>× source rate</span><input id="playbackSpeed" type="number" min="0.05" max="8" step="0.05" value="1"></label><label id="repeatCountField" hidden>Repeat count<input id="repeatCount" type="number" min="0.01" max="10000" step="1" value="1"></label></div>
+<div class="edit-fields"><label>Start <span>source seconds</span><input id="start" type="number" min="0" step="0.05" value="0"></label><label>End <span>source seconds</span><input id="end" type="number" min="0" step="0.05" value="1"></label><label><span id="durationCaption">Play for</span> <span>timeline seconds</span><input id="duration" type="number" min="0.05" max="3600" step="0.1" value="1"></label><label class="reverse"><input id="reverse" type="checkbox"> Reverse</label></div>
+<p id="timingSummary" class="subtle" aria-live="polite"></p>
+<div class="edit-footer"><span id="editingHint">Choose a clip or a slot to trim it.</span><button id="addSelected" disabled>＋ Add to next slot</button></div>
+<textarea id="note" rows="2" placeholder="Your direction: float toward glass, push off, catch the pole…" aria-label="Directions for this move"></textarea></div>
+</section></main>
+<section class="sequence"><div class="section-heading"><div><h2>Your sequence <span id="total">0.0 seconds</span></h2><p>Eight slots. Drag to reorder. Click a slot to trim it.</p></div><div><button id="undo" disabled>Undo</button><button id="addNote">＋ Transition note</button></div></div><div id="slots" class="slots"></div><p class="footnote">This board shows your chosen excerpts and timing. Wall contacts, zero-G travel, pole catches and smooth transitions are directions for the animation pass.</p></section>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="files" accept=".glb,.fbx" multiple hidden><input type="file" id="folder" webkitdirectory multiple hidden>
+<script type="module" src="/app.js"></script>
+</body></html>
