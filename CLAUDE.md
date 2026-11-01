@@ -18,7 +18,7 @@ The project-wide history stays in `.agent/CONTINUITY.md`.
 
 | Topic | File |
 |---|---|
-| Vexa zero-G pole routine, its review level, club podium dancers | `D:/Claude_Work/VEXA_DANCE_CONTINUITY.md` |
+| All character animation: clips, retargets, rigs, skinning, contact, motion clean-up (Vexa, dancers, NPCs, hero) — current state plus lessons that carry across characters | `D:/Claude_Work/ANIMATION_CONTINUITY.md` |
 
 ## This machine
 
