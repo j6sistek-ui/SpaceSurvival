@@ -8,6 +8,18 @@ for *how the machine works*. Every fact below was verified by running it. Where 
 command, this file is describing this machine and AGENTS.md is describing the intended workflow — both
 statements are noted together rather than one quietly overwriting the other.
 
+## Topic continuity files
+
+Some work is tracked in its own **live continuity file on this machine**: one copy on D:, outside every
+worktree, so parallel chats never fork it. Read the file before touching its topic and update it before you
+finish. Rows read WORKS / BROKEN / REGRESSED (with why) / TRIED-FAILED / OWNER CALL, each with a date, how it
+was verified and an evidence path. **These files are local by design: updating one never needs a commit or a PR.**
+The project-wide history stays in `.agent/CONTINUITY.md`.
+
+| Topic | File |
+|---|---|
+| All character animation: clips, retargets, rigs, skinning, contact, motion clean-up (Vexa, dancers, NPCs, hero) — current state plus lessons that carry across characters | `D:/Claude_Work/ANIMATION_CONTINUITY.md` |
+
 ## This machine
 
 | Tool | State |
