@@ -74,6 +74,10 @@ proven on one character is expected to need changes on the next. When it does, a
 | Height map converted to a normal map at the source's strength | Allison | Close-up frames, before and after | Any other bump-mapped skin |
 | Hair chains recovered from the pack original by vertex order | Freya | Edge-length check; hair hangs and stays attached in frame sheets | Any hair whose original has no bones (Allison's ponytail, Femme2's hair): chains must be generated, and that method is not written yet |
 | Sphere colliders fitted to the clothed body | Freya | No starting penetration; frame sheets | A flat back (the single sphere lets back hair slide off: a box is the next thing to try) |
+| Character-only key and fill light on channel 2 | Freya (DJ booth) | Same-camera frames against the owner's render; booth unchanged around her | A walking character (the light would have to follow her), a second lit character sharing channel 2 |
+| Glossy translucent material on the clear eye shell | Freya | Close-up frame: iris and pupil read | Allison (her shells were dropped at export), Femme2 |
+| Prop on a bone by a bone-relative transform from the reference pose | Freya's headphones | Frames from four cameras, in play | A held prop, a prop on a scale-100 skeleton (expected to fail) |
+| Prop set rebuilt from a material spec, hologram motion in the material | PHASE console and holograms | Frames; two moments compared for motion | Audio-driven motion, collision, the pedestal |
 | Hair physics asset, starting values in section 4 | Freya | Bone tracks and three-camera frame sheets; owner: "better" | Walking characters (Freya stands at a console), short hair, ears and tails |
 
 ## 1. Working method
@@ -151,6 +155,29 @@ proven on one character is expected to need changes on the next. When it does, a
   *(2026-11-20, Allison's skin.)*
 - Normal maps from Blender are OpenGL; flip green for Unreal.
 - Opacity can come from the base colour's own alpha or from a separate grey map. Read which from the graph.
+- A clear eye shell (cornea, eye moisture) is not hidden and not dropped. It gets a glossy, almost clear
+  translucent material, or the eyes read as flat discs. *(2026-11-20, Freya: her shell had alpha 0.02 and was
+  imported invisible.)*
+
+**When she looks worse in game than in her source render**
+
+Check the light on her before touching her materials.
+
+- A scene lit only by saturated colour (a club in magenta and violet) carries no green, so skin, lips, eyes
+  and fair hair all collapse to one waxy tint. A render looks better mostly because it has a neutral key.
+- Give a featured character her own light on a character-only lighting channel: her meshes go on channels
+  0 + 2, and a warm-neutral key from her front and above plus a weak cool fill are on channel 2 only. The
+  room, the props and the crowd are not touched, and the scene's coloured light stays as her rim.
+- Set the intensity against the scene's exposure, starting low. *(2026-11-20, Freya at the DJ booth: 6000 cd
+  burnt her white, 260 washed her out, 50 cd at two metres is what was saved.)*
+- Only then look at eyes (the shell above), skin shading and hair shading.
+
+**Props that ride a character** (headphones, a hat, a held object)
+
+- Attach the prop to the bone, not to the actor. Turn the fitted rest placement into a bone-relative
+  transform with the bone's reference transform. This needs unit-scale bones.
+- A prop set delivered with a material spec and no textures is rebuilt as a few parameter masters with one
+  instance per source material, matched to the mesh slots by the material's own name.
 
 **Clothing switch (18+)**
 
@@ -294,6 +321,11 @@ Moving any of these tools into the repository is the owner's decision.
 Newest first. One entry per change: what changed, which character and result caused it, and what it means
 for characters already done.
 
+- 2026-11-20: added "When she looks worse in game than in her source render" (light before materials, a
+  character-only key and fill), the clear eye shell rule, and "Props that ride a character". Cause: Freya at
+  the DJ booth looked far worse than the owner's render; a neutral 50 cd key on her alone closed most of
+  the gap, and her headphones and the PHASE console came in the same night. Trigger 3 (steps that were
+  not written). For characters already done: Allison's eyes have the same missing shell; nothing else.
 - 2026-11-20: the pull-request documentation check now requires a **Method changes** line in every ready
   pull request (owner: "yes" to enforcing it). Cause: a written rule alone depends on each assistant
   following it. Nothing to redo on any character.
