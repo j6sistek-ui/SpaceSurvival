@@ -438,9 +438,12 @@ std::vector<Play> Director::Update(double now, const Vec3 &viewer)
 void Director::AssignTiers(const Vec3 &viewer)
 {
     std::vector<int> order(patrons.size());
+    std::vector<double> distances(patrons.size());
     std::iota(order.begin(), order.end(), 0);
-    std::stable_sort(order.begin(), order.end(), [&](int a, int b)
-                     { return Distance(patrons[a].position, viewer) < Distance(patrons[b].position, viewer); });
+    for (std::size_t i = 0; i < patrons.size(); ++i)
+        distances[i] = Distance(patrons[i].position, viewer);
+    auto closer = [&](int a, int b) { return distances[a] < distances[b]; };
+    std::stable_sort(order.begin(), order.end(), closer);
     int heroes = 0;
     for (int index : order)
     {
