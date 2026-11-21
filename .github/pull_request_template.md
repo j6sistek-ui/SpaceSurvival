@@ -21,6 +21,7 @@ Do not touch every document cosmetically. Explain unchanged items; fix conflicti
 - Open: <Exact document, screenshot or launcher; build/receipt identity, or state that a new build is pending.>
 - Check: <One to three specific observations or decisions; relevant issue/PT IDs. For docs-only work, say what to read.>
 - Still open: <Remaining limitations, next action and owner; do not imply all remaining work belongs to the owner.>
+- Method changes: <None or Changed — for character, animation or physics work: what changed in docs/AI_WORK_INSTRUCTIONS.md, which character and result caused it, and what it means for characters already done. Otherwise None and why it does not apply.>
 
 ## Validation
 <Commands and actual results; explain checks not applicable or blocked. Separate automated/scripted evidence from natural play and owner acceptance.>
