@@ -1,5 +1,12 @@
 # Open work and owner review
 
+## RPT-20261120-01 — living club crowd (patron director)
+
+- **Owner request, November20:** the club must feel alive like GTA VI's clubs: a defined patron population doing visibly purposeful activities (dancing, bar, lounge, groups, walking), randomized within ranges so no two NPCs clone each other and no dance repeats, with props matching poses and density that holds frame rate. The owner wants the complete plan visible, not partial work. Defaults approved: Normal about 24 patrons plus 4 fixed staff; performing dancers are not counted. [Plan and setup](production/CLUB_AMBIENCE_PLAN.md).
+- **Current:** phase 3 first code. Portable rules `SS::Club::Director` (mix, spots, no-repeat, no-sync, activity timers, travel, detail tiers, seeded replay) pass strict and ASan/UBSan builds over 24 simulated 30-minute nights. Unreal `ASSClubActivitySpot`/`FSSClubClipRow`/`ASSClubCrowdDirector` drive existing ambient patrons via `bAnimationManagedExternally`; **not yet compiled in Unreal**.
+- **Open/check:** lead builds Editor (`Scripts/Build.ps1 -Target Editor`) and fixes any compile errors; then a starter clip table (6–10 reviewed clips per activity), spots in `L_FullVexaChamber` and a director with the Normal crowd for owner Play.
+- **Still open:** straight-line walking without pathfinding; props/seat fitting (phase 4, reuse `ASSBarTable` contacts); arrivals/departures and staff hand-offs (phase 5); profile, LOD/head-fill tiers and vertex-animated Mid/Far crowds without the `ss.StationCrewTrim` hide (phase 6); owner acceptance against the plan's "alive" checklist.
+
 ## RPT-20261030-01 — club bouncer cover gate and wardrobe wear
 
 - **Owner request, October30:** the deck-1 bouncer at the club stair blocks the club until the player pays cover through a menu; the payment confirmation is a demo (no credits are taken) and the final access rule is undecided. The deck-1 wardrobe must be a real character selection: equip and save, not only preview a hologram.
