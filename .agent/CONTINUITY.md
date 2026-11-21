@@ -1,5 +1,6 @@
 # SpaceSurvival continuity
 
+- 2026-11-21T00:30Z [USER] [CODE] [TOOL] RPT-20261120-01: the club crowd Unreal layer compiled clean on the first UE 5.8 Editor build (isolated worktree X:\Claude_Work\ClubCrowd\SpaceSurvival with junctions to the main checkout's plugins and licensed content; 0 errors). AdaptivePathfindingSystem 2.06 is engine-installed, enabled and loads on 5.8 (BuildId matches). Next: owner-approved starter clip table, then spots/director in L_ClubCrowdTest (copy of L_FullVexaChamber) and offscreen captures.
 - 2026-11-20T19:40Z [USER] [CODE] [TOOL] RPT-20261120-01: owner approved the living club crowd plan (docs/production/CLUB_AMBIENCE_PLAN.md; dancers excluded from patron count). Added portable `SS::Club::Director` rules plus tests (24 nights strict+sanitized pass on Linux g++) and an unbuilt Unreal director/spot/clip-row layer. Next: Editor build, starter clip table, spots and owner Play.
 
 - 2026-10-30T17:45Z [CODE] [TOOL] RPT-20261030-01: club cover gate (`ASSClubCoverGate`, `PayCover` menu, demo admission only) and wardrobe F/Y wear-and-save; sandbox game mode now applies the saved/preferred hero in `StartPlay`, after walker `BeginPlay`. Outpost 4/4 clean; club map wired by the external club builder with a 40 cm gate after capsule sweeps.

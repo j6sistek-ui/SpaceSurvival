@@ -29,7 +29,7 @@ copy of the decisions and the setup steps; `docs/KNOWN_ISSUES.md` owns status.
 | --- | --- | --- |
 | Rules: mix, spots, clip choice, no-repeat, no-sync, timers, travel, tiers, seed | `Source/SpaceSurvival/Domain/ClubCrowd.h/.cpp` | Portable C++17, unit tested |
 | Tests: 24 simulated 30-minute nights plus edge cases | `Tests/ClubCrowdTests.cpp` | Pass under strict and ASan/UBSan builds (Linux g++) |
-| Unreal layer: `ASSClubActivitySpot`, `FSSClubClipRow`, `ASSClubCrowdDirector` | `Source/SpaceSurvival/Public|Private/SSClubCrowd.*` | **Not yet compiled in Unreal** |
+| Unreal layer: `ASSClubActivitySpot`, `FSSClubClipRow`, `ASSClubCrowdDirector` | `Source/SpaceSurvival/Public|Private/SSClubCrowd.*` | Compiles in the UE 5.8 Editor build (2026-11-21, 0 errors); not yet run in a level |
 
 The director drives existing `ASSOutpostAmbientActor` patrons by setting `bAnimationManagedExternally`, so their
 own route/gesture/chatter loop stops for patrons it owns. Staff and performers are never added to it.
@@ -38,7 +38,7 @@ own route/gesture/chatter loop stops for patrons it owns. Staff and performers a
 
 1. **Clip table:** create a Data Table with row type `SSClubClipRow`. Add each reviewed clip with its activity,
    posture, prop, style and loop flag. Start with 6–10 good clips per activity for the club skeletons.
-2. **Spots:** place `SSClubActivitySpot` actors. Set activity, posture and capacity (group tables 3–4), with the
+2. **Spots:** place `SSClubActivitySpot` actors (first in `L_ClubCrowdTest`, a copy of `L_FullVexaChamber`, so the live club map stays untouched until the crowd is accepted). Set activity, posture and capacity (group tables 3–4), with the
    arrow facing where the patron should look. Measure `SeatHeight` on seats.
 3. **Director:** place one `SSClubCrowdDirector`, assign the clip table, and add the patron ambient actors with a
    dance style each (1–3). Leave `Spots` empty to use every spot in the level. Leave `Seed` at 0 for a new night each
