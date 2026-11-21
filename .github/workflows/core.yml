@@ -18,6 +18,12 @@ jobs:
         run: |
           g++ -std=c++17 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/SurvivalCore.cpp Tests/CoreTests.cpp -o /tmp/core-sanitized
           /tmp/core-sanitized
+      - name: Club crowd rules (strict and sanitized)
+        run: |
+          g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/ClubCrowd.cpp Tests/ClubCrowdTests.cpp -o /tmp/club-tests
+          /tmp/club-tests
+          g++ -std=c++17 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/ClubCrowd.cpp Tests/ClubCrowdTests.cpp -o /tmp/club-sanitized
+          /tmp/club-sanitized
   source:
     runs-on: ubuntu-latest
     steps:

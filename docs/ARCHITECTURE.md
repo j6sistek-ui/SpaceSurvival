@@ -38,6 +38,8 @@ Staff breaks may select `BarShotAnimation` per character; a missing override fal
 
 `ASSBarCrew` specializes ambient NPC actions while retaining the existing GameMode keyword/action and spatial voice/caption channel. `ASSBarTable` supplies authored seat/drink contacts; private Blueprints own clips, grips and routes. Native body post-process leads clothing skinning. Service state, collision checks and reservation cleanup stay in C++; no new inventory or economy system. Existing ClosePanel and TriggerNpcAction methods are exposed to Blueprint for scripted integration review without adding a second interaction implementation. [Behavior and limits](production/WAITRESS_BAR_SERVICE.md).
 
+`ASSClubCrowdDirector` (RPT-20261120-01) runs the club's random patron crowd. The engine-independent `SS::Club::Director` (`Domain/ClubCrowd.h`) decides activity mix, spot use, clip choice (no repeats, no neighbours in step), timing and a camera-distance detail tier; the actor applies those decisions to `ASSOutpostAmbientActor` patrons it owns through `bAnimationManagedExternally`, using `ASSClubActivitySpot` placements and an `FSSClubClipRow` data table. Staff and performers stay on their own systems.
+
 ## Cryo presentation interaction — October 22
 
 The owner-requested four-second hypercooling action lives in the small
