@@ -24,6 +24,7 @@ def valid_body():
 - Open: README.md and the local packaged Windows launcher.
 - Check: Review the updated documentation and follow the first playtest session.
 - Still open: Physical controller testing and the complete natural ten wave run.
+- Method changes: None — no character, animation or physics work in this change.
 ## Validation
 Python documentation tests passed; no gameplay source changed in this PR.
 """
@@ -67,6 +68,29 @@ class DocumentationReviewTests(unittest.TestCase):
                 self.assertTrue(gate.validate_body(body))
                 self.assertTrue(gate.validate_body(valid_body().replace("- " + field + ":", "- " + field + ": TBD\n- Duplicate:")))
                 self.assertTrue(gate.validate_body(valid_body().replace("## Validation", f"- {field}: This duplicates the existing owner handoff.\n## Validation")))
+
+    def test_method_changes_statuses_pass(self):
+        line = "- Method changes: None — no character, animation or physics work in this change."
+        self.assertIn(line, valid_body())
+        changed = "- Method changes: Changed — AI_WORK_INSTRUCTIONS.md hair values differ for Allison; Freya needs nothing redone."
+        self.assertEqual(gate.validate_body(valid_body().replace(line, changed)), [])
+
+    def test_method_changes_required_unique_and_specific(self):
+        line = "- Method changes: None — no character, animation or physics work in this change."
+        missing = "\n".join(row for row in valid_body().splitlines() if not row.startswith("- Method changes:"))
+        self.assertTrue(gate.validate_body(missing))
+        # A second copy fails wherever it sits: inside the section or after it.
+        self.assertTrue(gate.validate_body(valid_body().replace(line, line + "\n" + line)))
+        self.assertTrue(gate.validate_body(valid_body() + "\n- Method changes: Changed — a second answer that contradicts the first."))
+        for value in ("None", "None — TBD", "None — no", "Changed — <what changed>", "Not applicable — no character work at all here.",
+                      "no character, animation or physics work in this change."):
+            with self.subTest(value=value):
+                self.assertTrue(gate.validate_body(valid_body().replace(line, "- Method changes: " + value)))
+
+    def test_method_changes_outside_owner_review_does_not_count(self):
+        line = "- Method changes: None — no character, animation or physics work in this change."
+        moved = valid_body().replace(line + "\n", "") + line + "\n"
+        self.assertTrue(gate.validate_body(moved))
 
     def test_missing_or_duplicate_sections_fail(self):
         for title in ("Owner review", "Validation"):

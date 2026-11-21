@@ -1,4 +1,4 @@
-"""Check that a ready PR explains documentation freshness and the owner handoff.
+"""Check that a ready PR explains documentation freshness, the owner handoff and any change of method.
 
 Checks the review record plus canonical checklist counts and navigation; prose accuracy still needs review.
 PR body text is parsed only as data; it is never evaluated or executed.
@@ -12,6 +12,11 @@ import sys
 
 LABELS = ("State", "Solutions", "Start/run", "System/evidence", "Storage/release", "Owner handoff")
 STATUSES = ("Updated", "Reviewed unchanged")
+OWNER_FIELDS = ("Open", "Check", "Still open")
+# The owner must never learn of a method shift afterwards (docs/AI_WORK_INSTRUCTIONS.md): every ready PR says
+# whether the standing method for characters, animation or physics changed, even when the answer is none.
+METHOD_FIELD = "Method changes"
+METHOD_STATUSES = ("None", "Changed")
 PLACEHOLDERS = re.compile(
     r"<[^>]+>|\{\{.*?\}\}|\b(?:TBD|TODO|FIXME)\b|"
     r"(?:files\s*/\s*reason|reason here|describe here|fill (?:this|in)|replace (?:this|with))",
@@ -80,10 +85,19 @@ def validate_body(body):
             errors.append(f"{label}: use Updated or Reviewed unchanged, an em dash, and a specific explanation.")
 
     owner = section(text, "Owner review", errors)
-    for field in ("Open", "Check", "Still open"):
+    for field in OWNER_FIELDS:
         values = re.findall(rf"^\s*-\s+{re.escape(field)}:\s*([^\n]*)$", owner, re.MULTILINE)
         if len(values) != 1 or not substantive(values[0]):
             errors.append(f"Owner review: require one substantive '{field}' field.")
+    # Count the field across the whole body, so a second copy outside the section cannot contradict it.
+    methods = re.findall(rf"^\s*-\s+{re.escape(METHOD_FIELD)}:\s*([^\n]*)$", text, re.MULTILINE)
+    in_section = re.findall(rf"^\s*-\s+{re.escape(METHOD_FIELD)}:\s*([^\n]*)$", owner, re.MULTILINE)
+    method = re.fullmatch(r"(None|Changed)\s+—\s+(.+)", in_section[0].strip()) if len(in_section) == 1 else None
+    if len(methods) != 1 or not method or not substantive(method.group(2)):
+        errors.append(
+            f"Owner review: require one '{METHOD_FIELD}' field reading None or Changed, an em dash, and a specific "
+            "explanation (docs/AI_WORK_INSTRUCTIONS.md)."
+        )
 
     validation = section(text, "Validation", errors)
     if not substantive(validation):

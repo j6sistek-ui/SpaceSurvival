@@ -12,6 +12,7 @@ Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains P
 
 - [Project state and where files live](docs/PROJECT_STATE.md): GitHub source, local assets/builds and the separately published itch version.
 - [Contributor and other-chat onboarding](docs/CONTRIBUTOR_ONBOARDING.md): repository paths, skills, high-value owned assets, documentation duties and mistakes to avoid.
+- [AI work instructions](docs/AI_WORK_INSTRUCTIONS.md): the standing method for character setup, animation and physics, so every assistant approaches that work the same way.
 - [Build and run](docs/BUILD_RUN.md): launch the packaged game or develop with the installed UE 5.8.3.
 - [MotionBoard animation planner](Tools/MotionBoard/README.md): local animated previews, eight-slot rough ordering and JSON proposals; private source libraries are required.
 - [Edit the station](docs/STATION_EDITING.md): arrange the current Wayfarer map and apartment while preserving gameplay boundaries.

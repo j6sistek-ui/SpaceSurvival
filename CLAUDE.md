@@ -160,6 +160,20 @@ a star — no scattering, no sky fill — so a dim hard key with black shadows i
 does not want true daylight.** The station's own `BayLight`, `120000 / 650^2 = 0.284` illuminance, is
 the reference here, not a lux figure. Terrestrial rules apply again only for a shot near a planet.
 
+## Characters, animation and physics: follow the AI work instructions
+
+[docs/AI_WORK_INSTRUCTIONS.md](docs/AI_WORK_INSTRUCTIONS.md) is the standing method for bringing a character
+in, working on animation, and setting up physics such as hair. Read it before that work, every time. It holds
+the rules that were paid for once already: export in true centimetres so bones have scale 1, measure a texture
+instead of trusting its name, recover hair bones from the pack's original before inventing any, never reimport
+in place across a unit change. **When the work proves a better method, change that file in the same piece of
+work** (owner direction, 2026-11-20).
+
+The owner must never learn of a method shift afterwards. Two fixed points, every time: say so in one line
+**before** doing something differently from that file, and end the closing report with a **Method changes**
+line (what changed, which character caused it, what it means for characters already done), even when the
+answer is "none". The file lists the seven triggers.
+
 ## Hard rules
 
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
@@ -223,8 +237,10 @@ ShipCore force solver on a simulating Chaos body (Phoenix).
 `Scripts/CheckPrDocumentation.py` validates structure, not truth. A body needs exactly one **checked**
 declaration for each of `State`, `Solutions`, `Start/run`, `System/evidence`, `Storage/release` and
 `Owner handoff`, each reading `Updated — <specific reason>` or `Reviewed unchanged — <specific reason>`;
-then a `## Owner review` section with one `Open:`, one `Check:` and one `Still open:`; then a substantive
-`## Validation` section.
+then a `## Owner review` section with one `Open:`, one `Check:`, one `Still open:` and one
+`Method changes:` reading `None — <why>` or `Changed — <what, which character, what it means for characters
+already done>` (the owner's visibility into method shifts, see docs/AI_WORK_INSTRUCTIONS.md); then a
+substantive `## Validation` section.
 
 The gate cannot tell whether the body describes the commits it actually contains. **Re-read the body against
 the diff before asking for a merge** — a stale body that still passes the gate is the normal failure here.
